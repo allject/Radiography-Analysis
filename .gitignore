@@ -1,0 +1,12 @@
+# OS/editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Keep patient data and private samples out of public repo
+samples/
+private/
+patient-data/
+*.dcm
+*.zip
