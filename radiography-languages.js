@@ -6,13 +6,13 @@
   var LANGUAGE_STORAGE_KEY = 'radiographyAnalysis.language';
 
   var RA_LANGUAGES = {
-    tr: { code: 'tr', label: 'Türkçe', shortLabel: 'TR', title: 'Radiography Analysis | Dental Radyografi ROI ve Fraktal Analizi' },
-    en: { code: 'en', label: 'English', shortLabel: 'EN', title: 'Radiography Analysis | Dental Radiography ROI & Fractal Analysis' },
-    de: { code: 'de', label: 'Deutsch', shortLabel: 'DE', title: 'Radiography Analysis | Dentale Radiographie ROI- & Fraktalanalyse' }
+    tr: { code: 'tr', label: 'T\u00fcrk\u00e7e', shortLabel: 'TR', flag: '\ud83c\uddf9\ud83c\uddf7', labels: { tr: 'T\u00fcrk\u00e7e', en: 'Turkish', de: 'T\u00fcrkisch' }, title: 'Radiography Analysis | Dental Radyografi ROI ve Fraktal Analizi' },
+    en: { code: 'en', label: 'English', shortLabel: 'EN', flag: '\ud83c\uddec\ud83c\udde7', labels: { tr: '\u0130ngilizce', en: 'English', de: 'Englisch' }, title: 'Radiography Analysis | Dental Radiography ROI & Fractal Analysis' },
+    de: { code: 'de', label: 'Deutsch', shortLabel: 'DE', flag: '\ud83c\udde9\ud83c\uddea', labels: { tr: 'Almanca', en: 'German', de: 'Deutsch' }, title: 'Radiography Analysis | Dentale Radiographie ROI- & Fraktalanalyse' }
   };
 
   var TR_TO_EN = {
-    'Dil': 'Language', 'Kılavuz': 'Guide', 'Dikdörtgen': 'Rectangle', 'Daire': 'Circle', 'Yeni ROI': 'New ROI', 'Hizala': 'Align', 'Hesapla': 'Calculate', 'Filtreler': 'Filters', 'Otomatik': 'Automatic', 'Overlay': 'Overlay', 'İçe Aktar': 'Import',
+    'Dil': 'Language', 'Dil se\u00e7imi': 'Language selector', 'Kılavuz': 'Guide', 'Dikdörtgen': 'Rectangle', 'Daire': 'Circle', 'Yeni ROI': 'New ROI', 'Hizala': 'Align', 'Hesapla': 'Calculate', 'Filtreler': 'Filters', 'Otomatik': 'Automatic', 'Overlay': 'Overlay', 'İçe Aktar': 'Import',
     'Görsel ekleyin': 'Add image(s)', 'Görsel Seç': 'Choose image(s)', 'Parlaklık': 'Brightness', 'Kontrast': 'Contrast', 'Pozlama': 'Exposure',
     'Bir ya da birden fazla panoramik radyografi yükleyebilirsiniz. Tek görselde analiz yapılır; 2+ görselde ilk görsel referanstır ve diğerleri ona hizalanır.': 'You can load one or more panoramic radiographs. A single image runs analysis mode; with 2+ images, the first image is the reference and the others are aligned to it.',
     'Görsel işlemler sonuca etki etsin': 'Apply visual processing to results', 'Kapalıyken FD ham analiz hattıyla hesaplanır': 'When disabled, FD is calculated through the raw analysis pipeline',
@@ -45,7 +45,7 @@
   };
 
   var TR_TO_DE = {
-    'Dil': 'Sprache', 'Kılavuz': 'Handbuch', 'Dikdörtgen': 'Rechteck', 'Daire': 'Kreis', 'Yeni ROI': 'Neue ROI', 'Hizala': 'Ausrichten', 'Hesapla': 'Berechnen', 'Filtreler': 'Filter', 'Otomatik': 'Automatik', 'Overlay': 'Overlay', 'İçe Aktar': 'Importieren',
+    'Dil': 'Sprache', 'Dil se\u00e7imi': 'Sprachauswahl', 'Kılavuz': 'Handbuch', 'Dikdörtgen': 'Rechteck', 'Daire': 'Kreis', 'Yeni ROI': 'Neue ROI', 'Hizala': 'Ausrichten', 'Hesapla': 'Berechnen', 'Filtreler': 'Filter', 'Otomatik': 'Automatik', 'Overlay': 'Overlay', 'İçe Aktar': 'Importieren',
     'Görsel ekleyin': 'Bild(er) hinzufügen', 'Görsel Seç': 'Bild(er) auswählen', 'Parlaklık': 'Helligkeit', 'Kontrast': 'Kontrast', 'Pozlama': 'Belichtung',
     'Bir ya da birden fazla panoramik radyografi yükleyebilirsiniz. Tek görselde analiz yapılır; 2+ görselde ilk görsel referanstır ve diğerleri ona hizalanır.': 'Sie können eine oder mehrere Panorama-Radiographien laden. Ein einzelnes Bild startet den Analysemodus; ab 2 Bildern ist das erste Bild die Referenz und die anderen werden daran ausgerichtet.',
     'Görsel işlemler sonuca etki etsin': 'Bildverarbeitung auf Ergebnisse anwenden', 'Kapalıyken FD ham analiz hattıyla hesaplanır': 'Wenn deaktiviert, wird FD über die rohe Analyse-Pipeline berechnet',
@@ -69,10 +69,316 @@
     'Yeni ROI eklemek için referans görseli açın. Karşılaştırma modunda ilk görsel referanstır; diğerleri ona hizalanır.': 'Öffnen Sie das Referenzbild, um eine neue ROI hinzuzufügen. Im Vergleichsmodus ist das erste Bild die Referenz; die anderen werden daran ausgerichtet.', 'Karşılaştırma modu: diğer görseller ilk referans görsele hizalanıyor ve aktif ROI kopyalanıyor...': 'Vergleichsmodus: Zielbilder werden am ersten Referenzbild ausgerichtet und die aktive ROI wird kopiert...', 'Hizalama tamamlandı. ROI koordinatları referansa göre güncellendi.': 'Ausrichtung abgeschlossen. ROI-Koordinaten wurden relativ zur Referenz aktualisiert.', 'Aktif ROI yok. Tüm görseller için genel analiz başlatılıyor.': 'Keine aktive ROI. Vollbildanalyse für alle Bilder wird gestartet.', 'Analiz tamamlanamadı:': 'Analyse fehlgeschlagen:'
   };
 
+  // Public release translation hardening: export headers, dynamic statuses and QA labels.
+  Object.assign(TR_TO_EN, {
+    "Dil se\u00e7imi": "Language selector",
+    "Referans G\u00f6rsel": "Reference Image", "G\u00f6rsel": "Image", "ROI Grup": "ROI Group", "ROI Durumu": "ROI Status", "E\u015fle\u015fme G\u00fcveni": "Match Confidence", "\u015eekil": "Shape", "Koordinat Uzay\u0131": "Coordinate Space",
+    "Orijinal X": "Original X", "Orijinal Y": "Original Y", "Orijinal W": "Original W", "Orijinal H": "Original H", "Orijinal A\u00e7\u0131": "Original Angle",
+    "\u00c7al\u0131\u015fma X": "Workspace X", "\u00c7al\u0131\u015fma Y": "Workspace Y", "\u00c7al\u0131\u015fma W": "Workspace W", "\u00c7al\u0131\u015fma H": "Workspace H", "\u00c7al\u0131\u015fma A\u00e7\u0131": "Workspace Angle", "\u00c7al\u0131\u015fma ROI": "Workspace ROI",
+    "Analiz X": "Analysis X", "Analiz Y": "Analysis Y", "Analiz W": "Analysis W", "Analiz H": "Analysis H", "Analiz \u00d6n \u0130\u015flem": "Analysis Preprocessing", "Analiz Preseti": "Analysis Preset",
+    "Karma\u015f\u0131kl\u0131k": "Complexity", "Nokta": "Points", "E\u011fim SE": "Slope SE", "Kutu \u00d6l\u00e7ekleri": "Box Scales", "Elenen \u00d6l\u00e7ekler": "Excluded Scales", "G\u00fcvenilirlik": "Reliability", "Uyar\u0131": "Warning",
+    "Referans \u00d6n \u0130\u015flemleri": "Reference Preprocessing", "G\u00f6rsel \u0130\u015flemler Sonuca": "Visual Processing Applied", "Siyah-Beyaz G\u00f6r\u00fcn\u00fcm": "Black-and-White Preview", "Otomatik Kontrast": "Auto Contrast", "CLAHE \u00d6nizleme": "CLAHE Preview",
+    "\u00c7AKI\u015eTI": "ALIGNED", "REFERANS": "REFERENCE", "B\u0130L\u0130NM\u0130YOR": "UNKNOWN", "Y\u00fcksek": "High", "D\u00fc\u015f\u00fck": "Low", "D\u00fc\u015f\u00fck g\u00fcven": "Low confidence", "Orta g\u00fcven": "Medium confidence", "Y\u00fcksek g\u00fcven": "High confidence", "G\u00fcven: --": "Confidence: --", "Referans: --": "Reference: --", "Y\u00f6ntem: --": "Method: --",
+    "Ge\u00e7ti": "Passed", "D\u00fczeltildi": "Adjusted", "Riskli": "Risky", "\u0130ncele": "Review", "evet": "yes", "hay\u0131r": "no", "hayir": "no",
+    "G\u00f6rsel histogram\u0131": "Image histogram", "G\u00f6r\u00fcnen/analiz \u00f6nizleme histogram\u0131": "Visible/analysis preview histogram", "Ham g\u00f6r\u00fcnt\u00fc": "Raw image", "ham g\u00f6r\u00fcnt\u00fc": "raw image", "Referansa \u00e7ak\u0131\u015ft\u0131r\u0131ld\u0131": "Aligned to reference", "Referans/hizalanm\u0131\u015f uzay": "Reference/aligned space",
+    "Tek g\u00f6rsel analiz": "Single-image analysis", "Kar\u015f\u0131la\u015ft\u0131rma": "Comparison", "Referans (ilk g\u00f6rsel)": "Reference (first image)", "Referansa hizalanan g\u00f6rsel": "Image aligned to reference", "ROI bu g\u00f6rsel \u00fczerinde hesaplan\u0131r.": "ROI is calculated on this image.", "\u0130lk g\u00f6rsel referanst\u0131r; di\u011fer g\u00f6rseller Hizala/Hesapla ile referansa \u00e7ak\u0131\u015ft\u0131r\u0131l\u0131r.": "The first image is the reference; other images are aligned to it with Align/Calculate.",
+    "1 g\u00f6rsel y\u00fcklendi. Tek g\u00f6rsel analiz modundas\u0131n\u0131z; ROI ekleyip Hesapla\u2019ya bas\u0131n.": "1 image loaded. You are in single-image analysis mode; add an ROI and click Calculate.", "Tek g\u00f6rsel analiz modundas\u0131n\u0131z; hizalama gerekmiyor. ROI ekleyip Hesapla\u2019ya basabilirsiniz.": "You are in single-image analysis mode; alignment is not required. You can add an ROI and click Calculate.",
+    "Analiz i\u00e7in en az 1 r\u00f6ntgen dosyas\u0131 se\u00e7in.": "Select at least 1 radiograph file for analysis.", "Hesaplama i\u00e7in \u00f6nce en az 1 g\u00f6rsel y\u00fckleyin.": "Load at least 1 image before calculation.", "Hizalama i\u00e7in \u00f6nce en az 1 g\u00f6rsel y\u00fckleyin.": "Load at least 1 image before alignment.", "Kar\u015f\u0131la\u015ft\u0131rma i\u00e7in en az iki g\u00f6rsel y\u00fckleyin.": "Load at least two images for comparison.", "G\u00f6rsellerden biri y\u00fcklenemedi. L\u00fctfen desteklenen r\u00f6ntgen dosyalar\u0131 se\u00e7in.": "One of the images could not be loaded. Please choose supported radiograph files.", "G\u00f6rsel yok": "No image", "Analiz kaynak g\u00f6rseli haz\u0131r de\u011fil.": "The analysis source image is not ready.",
+    "Aktif ROI di\u011fer g\u00f6rsellere hizaland\u0131. Gerekirse d\u00fczeltip Hesapla'ya bas\u0131n.": "The active ROI was aligned to the other images. Adjust if needed, then click Calculate.", "Aktif ROI i\u00e7in t\u00fcm \u00f6l\u00e7\u00fcmler hesaplan\u0131yor...": "All measurements are being calculated for the active ROI...", "ROI yok: t\u00fcm foto\u011fraf i\u00e7in \u00f6l\u00e7\u00fcmler hesaplan\u0131yor...": "No ROI: measurements are being calculated for the full image...", "ROI ayarland\u0131. Sonu\u00e7lar\u0131 \u00fcretmek i\u00e7in Hesapla'ya bas\u0131n.": "ROI has been adjusted. Click Calculate to produce results.",
+    "Kalibrasyon de\u011fi\u015fti. Fiziksel mm de\u011ferleri i\u00e7in Hesapla'ya bas\u0131n.": "Calibration changed. Click Calculate for physical mm values.", "Referans g\u00f6rsel g\u00fcncellendi. Yeni hizalama i\u00e7in Hesapla'ya bas\u0131n.": "Reference image updated. Click Calculate for a new alignment.", "Hizalamak i\u00e7in bir ROI se\u00e7in.": "Select an ROI to align.", "Hizalama ba\u015flat\u0131lamad\u0131.": "Alignment could not be started.", "Hizalama hatas\u0131:": "Alignment error:", "Hizalama zaman a\u015f\u0131m\u0131; \u00f6l\u00e7ek tabanl\u0131 g\u00fcvenli yedek kullan\u0131ld\u0131.": "Alignment timed out; scale-based safe fallback was used.", "Homografi \u00fcretilemedi": "Homography could not be produced", "RANSAC i\u00e7in yeterli e\u015fle\u015fme yok": "Not enough matches for RANSAC", "Yeterli ortak \u00f6zellik noktas\u0131 yok": "Not enough shared feature points",
+    "Overlay i\u00e7in en az 2 g\u00f6rsel gerekir.": "Overlay requires at least 2 images.", "Overlay i\u00e7in referans + hedef g\u00f6rsel bekleniyor": "Waiting for reference + target image for overlay", "Bu hedef hen\u00fcz referansa hizalanmam\u0131\u015f; overlay ham hedefi g\u00f6steriyor. Daha do\u011fru kontrol i\u00e7in \u00f6nce Hizala\u2019ya bas\u0131n.": "This target has not been aligned to the reference yet; the overlay shows the raw target. For a more accurate check, click Align first.",
+    "Hedef g\u00f6rsel referans koordinat\u0131na \u00e7ak\u0131\u015ft\u0131r\u0131lm\u0131\u015f halde bindirildi. Anatomik kenarlar \u00fcst \u00fcste gelmiyorsa ROI\u2019yi elle d\u00fczeltin.": "The target image is overlaid after alignment to the reference coordinate space. If anatomical edges do not overlap, adjust the ROI manually.", "Se\u00e7ili ROI b\u00fcy\u00fct\u00fclerek bindirildi. Camg\u00f6be\u011fi referans, yar\u0131 saydam katman hedef ROI\u2019dir; piksel/kontur kaymas\u0131n\u0131 buradan kontrol edin.": "The selected ROI is enlarged and overlaid. Cyan is the reference, the translucent layer is the target ROI; check pixel/contour drift here.", "Se\u00e7ili ROI b\u00fcy\u00fct\u00fclm\u00fc\u015f halde g\u00f6steriliyor; hedef hen\u00fcz referansa hizalanmam\u0131\u015fsa \u00f6nce Hizala\u2019ya bas\u0131n.": "The selected ROI is shown enlarged; if the target is not aligned yet, click Align first.",
+    "Se\u00e7ili g\u00f6rsel/ROI i\u00e7in i\u015flem hatt\u0131 bekliyor. Hesapla'ya bas\u0131n.": "The pipeline is waiting for the selected image/ROI. Click Calculate.", "Referans analiz hatt\u0131 bekleniyor": "Waiting for reference analysis pipeline", "\u00d6n i\u015flemler kapal\u0131": "Preprocessing disabled", "Python referans FD": "Python reference FD", "Python uyumlu kutu say\u0131m\u0131": "Python-compatible box counting", "Python referans FD + FD d\u0131\u015f\u0131 metrik/\u00f6nizleme": "Python reference FD + non-FD metric/preview", "Index2 referans FD: g\u00f6rsel ayarlar\u0131 fraktal hesab\u0131ndan ayr\u0131 tutulur": "Index2 reference FD: visual settings are kept separate from fractal calculation", "sabit referans ad\u0131mlar\u0131": "fixed reference steps", "kutu say\u0131m\u0131": "box counting", "Otsu e\u015fikleme": "Otsu thresholding", "ham Otsu e\u015fikleme": "raw Otsu thresholding", "Gaussian arka plan \u00e7\u0131karma": "Gaussian background subtraction", "negatif k\u0131rpma + 128 uint8": "negative clipping + 128 uint8",
+    "metrik/\u00f6nizleme: 8-bit veri korunumu (FD d\u0131\u015f\u0131)": "metric/preview: 8-bit data preservation (non-FD)", "metrik/\u00f6nizleme: gri skala (FD d\u0131\u015f\u0131)": "metric/preview: grayscale (non-FD)", "metrik/\u00f6nizleme: otomatik kontrast (FD d\u0131\u015f\u0131)": "metric/preview: auto contrast (non-FD)", "metrik/\u00f6nizleme: CLAHE (FD d\u0131\u015f\u0131)": "metric/preview: CLAHE (non-FD)",
+    "Analiz ba\u015flat\u0131lamad\u0131. ROI ve g\u00f6rsel s\u0131n\u0131rlar\u0131 kontrol edildi.": "Analysis could not be started. ROI and image boundaries were checked.", "Analiz haz\u0131rlama hatas\u0131:": "Analysis preparation error:", "Hesaplama ba\u015flat\u0131lamad\u0131.": "Calculation could not be started.", "Hesaplama hatas\u0131:": "Calculation error:", "Hesaplan\u0131yor": "Calculating", "Analiz Hatas\u0131": "Analysis Error", "Worker Hatas\u0131:": "Worker Error:", "Worker ba\u015flatma hatas\u0131:": "Worker startup error:", "Worker olu\u015fturulamad\u0131:": "Worker could not be created:", "Uygulama hatas\u0131:": "Application error:", "Yakalanmam\u0131\u015f i\u015flem hatas\u0131:": "Uncaught operation error:", "Aray\u00fcz olaylar\u0131 ba\u011flanamad\u0131:": "UI events could not be attached:", "OpenCV y\u00fcklenemedi veya zaman a\u015f\u0131m\u0131na u\u011frad\u0131.": "OpenCV could not load or timed out.", "OpenCV kay\u0131t hatt\u0131 ba\u015flat\u0131lamad\u0131": "OpenCV registration pipeline could not start", "OpenCV.js feature/homography API yok": "OpenCV.js feature/homography API is unavailable",
+    "Otomatik ayarlar s\u0131f\u0131rland\u0131": "Automatic settings reset", "Otomatik ayar hatas\u0131:": "Automatic setting error:", "Otomatik ayar uygulanamad\u0131; \u00e7al\u0131\u015fma korunuyor.": "Automatic setting could not be applied; current work is preserved.", "\u00d6nizleme ayar\u0131 uygulanamad\u0131.": "Preview setting could not be applied.", "\u00d6nizleme filtresi hatas\u0131:": "Preview filter error:", "Grafik kurulumu atland\u0131:": "Chart setup skipped:", "S\u00fcr\u00fcklenebilir panel kurulumu atland\u0131:": "Draggable panel setup skipped:", "Ayarlar taray\u0131c\u0131da saklanamad\u0131:": "Settings could not be saved in the browser:", "Varsay\u0131lan ayarlar saklanamad\u0131:": "Default settings could not be saved:", "ROI boyutu taray\u0131c\u0131da saklanamad\u0131:": "ROI size could not be saved in the browser:", "Kopyalama hatas\u0131:": "Copy error:", "Kopyalama izni al\u0131namad\u0131": "Copy permission was not granted", "Kay\u0131t hatas\u0131": "Registration error",
+    "B\u00f6lge ismini de\u011fi\u015ftir:": "Rename region:", "Se\u00e7ili ROI": "Selected ROI", "ROI verisi yok": "No ROI data", "\u00d6l\u00e7\u00fcm bekliyor": "Waiting for measurement", "Ge\u00e7erli piksel bulunamad\u0131.": "No valid pixel found.", "Regresyon i\u00e7in yeterli ge\u00e7erli \u00f6l\u00e7ek bulunamad\u0131.": "Not enough valid scales for regression.", "Regresyonda 4 adetten az ge\u00e7erli \u00f6l\u00e7ek var.": "Regression has fewer than 4 valid scales.", "R\u00b2 0.95 alt\u0131nda; log-log uyumu zay\u0131f.": "R\u00b2 is below 0.95; log-log fit is weak.", "E\u011fim standart hatas\u0131 y\u00fcksek; sonu\u00e7 dikkatle yorumlanmal\u0131.": "Slope standard error is high; interpret the result carefully.", "ROI k\u0131sa kenar\u0131 64 px alt\u0131nda; FD de\u011feri k\u00fc\u00e7\u00fck \u00f6rneklem nedeniyle yan\u0131lt\u0131c\u0131 olabilir.": "The ROI short edge is below 64 px; FD may be misleading due to small sample size.", "E\u015fle\u015fme g\u00fcveni d\u00fc\u015f\u00fck; ROI elle kontrol edilmeli": "Match confidence is low; ROI should be checked manually", "Lokal ROI d\u00fczeltmesi reddedildi; global hizalama kullan\u0131ld\u0131": "Local ROI correction was rejected; global alignment was used",
+    "Histogram i\u00e7in \u00f6nce bir g\u00f6rsel veya ROI gerekli.": "An image or ROI is required before histogram calculation.", "Histogram bilgisi d\u00fc\u015f\u00fck; \u00e7ok d\u00fcz/tekd\u00fcze alan olabilir.": "Histogram information is low; the region may be too flat/uniform.", "Dinamik aral\u0131k dar; kontrast d\u00fc\u015f\u00fck olabilir.": "Dynamic range is narrow; contrast may be low.", "G\u00f6r\u00fcnt\u00fc koyu b\u00f6lgede yo\u011funla\u015f\u0131yor.": "The image is concentrated in dark tones.", "G\u00f6r\u00fcnt\u00fc parlak b\u00f6lgede yo\u011funla\u015f\u0131yor.": "The image is concentrated in bright tones.", "Gri de\u011fer da\u011f\u0131l\u0131m\u0131 homojen; doku ayr\u0131m\u0131 zay\u0131f g\u00f6r\u00fcnebilir.": "Gray-value distribution is homogeneous; tissue separation may appear weak.", "Siyah/beyaz u\u00e7larda k\u0131rp\u0131lma var.": "There is clipping at black/white extremes.", "Pozlama ve gri de\u011fer da\u011f\u0131l\u0131m\u0131 analiz i\u00e7in dengeli g\u00f6r\u00fcn\u00fcyor.": "Exposure and gray-value distribution look balanced for analysis.", "ROI piksel uzay\u0131": "ROI pixel space"
+  });
+  Object.assign(TR_TO_DE, {
+    "Dil se\u00e7imi": "Sprachauswahl",
+    "Referans G\u00f6rsel": "Referenzbild", "G\u00f6rsel": "Bild", "ROI Grup": "ROI-Gruppe", "ROI Durumu": "ROI-Status", "E\u015fle\u015fme G\u00fcveni": "Abgleich-Konfidenz", "\u015eekil": "Form", "Koordinat Uzay\u0131": "Koordinatenraum",
+    "Orijinal X": "Original X", "Orijinal Y": "Original Y", "Orijinal W": "Original B", "Orijinal H": "Original H", "Orijinal A\u00e7\u0131": "Originalwinkel",
+    "\u00c7al\u0131\u015fma X": "Arbeitsbereich X", "\u00c7al\u0131\u015fma Y": "Arbeitsbereich Y", "\u00c7al\u0131\u015fma W": "Arbeitsbereich B", "\u00c7al\u0131\u015fma H": "Arbeitsbereich H", "\u00c7al\u0131\u015fma A\u00e7\u0131": "Arbeitsbereich Winkel", "\u00c7al\u0131\u015fma ROI": "Arbeitsbereich-ROI",
+    "Analiz X": "Analyse X", "Analiz Y": "Analyse Y", "Analiz W": "Analyse B", "Analiz H": "Analyse H", "Analiz \u00d6n \u0130\u015flem": "Analyse-Vorverarbeitung", "Analiz Preseti": "Analyse-Voreinstellung",
+    "Karma\u015f\u0131kl\u0131k": "Komplexit\u00e4t", "Nokta": "Punkte", "E\u011fim SE": "Steigungs-SE", "Kutu \u00d6l\u00e7ekleri": "Box-Skalen", "Elenen \u00d6l\u00e7ekler": "Ausgeschlossene Skalen", "G\u00fcvenilirlik": "Zuverl\u00e4ssigkeit", "Uyar\u0131": "Warnung",
+    "Referans \u00d6n \u0130\u015flemleri": "Referenz-Vorverarbeitung", "G\u00f6rsel \u0130\u015flemler Sonuca": "Bildverarbeitung angewendet", "Siyah-Beyaz G\u00f6r\u00fcn\u00fcm": "Schwarzwei\u00df-Vorschau", "Otomatik Kontrast": "Automatischer Kontrast", "CLAHE \u00d6nizleme": "CLAHE-Vorschau",
+    "\u00c7AKI\u015eTI": "AUSGERICHTET", "REFERANS": "REFERENZ", "B\u0130L\u0130NM\u0130YOR": "UNBEKANNT", "Y\u00fcksek": "Hoch", "D\u00fc\u015f\u00fck": "Niedrig", "D\u00fc\u015f\u00fck g\u00fcven": "Niedrige Konfidenz", "Orta g\u00fcven": "Mittlere Konfidenz", "Y\u00fcksek g\u00fcven": "Hohe Konfidenz", "G\u00fcven: --": "Konfidenz: --", "Referans: --": "Referenz: --", "Y\u00f6ntem: --": "Methode: --",
+    "Ge\u00e7ti": "Bestanden", "D\u00fczeltildi": "Angepasst", "Riskli": "Risikobehaftet", "\u0130ncele": "Pr\u00fcfen", "evet": "ja", "hay\u0131r": "nein", "hayir": "nein",
+    "G\u00f6rsel histogram\u0131": "Bildhistogramm", "G\u00f6r\u00fcnen/analiz \u00f6nizleme histogram\u0131": "Sichtbares/Analyse-Vorschauhistogramm", "Ham g\u00f6r\u00fcnt\u00fc": "Rohbild", "ham g\u00f6r\u00fcnt\u00fc": "Rohbild", "Referansa \u00e7ak\u0131\u015ft\u0131r\u0131ld\u0131": "An Referenz ausgerichtet", "Referans/hizalanm\u0131\u015f uzay": "Referenz-/ausgerichteter Raum",
+    "Tek g\u00f6rsel analiz": "Einzelbildanalyse", "Kar\u015f\u0131la\u015ft\u0131rma": "Vergleich", "Referans (ilk g\u00f6rsel)": "Referenz (erstes Bild)", "Referansa hizalanan g\u00f6rsel": "An Referenz ausgerichtetes Bild", "ROI bu g\u00f6rsel \u00fczerinde hesaplan\u0131r.": "Die ROI wird auf diesem Bild berechnet.", "\u0130lk g\u00f6rsel referanst\u0131r; di\u011fer g\u00f6rseller Hizala/Hesapla ile referansa \u00e7ak\u0131\u015ft\u0131r\u0131l\u0131r.": "Das erste Bild ist die Referenz; andere Bilder werden mit Ausrichten/Berechnen daran ausgerichtet.",
+    "1 g\u00f6rsel y\u00fcklendi. Tek g\u00f6rsel analiz modundas\u0131n\u0131z; ROI ekleyip Hesapla\u2019ya bas\u0131n.": "1 Bild geladen. Sie befinden sich im Einzelbild-Analysemodus; f\u00fcgen Sie eine ROI hinzu und klicken Sie auf Berechnen.", "Tek g\u00f6rsel analiz modundas\u0131n\u0131z; hizalama gerekmiyor. ROI ekleyip Hesapla\u2019ya basabilirsiniz.": "Sie befinden sich im Einzelbild-Analysemodus; Ausrichtung ist nicht erforderlich. Sie k\u00f6nnen eine ROI hinzuf\u00fcgen und Berechnen klicken.",
+    "Analiz i\u00e7in en az 1 r\u00f6ntgen dosyas\u0131 se\u00e7in.": "W\u00e4hlen Sie mindestens 1 R\u00f6ntgendatei f\u00fcr die Analyse.", "Hesaplama i\u00e7in \u00f6nce en az 1 g\u00f6rsel y\u00fckleyin.": "Laden Sie vor der Berechnung mindestens 1 Bild.", "Hizalama i\u00e7in \u00f6nce en az 1 g\u00f6rsel y\u00fckleyin.": "Laden Sie vor der Ausrichtung mindestens 1 Bild.", "Kar\u015f\u0131la\u015ft\u0131rma i\u00e7in en az iki g\u00f6rsel y\u00fckleyin.": "Laden Sie mindestens zwei Bilder f\u00fcr den Vergleich.", "G\u00f6rsellerden biri y\u00fcklenemedi. L\u00fctfen desteklenen r\u00f6ntgen dosyalar\u0131 se\u00e7in.": "Eines der Bilder konnte nicht geladen werden. Bitte w\u00e4hlen Sie unterst\u00fctzte R\u00f6ntgendateien.", "G\u00f6rsel yok": "Kein Bild", "Analiz kaynak g\u00f6rseli haz\u0131r de\u011fil.": "Das Quellbild f\u00fcr die Analyse ist nicht bereit.",
+    "Aktif ROI di\u011fer g\u00f6rsellere hizaland\u0131. Gerekirse d\u00fczeltip Hesapla'ya bas\u0131n.": "Die aktive ROI wurde an die anderen Bilder angepasst. Bei Bedarf korrigieren und Berechnen klicken.", "Aktif ROI i\u00e7in t\u00fcm \u00f6l\u00e7\u00fcmler hesaplan\u0131yor...": "Alle Messungen f\u00fcr die aktive ROI werden berechnet...", "ROI yok: t\u00fcm foto\u011fraf i\u00e7in \u00f6l\u00e7\u00fcmler hesaplan\u0131yor...": "Keine ROI: Messungen werden f\u00fcr das gesamte Bild berechnet...", "ROI ayarland\u0131. Sonu\u00e7lar\u0131 \u00fcretmek i\u00e7in Hesapla'ya bas\u0131n.": "ROI wurde angepasst. Klicken Sie auf Berechnen, um Ergebnisse zu erzeugen.",
+    "Kalibrasyon de\u011fi\u015fti. Fiziksel mm de\u011ferleri i\u00e7in Hesapla'ya bas\u0131n.": "Kalibrierung ge\u00e4ndert. Klicken Sie auf Berechnen f\u00fcr physische mm-Werte.", "Referans g\u00f6rsel g\u00fcncellendi. Yeni hizalama i\u00e7in Hesapla'ya bas\u0131n.": "Referenzbild aktualisiert. Klicken Sie auf Berechnen f\u00fcr eine neue Ausrichtung.", "Hizalamak i\u00e7in bir ROI se\u00e7in.": "W\u00e4hlen Sie eine ROI zum Ausrichten.", "Hizalama ba\u015flat\u0131lamad\u0131.": "Ausrichtung konnte nicht gestartet werden.", "Hizalama hatas\u0131:": "Ausrichtungsfehler:", "Hizalama zaman a\u015f\u0131m\u0131; \u00f6l\u00e7ek tabanl\u0131 g\u00fcvenli yedek kullan\u0131ld\u0131.": "Zeit\u00fcberschreitung bei der Ausrichtung; skalierungsbasierter sicherer Ersatz wurde verwendet.", "Homografi \u00fcretilemedi": "Homographie konnte nicht erzeugt werden", "RANSAC i\u00e7in yeterli e\u015fle\u015fme yok": "Nicht gen\u00fcgend Treffer f\u00fcr RANSAC", "Yeterli ortak \u00f6zellik noktas\u0131 yok": "Nicht gen\u00fcgend gemeinsame Merkmalspunkte",
+    "Overlay i\u00e7in en az 2 g\u00f6rsel gerekir.": "Overlay erfordert mindestens 2 Bilder.", "Overlay i\u00e7in referans + hedef g\u00f6rsel bekleniyor": "Warten auf Referenz- und Zielbild f\u00fcr Overlay", "Bu hedef hen\u00fcz referansa hizalanmam\u0131\u015f; overlay ham hedefi g\u00f6steriyor. Daha do\u011fru kontrol i\u00e7in \u00f6nce Hizala\u2019ya bas\u0131n.": "Dieses Ziel wurde noch nicht an die Referenz ausgerichtet; das Overlay zeigt das Rohziel. F\u00fcr eine genauere Pr\u00fcfung zuerst Ausrichten klicken.",
+    "Hedef g\u00f6rsel referans koordinat\u0131na \u00e7ak\u0131\u015ft\u0131r\u0131lm\u0131\u015f halde bindirildi. Anatomik kenarlar \u00fcst \u00fcste gelmiyorsa ROI\u2019yi elle d\u00fczeltin.": "Das Zielbild wurde nach Ausrichtung im Referenzkoordinatensystem \u00fcberlagert. Wenn anatomische Kanten nicht deckungsgleich sind, korrigieren Sie die ROI manuell.", "Se\u00e7ili ROI b\u00fcy\u00fct\u00fclerek bindirildi. Camg\u00f6be\u011fi referans, yar\u0131 saydam katman hedef ROI\u2019dir; piksel/kontur kaymas\u0131n\u0131 buradan kontrol edin.": "Die ausgew\u00e4hlte ROI wird vergr\u00f6\u00dfert \u00fcberlagert. Cyan ist die Referenz, die halbtransparente Ebene ist die Ziel-ROI; pr\u00fcfen Sie hier Pixel-/Konturversatz.", "Se\u00e7ili ROI b\u00fcy\u00fct\u00fclm\u00fc\u015f halde g\u00f6steriliyor; hedef hen\u00fcz referansa hizalanmam\u0131\u015fsa \u00f6nce Hizala\u2019ya bas\u0131n.": "Die ausgew\u00e4hlte ROI wird vergr\u00f6\u00dfert angezeigt; wenn das Ziel noch nicht ausgerichtet ist, klicken Sie zuerst auf Ausrichten.",
+    "Se\u00e7ili g\u00f6rsel/ROI i\u00e7in i\u015flem hatt\u0131 bekliyor. Hesapla'ya bas\u0131n.": "Die Pipeline wartet auf das ausgew\u00e4hlte Bild/die ROI. Klicken Sie auf Berechnen.", "Referans analiz hatt\u0131 bekleniyor": "Warten auf Referenz-Analysepipeline", "\u00d6n i\u015flemler kapal\u0131": "Vorverarbeitung deaktiviert", "Python referans FD": "Python-Referenz-FD", "Python uyumlu kutu say\u0131m\u0131": "Python-kompatibles Box-Counting", "Python referans FD + FD d\u0131\u015f\u0131 metrik/\u00f6nizleme": "Python-Referenz-FD + Nicht-FD-Metrik/Vorschau", "Index2 referans FD: g\u00f6rsel ayarlar\u0131 fraktal hesab\u0131ndan ayr\u0131 tutulur": "Index2-Referenz-FD: Bildeinstellungen werden von der Fraktalberechnung getrennt gehalten", "sabit referans ad\u0131mlar\u0131": "feste Referenzschritte", "kutu say\u0131m\u0131": "Box-Counting", "Otsu e\u015fikleme": "Otsu-Schwellenwert", "ham Otsu e\u015fikleme": "rohe Otsu-Schwellenwertbildung", "Gaussian arka plan \u00e7\u0131karma": "Gau\u00dfscher Hintergrundabzug", "negatif k\u0131rpma + 128 uint8": "negatives Clipping + 128 uint8",
+    "metrik/\u00f6nizleme: 8-bit veri korunumu (FD d\u0131\u015f\u0131)": "Metrik/Vorschau: 8-Bit-Datenerhalt (nicht FD)", "metrik/\u00f6nizleme: gri skala (FD d\u0131\u015f\u0131)": "Metrik/Vorschau: Graustufen (nicht FD)", "metrik/\u00f6nizleme: otomatik kontrast (FD d\u0131\u015f\u0131)": "Metrik/Vorschau: automatischer Kontrast (nicht FD)", "metrik/\u00f6nizleme: CLAHE (FD d\u0131\u015f\u0131)": "Metrik/Vorschau: CLAHE (nicht FD)",
+    "Analiz ba\u015flat\u0131lamad\u0131. ROI ve g\u00f6rsel s\u0131n\u0131rlar\u0131 kontrol edildi.": "Analyse konnte nicht gestartet werden. ROI- und Bildgrenzen wurden gepr\u00fcft.", "Analiz haz\u0131rlama hatas\u0131:": "Fehler bei der Analysevorbereitung:", "Hesaplama ba\u015flat\u0131lamad\u0131.": "Berechnung konnte nicht gestartet werden.", "Hesaplama hatas\u0131:": "Berechnungsfehler:", "Hesaplan\u0131yor": "Berechnung l\u00e4uft", "Analiz Hatas\u0131": "Analysefehler", "Worker Hatas\u0131:": "Worker-Fehler:", "Worker ba\u015flatma hatas\u0131:": "Worker-Startfehler:", "Worker olu\u015fturulamad\u0131:": "Worker konnte nicht erstellt werden:", "Uygulama hatas\u0131:": "Anwendungsfehler:", "Yakalanmam\u0131\u015f i\u015flem hatas\u0131:": "Nicht abgefangener Vorgangsfehler:", "Aray\u00fcz olaylar\u0131 ba\u011flanamad\u0131:": "UI-Ereignisse konnten nicht verbunden werden:", "OpenCV y\u00fcklenemedi veya zaman a\u015f\u0131m\u0131na u\u011frad\u0131.": "OpenCV konnte nicht geladen werden oder Zeit\u00fcberschreitung.", "OpenCV kay\u0131t hatt\u0131 ba\u015flat\u0131lamad\u0131": "OpenCV-Registrierungspipeline konnte nicht gestartet werden", "OpenCV.js feature/homography API yok": "OpenCV.js-Feature/Homographie-API ist nicht verf\u00fcgbar",
+    "Otomatik ayarlar s\u0131f\u0131rland\u0131": "Automatische Einstellungen zur\u00fcckgesetzt", "Otomatik ayar hatas\u0131:": "Fehler bei automatischer Einstellung:", "Otomatik ayar uygulanamad\u0131; \u00e7al\u0131\u015fma korunuyor.": "Automatische Einstellung konnte nicht angewendet werden; aktueller Stand bleibt erhalten.", "\u00d6nizleme ayar\u0131 uygulanamad\u0131.": "Vorschaueinstellung konnte nicht angewendet werden.", "\u00d6nizleme filtresi hatas\u0131:": "Vorschau-Filterfehler:", "Grafik kurulumu atland\u0131:": "Diagrammeinrichtung \u00fcbersprungen:", "S\u00fcr\u00fcklenebilir panel kurulumu atland\u0131:": "Einrichtung des ziehbaren Panels \u00fcbersprungen:", "Ayarlar taray\u0131c\u0131da saklanamad\u0131:": "Einstellungen konnten im Browser nicht gespeichert werden:", "Varsay\u0131lan ayarlar saklanamad\u0131:": "Standardeinstellungen konnten nicht gespeichert werden:", "ROI boyutu taray\u0131c\u0131da saklanamad\u0131:": "ROI-Gr\u00f6\u00dfe konnte im Browser nicht gespeichert werden:", "Kopyalama hatas\u0131:": "Kopierfehler:", "Kopyalama izni al\u0131namad\u0131": "Kopierberechtigung wurde nicht erteilt", "Kay\u0131t hatas\u0131": "Registrierungsfehler",
+    "B\u00f6lge ismini de\u011fi\u015ftir:": "Region umbenennen:", "Se\u00e7ili ROI": "Ausgew\u00e4hlte ROI", "ROI verisi yok": "Keine ROI-Daten", "\u00d6l\u00e7\u00fcm bekliyor": "Warten auf Messung", "Ge\u00e7erli piksel bulunamad\u0131.": "Kein g\u00fcltiges Pixel gefunden.", "Regresyon i\u00e7in yeterli ge\u00e7erli \u00f6l\u00e7ek bulunamad\u0131.": "Nicht gen\u00fcgend g\u00fcltige Skalen f\u00fcr Regression.", "Regresyonda 4 adetten az ge\u00e7erli \u00f6l\u00e7ek var.": "Regression enth\u00e4lt weniger als 4 g\u00fcltige Skalen.", "R\u00b2 0.95 alt\u0131nda; log-log uyumu zay\u0131f.": "R\u00b2 liegt unter 0,95; Log-Log-Anpassung ist schwach.", "E\u011fim standart hatas\u0131 y\u00fcksek; sonu\u00e7 dikkatle yorumlanmal\u0131.": "Standardfehler der Steigung ist hoch; Ergebnis vorsichtig interpretieren.", "ROI k\u0131sa kenar\u0131 64 px alt\u0131nda; FD de\u011feri k\u00fc\u00e7\u00fck \u00f6rneklem nedeniyle yan\u0131lt\u0131c\u0131 olabilir.": "Die kurze ROI-Kante liegt unter 64 px; FD kann wegen kleiner Stichprobe irref\u00fchrend sein.", "E\u015fle\u015fme g\u00fcveni d\u00fc\u015f\u00fck; ROI elle kontrol edilmeli": "Abgleich-Konfidenz ist niedrig; ROI sollte manuell gepr\u00fcft werden", "Lokal ROI d\u00fczeltmesi reddedildi; global hizalama kullan\u0131ld\u0131": "Lokale ROI-Korrektur wurde verworfen; globale Ausrichtung verwendet",
+    "Histogram i\u00e7in \u00f6nce bir g\u00f6rsel veya ROI gerekli.": "F\u00fcr das Histogramm ist zuerst ein Bild oder eine ROI erforderlich.", "Histogram bilgisi d\u00fc\u015f\u00fck; \u00e7ok d\u00fcz/tekd\u00fcze alan olabilir.": "Histogramminformation ist gering; der Bereich kann zu flach/einheitlich sein.", "Dinamik aral\u0131k dar; kontrast d\u00fc\u015f\u00fck olabilir.": "Der Dynamikbereich ist eng; der Kontrast kann niedrig sein.", "G\u00f6r\u00fcnt\u00fc koyu b\u00f6lgede yo\u011funla\u015f\u0131yor.": "Das Bild konzentriert sich in dunklen Tonwerten.", "G\u00f6r\u00fcnt\u00fc parlak b\u00f6lgede yo\u011funla\u015f\u0131yor.": "Das Bild konzentriert sich in hellen Tonwerten.", "Gri de\u011fer da\u011f\u0131l\u0131m\u0131 homojen; doku ayr\u0131m\u0131 zay\u0131f g\u00f6r\u00fcnebilir.": "Grauwertverteilung ist homogen; Gewebetrennung kann schwach wirken.", "Siyah/beyaz u\u00e7larda k\u0131rp\u0131lma var.": "An Schwarz-/Wei\u00df-Enden liegt Clipping vor.", "Pozlama ve gri de\u011fer da\u011f\u0131l\u0131m\u0131 analiz i\u00e7in dengeli g\u00f6r\u00fcn\u00fcyor.": "Belichtung und Grauwertverteilung wirken f\u00fcr die Analyse ausgewogen.", "ROI piksel uzay\u0131": "ROI-Pixelraum"
+  });
+
+
+  // Public release translation completion: static UI, dynamic labels and export headers.
+  Object.assign(TR_TO_EN, {
+    "Mean Gray":"Mean Gray", "Median":"Median", "Std Dev":"Std Dev", "Lacunarity":"Lacunarity", "Tb.Th / Tb.Sp":"Tb.Th / Tb.Sp", "Mean / Median":"Mean / Median", "Clipping":"Clipping", "P5 - P95":"P5 - P95", "Otsu":"Otsu", "R\u00b2":"R\u00b2", "ROI":"ROI", "px":"px",
+    "DOSYA":"FILE", "\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK":"RESOLUTION", "BOYUT":"SIZE", "T\u0130P":"TYPE", "H\u0130ZALAMA":"ALIGNMENT", "MOD":"MODE", "ROL":"ROLE", "AKI\u015e":"FLOW", "E\u015eLE\u015eME":"MATCH", "H\u0130ZALAMA G\u00dcVEN\u0130":"ALIGNMENT CONFIDENCE", "\u0130\u00c7ER\u0130K SKORU":"CONTENT SCORE", "\u00d6ZELL\u0130K Y\u00d6NTEM\u0130":"FEATURE METHOD",
+    "DOSYA:":"FILE:", "\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK:":"RESOLUTION:", "BOYUT:":"SIZE:", "T\u0130P:":"TYPE:", "H\u0130ZALAMA:":"ALIGNMENT:", "MOD:":"MODE:", "ROL:":"ROLE:", "AKI\u015e:":"FLOW:", "E\u015eLE\u015eME:":"MATCH:", "H\u0130ZALAMA G\u00dcVEN\u0130:":"ALIGNMENT CONFIDENCE:", "\u0130\u00c7ER\u0130K SKORU:":"CONTENT SCORE:", "\u00d6ZELL\u0130K Y\u00d6NTEM\u0130:":"FEATURE METHOD:",
+    "aday":"candidate", "kullan\u0131lan":"used", "uyar\u0131":"warning", "inlier":"inlier", "G":"C", "Ref":"Ref",
+    "G\u00f6rsel i\u015flemler sonuca uygulanacak":"Visual processing will be applied to results", "Mod":"Mode", "Export kolon kontrol\u00fc":"Export column check", "Orijinal ROI":"Original ROI",
+    "Hedef: --":"Target: --", "G\u00fcven: --":"Confidence: --", "Y\u00f6ntem: --":"Method: --", "E\u015fle\u015fme: --":"Match: --", "ROI Min":"ROI Min", "ImageJ-compatible":"ImageJ-compatible",
+    "Area px\u00b2":"Area px\u00b2", "Area mm\u00b2":"Area mm\u00b2", "Perimeter px":"Perimeter px", "Perimeter mm":"Perimeter mm", "Feret px":"Feret px", "Feret mm":"Feret mm", "MinFeret px":"MinFeret px", "MinFeret mm":"MinFeret mm",
+    "Bounding Width px":"Bounding Width px", "Bounding Height px":"Bounding Height px", "Bounding Width mm":"Bounding Width mm", "Bounding Height mm":"Bounding Height mm",
+    "Fit Ellipse Major px":"Fit Ellipse Major px", "Fit Ellipse Minor px":"Fit Ellipse Minor px", "Fit Ellipse Major mm":"Fit Ellipse Major mm", "Fit Ellipse Minor mm":"Fit Ellipse Minor mm", "Ellipse Angle":"Ellipse Angle",
+    "Circularity":"Circularity", "Roundness":"Roundness", "Solidity":"Solidity", "Aspect Ratio":"Aspect Ratio", "Standard Deviation":"Standard Deviation", "Skewness":"Skewness", "Kurtosis":"Kurtosis", "Area Fraction %":"Area Fraction %",
+    "Centroid X":"Centroid X", "Centroid Y":"Centroid Y", "Center of Mass X":"Center of Mass X", "Center of Mass Y":"Center of Mass Y", "Stack Position":"Stack Position", "Otsu Threshold":"Otsu Threshold",
+    "Trabecular Thickness px":"Trabecular Thickness px", "Trabecular Thickness mm":"Trabecular Thickness mm", "Trabecular Separation px":"Trabecular Separation px", "Trabecular Separation mm":"Trabecular Separation mm"
+  });
+  Object.assign(TR_TO_DE, {
+    "Mean Gray":"Mittlerer Grauwert", "Median":"Median", "Std Dev":"Std.-Abw.", "Lacunarity":"Lacunarit\u00e4t", "Tb.Th / Tb.Sp":"Tb.Th / Tb.Sp", "Mean / Median":"Mittelwert / Median", "Clipping":"Clipping", "P5 - P95":"P5 - P95", "Otsu":"Otsu", "R\u00b2":"R\u00b2", "ROI":"ROI", "px":"px",
+    "DOSYA":"DATEI", "\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK":"AUFL\u00d6SUNG", "BOYUT":"GR\u00d6SSE", "T\u0130P":"TYP", "H\u0130ZALAMA":"AUSRICHTUNG", "MOD":"MODUS", "ROL":"ROLLE", "AKI\u015e":"ABLAUF", "E\u015eLE\u015eME":"ABGLEICH", "H\u0130ZALAMA G\u00dcVEN\u0130":"AUSRICHTUNGS-KONFIDENZ", "\u0130\u00c7ER\u0130K SKORU":"INHALTSSCORE", "\u00d6ZELL\u0130K Y\u00d6NTEM\u0130":"MERKMALSMETHODE",
+    "DOSYA:":"DATEI:", "\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK:":"AUFL\u00d6SUNG:", "BOYUT:":"GR\u00d6SSE:", "T\u0130P:":"TYP:", "H\u0130ZALAMA:":"AUSRICHTUNG:", "MOD:":"MODUS:", "ROL:":"ROLLE:", "AKI\u015e:":"ABLAUF:", "E\u015eLE\u015eME:":"ABGLEICH:", "H\u0130ZALAMA G\u00dcVEN\u0130:":"AUSRICHTUNGS-KONFIDENZ:", "\u0130\u00c7ER\u0130K SKORU:":"INHALTSSCORE:", "\u00d6ZELL\u0130K Y\u00d6NTEM\u0130:":"MERKMALSMETHODE:",
+    "aday":"Kandidaten", "kullan\u0131lan":"verwendet", "uyar\u0131":"Warnung", "inlier":"Inlier", "G":"K", "Ref":"Ref",
+    "G\u00f6rsel i\u015flemler sonuca uygulanacak":"Bildverarbeitung wird auf Ergebnisse angewendet", "Mod":"Modus", "Export kolon kontrol\u00fc":"Export-Spaltenpr\u00fcfung", "Orijinal ROI":"Original-ROI",
+    "Hedef: --":"Ziel: --", "G\u00fcven: --":"Konfidenz: --", "Y\u00f6ntem: --":"Methode: --", "E\u015fle\u015fme: --":"Abgleich: --", "ROI Min":"ROI Min", "ImageJ-compatible":"ImageJ-kompatibel",
+    "Mean Gray Value":"Mittlerer Grauwert", "Median Gray Value":"Median-Grauwert", "Integrated Density":"Integrierte Dichte", "Minimum Gray Value":"Minimaler Grauwert", "Maximum Gray Value":"Maximaler Grauwert", "Grayscale Profile":"Grauwertprofil",
+    "Area px\u00b2":"Fl\u00e4che px\u00b2", "Area mm\u00b2":"Fl\u00e4che mm\u00b2", "Perimeter px":"Umfang px", "Perimeter mm":"Umfang mm", "Feret px":"Feret px", "Feret mm":"Feret mm", "MinFeret px":"MinFeret px", "MinFeret mm":"MinFeret mm",
+    "Bounding Width px":"Begrenzungsbreite px", "Bounding Height px":"Begrenzungsh\u00f6he px", "Bounding Width mm":"Begrenzungsbreite mm", "Bounding Height mm":"Begrenzungsh\u00f6he mm",
+    "Fit Ellipse Major px":"Ellipse Hauptachse px", "Fit Ellipse Minor px":"Ellipse Nebenachse px", "Fit Ellipse Major mm":"Ellipse Hauptachse mm", "Fit Ellipse Minor mm":"Ellipse Nebenachse mm", "Ellipse Angle":"Ellipsenwinkel",
+    "Circularity":"Zirkularit\u00e4t", "Roundness":"Rundheit", "Solidity":"Solidit\u00e4t", "Aspect Ratio":"Seitenverh\u00e4ltnis", "Standard Deviation":"Standardabweichung", "Skewness":"Schiefe", "Kurtosis":"Kurtosis", "Area Fraction %":"Fl\u00e4chenanteil %",
+    "Centroid X":"Zentroid X", "Centroid Y":"Zentroid Y", "Center of Mass X":"Massenzentrum X", "Center of Mass Y":"Massenzentrum Y", "Stack Position":"Stack-Position", "Otsu Threshold":"Otsu-Schwelle",
+    "Trabecular Thickness px":"Trabekeldicke px", "Trabecular Thickness mm":"Trabekeldicke mm", "Trabecular Separation px":"Trabekelabstand px", "Trabecular Separation mm":"Trabekelabstand mm"
+  });
+
+
+  // Final language completion: export headers, guide column labels and compact selector metadata.
+  Object.assign(TR_TO_EN, {
+  "ImageJ:Label": "ImageJ:Label",
+  "ImageJ:Area": "ImageJ:Area",
+  "ImageJ:Mean": "ImageJ:Mean",
+  "ImageJ:StdDev": "ImageJ:StdDev",
+  "ImageJ:Mode": "ImageJ:Mode",
+  "ImageJ:Min": "ImageJ:Min",
+  "ImageJ:Max": "ImageJ:Max",
+  "ImageJ:X": "ImageJ:X",
+  "ImageJ:Y": "ImageJ:Y",
+  "ImageJ:XM": "ImageJ:XM",
+  "ImageJ:YM": "ImageJ:YM",
+  "ImageJ:Perim.": "ImageJ:Perim.",
+  "ImageJ:BX": "ImageJ:BX",
+  "ImageJ:BY": "ImageJ:BY",
+  "ImageJ:Width": "ImageJ:Width",
+  "ImageJ:Height": "ImageJ:Height",
+  "ImageJ:Major": "ImageJ:Major",
+  "ImageJ:Minor": "ImageJ:Minor",
+  "ImageJ:Angle": "ImageJ:Angle",
+  "ImageJ:Circ.": "ImageJ:Circ.",
+  "ImageJ:Feret": "ImageJ:Feret",
+  "ImageJ:IntDen": "ImageJ:IntDen",
+  "ImageJ:Median": "ImageJ:Median",
+  "ImageJ:Skew": "ImageJ:Skew",
+  "ImageJ:Kurt": "ImageJ:Kurt",
+  "ImageJ:%Area": "ImageJ:%Area",
+  "ImageJ:RawIntDen": "ImageJ:RawIntDen",
+  "ImageJ:Slice": "ImageJ:Slice",
+  "ImageJ:FeretX": "ImageJ:FeretX",
+  "ImageJ:FeretY": "ImageJ:FeretY",
+  "ImageJ:FeretAngle": "ImageJ:FeretAngle",
+  "ImageJ:MinFeret": "ImageJ:MinFeret",
+  "ImageJ:AR": "ImageJ:AR",
+  "ImageJ:Round": "ImageJ:Round",
+  "ImageJ:Solidity": "ImageJ:Solidity",
+  "R\u00b2": "R\u00b2",
+  "Mean Gray Value": "Mean Gray Value",
+  "Median Gray Value": "Median Gray Value",
+  "Integrated Density": "Integrated Density",
+  "Minimum Gray Value": "Minimum Gray Value",
+  "Maximum Gray Value": "Maximum Gray Value",
+  "Grayscale Profile": "Grayscale Profile",
+  "Area px\u00b2": "Area px\u00b2",
+  "Area mm\u00b2": "Area mm\u00b2",
+  "Perimeter px": "Perimeter px",
+  "Perimeter mm": "Perimeter mm",
+  "Feret px": "Feret px",
+  "Feret mm": "Feret mm",
+  "MinFeret px": "MinFeret px",
+  "MinFeret mm": "MinFeret mm",
+  "Bounding Width px": "Bounding Width px",
+  "Bounding Height px": "Bounding Height px",
+  "Bounding Width mm": "Bounding Width mm",
+  "Bounding Height mm": "Bounding Height mm",
+  "Fit Ellipse Major px": "Fit Ellipse Major px",
+  "Fit Ellipse Minor px": "Fit Ellipse Minor px",
+  "Fit Ellipse Major mm": "Fit Ellipse Major mm",
+  "Fit Ellipse Minor mm": "Fit Ellipse Minor mm",
+  "Ellipse Angle": "Ellipse Angle",
+  "Circularity": "Circularity",
+  "Roundness": "Roundness",
+  "Solidity": "Solidity",
+  "Aspect Ratio": "Aspect Ratio",
+  "Standard Deviation": "Standard Deviation",
+  "Skewness": "Skewness",
+  "Kurtosis": "Kurtosis",
+  "Area Fraction %": "Area Fraction %",
+  "Centroid X": "Centroid X",
+  "Centroid Y": "Centroid Y",
+  "Center of Mass X": "Center of Mass X",
+  "Center of Mass Y": "Center of Mass Y",
+  "Stack Position": "Stack Position",
+  "Lacunarity": "Lacunarity",
+  "Trabecular Thickness px": "Trabecular Thickness px",
+  "Trabecular Thickness mm": "Trabecular Thickness mm",
+  "Trabecular Separation px": "Trabecular Separation px",
+  "Trabecular Separation mm": "Trabecular Separation mm",
+  "Otsu Threshold": "Otsu Threshold",
+  "Mean Gray": "Mean Gray",
+  "Median": "Median",
+  "Std Dev": "Std Dev",
+  "Tb.Th / Tb.Sp": "Tb.Th / Tb.Sp",
+  "Mean / Median": "Mean / Median",
+  "Clipping": "Clipping",
+  "P5 - P95": "P5 - P95",
+  "Otsu": "Otsu",
+  "ROI": "ROI",
+  "px": "px",
+  "Column": "Column",
+  "Group": "Group",
+  "Explanation": "Explanation",
+  "Note": "Note"
+});
+  Object.assign(TR_TO_DE, {
+  "ImageJ:Label": "ImageJ:Label",
+  "ImageJ:Area": "ImageJ:Fl\u00e4che",
+  "ImageJ:Mean": "ImageJ:Mittelwert",
+  "ImageJ:StdDev": "ImageJ:StdAbw",
+  "ImageJ:Mode": "ImageJ:Modus",
+  "ImageJ:Min": "ImageJ:Min",
+  "ImageJ:Max": "ImageJ:Max",
+  "ImageJ:X": "ImageJ:X",
+  "ImageJ:Y": "ImageJ:Y",
+  "ImageJ:XM": "ImageJ:XM",
+  "ImageJ:YM": "ImageJ:YM",
+  "ImageJ:Perim.": "ImageJ:Umfang",
+  "ImageJ:BX": "ImageJ:BX",
+  "ImageJ:BY": "ImageJ:BY",
+  "ImageJ:Width": "ImageJ:Breite",
+  "ImageJ:Height": "ImageJ:H\u00f6he",
+  "ImageJ:Major": "ImageJ:Hauptachse",
+  "ImageJ:Minor": "ImageJ:Nebenachse",
+  "ImageJ:Angle": "ImageJ:Winkel",
+  "ImageJ:Circ.": "ImageJ:Zirk.",
+  "ImageJ:Feret": "ImageJ:Feret",
+  "ImageJ:IntDen": "ImageJ:IntDichte",
+  "ImageJ:Median": "ImageJ:Median",
+  "ImageJ:Skew": "ImageJ:Schiefe",
+  "ImageJ:Kurt": "ImageJ:Kurt",
+  "ImageJ:%Area": "ImageJ:%Fl\u00e4che",
+  "ImageJ:RawIntDen": "ImageJ:RohIntDichte",
+  "ImageJ:Slice": "ImageJ:Slice",
+  "ImageJ:FeretX": "ImageJ:FeretX",
+  "ImageJ:FeretY": "ImageJ:FeretY",
+  "ImageJ:FeretAngle": "ImageJ:FeretWinkel",
+  "ImageJ:MinFeret": "ImageJ:MinFeret",
+  "ImageJ:AR": "ImageJ:SV",
+  "ImageJ:Round": "ImageJ:Rund",
+  "ImageJ:Solidity": "ImageJ:Solidit\u00e4t",
+  "R\u00b2": "R\u00b2",
+  "Mean Gray Value": "Mittlerer Grauwert",
+  "Median Gray Value": "Median-Grauwert",
+  "Integrated Density": "Integrierte Dichte",
+  "Minimum Gray Value": "Minimaler Grauwert",
+  "Maximum Gray Value": "Maximaler Grauwert",
+  "Grayscale Profile": "Grauwertprofil",
+  "Area px\u00b2": "Fl\u00e4che px\u00b2",
+  "Area mm\u00b2": "Fl\u00e4che mm\u00b2",
+  "Perimeter px": "Umfang px",
+  "Perimeter mm": "Umfang mm",
+  "Feret px": "Feret px",
+  "Feret mm": "Feret mm",
+  "MinFeret px": "MinFeret px",
+  "MinFeret mm": "MinFeret mm",
+  "Bounding Width px": "Begrenzungsbreite px",
+  "Bounding Height px": "Begrenzungsh\u00f6he px",
+  "Bounding Width mm": "Begrenzungsbreite mm",
+  "Bounding Height mm": "Begrenzungsh\u00f6he mm",
+  "Fit Ellipse Major px": "Ellipse Hauptachse px",
+  "Fit Ellipse Minor px": "Ellipse Nebenachse px",
+  "Fit Ellipse Major mm": "Ellipse Hauptachse mm",
+  "Fit Ellipse Minor mm": "Ellipse Nebenachse mm",
+  "Ellipse Angle": "Ellipsenwinkel",
+  "Circularity": "Zirkularit\u00e4t",
+  "Roundness": "Rundheit",
+  "Solidity": "Solidit\u00e4t",
+  "Aspect Ratio": "Seitenverh\u00e4ltnis",
+  "Standard Deviation": "Standardabweichung",
+  "Skewness": "Schiefe",
+  "Kurtosis": "Kurtosis",
+  "Area Fraction %": "Fl\u00e4chenanteil %",
+  "Centroid X": "Zentroid X",
+  "Centroid Y": "Zentroid Y",
+  "Center of Mass X": "Massenzentrum X",
+  "Center of Mass Y": "Massenzentrum Y",
+  "Stack Position": "Stack-Position",
+  "Lacunarity": "Lacunarit\u00e4t",
+  "Trabecular Thickness px": "Trabekeldicke px",
+  "Trabecular Thickness mm": "Trabekeldicke mm",
+  "Trabecular Separation px": "Trabekelabstand px",
+  "Trabecular Separation mm": "Trabekelabstand mm",
+  "Otsu Threshold": "Otsu-Schwelle",
+  "Mean Gray": "Mittlerer Grauwert",
+  "Median": "Median",
+  "Std Dev": "Std.-Abw.",
+  "Tb.Th / Tb.Sp": "Tb.Th / Tb.Sp",
+  "Mean / Median": "Mittelwert / Median",
+  "Clipping": "Clipping",
+  "P5 - P95": "P5 - P95",
+  "Otsu": "Otsu",
+  "ROI": "ROI",
+  "px": "px",
+  "Column": "Spalte",
+  "Group": "Gruppe",
+  "Explanation": "Erkl\u00e4rung",
+  "Note": "Hinweis"
+});
+
+
+  // Runtime-safe export/header language completion. Keep this block additive so future languages can extend it cleanly.
+  Object.assign(TR_TO_EN, {
+    "8-bit Normalizasyon": "8-bit Normalization",
+    "8-bit normalizasyon": "8-bit normalization",
+    "G\u00f6rsel \u0130\u015flemler Sonuca": "Visual Processing Applied",
+    "Referans \u00d6n \u0130\u015flemleri": "Reference Preprocessing",
+    "Siyah-Beyaz G\u00f6r\u00fcn\u00fcm": "Black-and-White Preview",
+    "CLAHE \u00d6nizleme": "CLAHE Preview",
+    "Otomatik Kontrast": "Auto Contrast",
+    "Analiz Preseti": "Analysis Preset",
+    "Kalibrasyon": "Calibration",
+    "Parlakl\u0131k": "Brightness",
+    "Kontrast": "Contrast",
+    "Pozlama": "Exposure"
+  });
+  Object.assign(TR_TO_DE, {
+    "8-bit Normalizasyon": "8-Bit-Normalisierung",
+    "8-bit normalizasyon": "8-Bit-Normalisierung",
+    "G\u00f6rsel \u0130\u015flemler Sonuca": "Bildverarbeitung angewendet",
+    "Referans \u00d6n \u0130\u015flemleri": "Referenz-Vorverarbeitung",
+    "Siyah-Beyaz G\u00f6r\u00fcn\u00fcm": "Schwarzwei\u00df-Vorschau",
+    "CLAHE \u00d6nizleme": "CLAHE-Vorschau",
+    "Otomatik Kontrast": "Automatischer Kontrast",
+    "Analiz Preseti": "Analyse-Voreinstellung",
+    "Kalibrasyon": "Kalibrierung",
+    "Parlakl\u0131k": "Helligkeit",
+    "Kontrast": "Kontrast",
+    "Pozlama": "Belichtung"
+  });
+
   var TRANSLATIONS = { en: TR_TO_EN, de: TR_TO_DE };
   var EXPORT_HEADERS = { en: { 'Referans Görsel':'Reference Image','Görsel':'Image','ROI Grup':'ROI Group','ROI Durumu':'ROI Status','Eşleşme Güveni':'Match Confidence','Şekil':'Shape','Koordinat Uzayı':'Coordinate Space','Orijinal X':'Original X','Orijinal Y':'Original Y','Orijinal W':'Original W','Orijinal H':'Original H','Orijinal Açı':'Original Angle','Çalışma X':'Workspace X','Çalışma Y':'Workspace Y','Çalışma W':'Workspace W','Çalışma H':'Workspace H','Çalışma Açı':'Workspace Angle','Analiz X':'Analysis X','Analiz Y':'Analysis Y','Analiz W':'Analysis W','Analiz H':'Analysis H','Fraktal Boyut (D)':'Fractal Dimension (D)','Karmaşıklık':'Complexity','Nokta':'Points','Eğim SE':'Slope SE','Kutu Ölçekleri':'Box Scales','Elenen Ölçekler':'Excluded Scales','Güvenilirlik':'Reliability','Uyarı':'Warning','Analiz Ön İşlem':'Analysis Preprocessing','Kalibrasyon':'Calibration','Analiz Preseti':'Analysis Preset','Parlaklık':'Brightness','Kontrast':'Contrast','Pozlama':'Exposure','Görsel İşlemler Sonuca':'Visual Processing Applied','Referans Ön İşlemleri':'Reference Preprocessing','8-bit Normalizasyon':'8-bit Normalization','Siyah-Beyaz Görünüm':'Black-and-White Preview','Otomatik Kontrast':'Auto Contrast','CLAHE Önizleme':'CLAHE Preview' }, de: { 'Referans Görsel':'Referenzbild','Görsel':'Bild','ROI Grup':'ROI-Gruppe','ROI Durumu':'ROI-Status','Eşleşme Güveni':'Abgleich-Konfidenz','Şekil':'Form','Koordinat Uzayı':'Koordinatenraum','Orijinal X':'Original X','Orijinal Y':'Original Y','Orijinal W':'Original B','Orijinal H':'Original H','Orijinal Açı':'Originalwinkel','Çalışma X':'Arbeitsbereich X','Çalışma Y':'Arbeitsbereich Y','Çalışma W':'Arbeitsbereich B','Çalışma H':'Arbeitsbereich H','Çalışma Açı':'Arbeitsbereich Winkel','Analiz X':'Analyse X','Analiz Y':'Analyse Y','Analiz W':'Analyse B','Analiz H':'Analyse H','Fraktal Boyut (D)':'Fraktale Dimension (D)','Karmaşıklık':'Komplexität','Nokta':'Punkte','Eğim SE':'Steigungs-SE','Kutu Ölçekleri':'Box-Skalen','Elenen Ölçekler':'Ausgeschlossene Skalen','Güvenilirlik':'Zuverlässigkeit','Uyarı':'Warnung','Analiz Ön İşlem':'Analyse-Vorverarbeitung','Kalibrasyon':'Kalibrierung','Analiz Preseti':'Analyse-Voreinstellung','Parlaklık':'Helligkeit','Kontrast':'Kontrast','Pozlama':'Belichtung','Görsel İşlemler Sonuca':'Bildverarbeitung angewendet','Referans Ön İşlemleri':'Referenz-Vorverarbeitung','8-bit Normalizasyon':'8-Bit-Normalisierung','Siyah-Beyaz Görünüm':'Schwarzweiß-Vorschau','Otomatik Kontrast':'Automatischer Kontrast','CLAHE Önizleme':'CLAHE-Vorschau' } };
-  var PREFIX_TR = ['Referans:', 'Hedef:', 'Güven:', 'Yöntem:', 'Görsel histogramı:', 'ROI histogramı:', 'Tam görsel histogramı:', 'Eşleşme güveni', 'GÜVEN:', 'GÜVEN SKORU:'];
-  var PREFIX_TO = { en: ['Reference:', 'Target:', 'Confidence:', 'Method:', 'Image histogram:', 'ROI histogram:', 'Full-image histogram:', 'Alignment confidence', 'CONFIDENCE:', 'CONFIDENCE SCORE:'], de: ['Referenz:', 'Ziel:', 'Konfidenz:', 'Methode:', 'Bildhistogramm:', 'ROI-Histogramm:', 'Vollbild-Histogramm:', 'Ausrichtungs-Konfidenz', 'KONFIDENZ:', 'KONFIDENZWERT:'] };
+  var PREFIX_TR = ['Referans:', 'Hedef:', 'G\u00fcven:', 'Y\u00f6ntem:', 'G\u00f6rsel histogram\u0131:', 'ROI histogram\u0131:', 'Tam g\u00f6rsel histogram\u0131:', 'E\u015fle\u015fme g\u00fcveni', 'G\u00dcVEN:', 'G\u00dcVEN SKORU:', 'DOSYA:', '\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK:', 'BOYUT:', 'T\u0130P:', 'H\u0130ZALAMA:', 'MOD:', 'ROL:', 'AKI\u015e:', 'E\u015eLE\u015eME:', 'H\u0130ZALAMA G\u00dcVEN\u0130:', '\u0130\u00c7ER\u0130K SKORU:', '\u00d6ZELL\u0130K Y\u00d6NTEM\u0130:', 'Mod '];
+  var PREFIX_TO = { en: ['Reference:', 'Target:', 'Confidence:', 'Method:', 'Image histogram:', 'ROI histogram:', 'Full-image histogram:', 'Alignment confidence', 'CONFIDENCE:', 'CONFIDENCE SCORE:', 'FILE:', 'RESOLUTION:', 'SIZE:', 'TYPE:', 'ALIGNMENT:', 'MODE:', 'ROLE:', 'FLOW:', 'MATCH:', 'ALIGNMENT CONFIDENCE:', 'CONTENT SCORE:', 'FEATURE METHOD:', 'Mode '], de: ['Referenz:', 'Ziel:', 'Konfidenz:', 'Methode:', 'Bildhistogramm:', 'ROI-Histogramm:', 'Vollbild-Histogramm:', 'Ausrichtungs-Konfidenz', 'KONFIDENZ:', 'KONFIDENZWERT:', 'DATEI:', 'AUFL\u00d6SUNG:', 'GR\u00d6SSE:', 'TYP:', 'AUSRICHTUNG:', 'MODUS:', 'ROLLE:', 'ABLAUF:', 'ABGLEICH:', 'AUSRICHTUNGS-KONFIDENZ:', 'INHALTSSCORE:', 'MERKMALSMETHODE:', 'Modus '] };
   function normalizeLanguage(lang) { var v = String(lang || '').toLowerCase().slice(0, 2); return RA_LANGUAGES[v] ? v : 'tr'; }
   function safeJson(value) { try { return JSON.parse(value || '{}'); } catch (_) { return {}; } }
   function readSavedSettings() { try { return safeJson(localStorage.getItem(SETTINGS_STORAGE_KEY) || localStorage.getItem(LEGACY_SETTINGS_STORAGE_KEY) || '{}'); } catch (_) { return {}; } }
@@ -84,16 +390,23 @@
   function canonicalText(text) { var value = normalizeTextKey(text); if (!value) return value; Object.keys(REVERSE).some(function(lang){ if (REVERSE[lang][value]) { value = REVERSE[lang][value]; return true; } return false; }); return value; }
   function translatePrefix(value) { var clean = String(value == null ? '' : value).trim(); var canonical = clean; Object.keys(PREFIX_TO).some(function(lang){ return PREFIX_TO[lang].some(function(prefix, i){ if (canonical.indexOf(prefix) === 0) { canonical = PREFIX_TR[i] + canonical.slice(prefix.length); return true; } return false; }); }); if (window.currentLanguage === 'tr') return canonical !== clean ? canonical : null; var targetPrefixes = PREFIX_TO[window.currentLanguage] || []; for (var i=0; i<PREFIX_TR.length; i++) if (canonical.indexOf(PREFIX_TR[i]) === 0) return (targetPrefixes[i] || PREFIX_TR[i]) + canonical.slice(PREFIX_TR[i].length); return null; }
   function t(text) { var raw = String(text == null ? '' : text); var trimmed = raw.trim(); if (!trimmed) return raw; var prefixed = translatePrefix(trimmed); var canonical = canonicalText(trimmed); var translated = prefixed || (window.currentLanguage === 'tr' ? canonical : ((TRANSLATIONS[window.currentLanguage] || {})[canonical] || canonical)); return raw.replace(trimmed, translated); }
-  function localizeExportHeader(header) { var map = EXPORT_HEADERS[window.currentLanguage] || {}; return window.currentLanguage === 'tr' ? header : header.map(function(item){ return map[item] || item; }); }
+  function localizeExportHeader(header) { return window.currentLanguage === 'tr' ? header : header.map(function(item){ return t(item); }); }
   function localizeExportCell(value) { if (window.currentLanguage === 'tr') return value; var clean = String(value == null ? '' : value).trim(); return (TRANSLATIONS[window.currentLanguage] || {})[canonicalText(clean)] || translatePrefix(clean) || value; }
   function persistLanguage() { try { localStorage.setItem(LANGUAGE_STORAGE_KEY, window.currentLanguage); var saved = readSavedSettings(); saved.language = window.currentLanguage; writeSavedSettings(saved); } catch (err) { console.warn('Language preference could not be saved:', err); } }
-  function setLanguageOptions(select) { if (!select) return; var current = select.value || window.currentLanguage; select.innerHTML = ''; Object.keys(RA_LANGUAGES).forEach(function(code){ var opt = document.createElement('option'); opt.value = code; opt.textContent = RA_LANGUAGES[code].label; select.appendChild(opt); }); select.value = normalizeLanguage(current); }
-  function localizeTextNode(node) { if (!node || node.nodeType !== Node.TEXT_NODE) return; var p = node.parentElement; if (!p || ['SCRIPT','STYLE','TEXTAREA','CODE','PRE','CANVAS','OPTION'].indexOf(p.tagName) >= 0) return; var next = t(node.nodeValue); if (next !== node.nodeValue) node.nodeValue = next; }
-  function localizeAttributes(el) { if (!el || el.nodeType !== Node.ELEMENT_NODE) return; ['title','placeholder','aria-label'].forEach(function(attr){ if (!el.hasAttribute(attr)) return; var v = el.getAttribute(attr); var next = t(v); if (next !== v) el.setAttribute(attr, next); }); }
+  function getLanguageLabel(code, uiLang) { var item = RA_LANGUAGES[normalizeLanguage(code)] || RA_LANGUAGES.tr; var lang = normalizeLanguage(uiLang || window.currentLanguage); return (item.labels && item.labels[lang]) || item.label || item.shortLabel || code; }
+  function getNativeLanguageLabel(code) { var item = RA_LANGUAGES[normalizeLanguage(code)] || RA_LANGUAGES.tr; return item.label || getLanguageLabel(code, code); }
+  function getLanguageFlag(code) { var item = RA_LANGUAGES[normalizeLanguage(code)] || RA_LANGUAGES.tr; return item.flag || ''; }
+  function setLanguageOptions(select) { if (!select) return; var current = normalizeLanguage(select.value || window.currentLanguage); select.innerHTML = ''; Object.keys(RA_LANGUAGES).forEach(function(code){ var item = RA_LANGUAGES[code]; var opt = document.createElement('option'); opt.value = code; opt.textContent = (item.flag ? item.flag + ' ' : '') + (item.label || getLanguageLabel(code, code)); select.appendChild(opt); }); select.value = current; select.setAttribute('aria-label', t('Dil se\u00e7imi')); }
+  function isI18nSkipped(el) { while (el && el.nodeType === 1) { if (el.hasAttribute && (el.hasAttribute('data-i18n-skip') || el.hasAttribute('data-no-i18n'))) return true; el = el.parentElement; } return false; }
+  function translateRemainder(tail) { if (!tail) return tail; var lead = (tail.match(/^\s*/) || [''])[0]; var end = (tail.match(/\s*$/) || [''])[0]; var core = tail.slice(lead.length, tail.length - end.length); if (!core) return tail; var canonical = canonicalText(core); var map = TRANSLATIONS[window.currentLanguage] || {}; var translated = window.currentLanguage === 'tr' ? canonical : (map[canonical] || canonical); return lead + translated + end; }
+  function translatePrefix(value) { var clean = String(value == null ? '' : value).trim(); var canonical = clean; Object.keys(PREFIX_TO).some(function(lang){ return PREFIX_TO[lang].some(function(prefix, i){ if (canonical.indexOf(prefix) === 0) { canonical = PREFIX_TR[i] + canonical.slice(prefix.length); return true; } return false; }); }); if (window.currentLanguage === 'tr') return canonical !== clean ? canonical : null; var targetPrefixes = PREFIX_TO[window.currentLanguage] || []; for (var i=0; i<PREFIX_TR.length; i++) if (canonical.indexOf(PREFIX_TR[i]) === 0) return (targetPrefixes[i] || PREFIX_TR[i]) + translateRemainder(canonical.slice(PREFIX_TR[i].length)); return null; }
+  function localizeTextNode(node) { if (!node || node.nodeType !== Node.TEXT_NODE) return; var p = node.parentElement; if (!p || isI18nSkipped(p) || ['SCRIPT','STYLE','TEXTAREA','CODE','PRE','CANVAS','OPTION'].indexOf(p.tagName) >= 0) return; var next = t(node.nodeValue); if (next !== node.nodeValue) node.nodeValue = next; }
+  function localizeAttributes(el) { if (!el || el.nodeType !== Node.ELEMENT_NODE || isI18nSkipped(el)) return; ['title','placeholder','aria-label'].forEach(function(attr){ if (!el.hasAttribute(attr)) return; var v = el.getAttribute(attr); var next = t(v); if (next !== v) el.setAttribute(attr, next); }); }
   var i18nApplying = false, i18nObserver = null;
-  function applyI18n(root) { root = root || document.body; if (!root || i18nApplying) return; i18nApplying = true; try { document.documentElement.lang = window.currentLanguage; document.title = (RA_LANGUAGES[window.currentLanguage] || RA_LANGUAGES.tr).title; document.querySelectorAll('[data-language]').forEach(function(btn){ btn.classList.toggle('active', btn.dataset.language === window.currentLanguage); btn.setAttribute('aria-pressed', btn.dataset.language === window.currentLanguage ? 'true' : 'false'); }); document.querySelectorAll('select[data-language-select], #language-select').forEach(function(select){ setLanguageOptions(select); select.value = window.currentLanguage; }); var guideLink = document.getElementById('guide-link'); if (guideLink) guideLink.href = 'user-guide.html?lang=' + window.currentLanguage; var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function(node){ var p=node.parentElement; if(!p || ['SCRIPT','STYLE','TEXTAREA','CODE','PRE','CANVAS','OPTION'].indexOf(p.tagName)>=0) return NodeFilter.FILTER_REJECT; return NodeFilter.FILTER_ACCEPT; } }); var nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(localizeTextNode); if (root.nodeType === Node.ELEMENT_NODE) localizeAttributes(root); if (root.querySelectorAll) root.querySelectorAll('[title], [placeholder], [aria-label]').forEach(localizeAttributes); } finally { i18nApplying = false; } }
-  function setupLanguageSwitcher() { document.querySelectorAll('select[data-language-select], #language-select').forEach(function(select){ setLanguageOptions(select); select.value = window.currentLanguage; select.onchange = function(){ setLanguage(select.value); }; }); document.querySelectorAll('[data-language]').forEach(function(btn){ btn.onclick = function(){ setLanguage(btn.dataset.language); }; }); if (!i18nObserver) { var pending=false; i18nObserver = new MutationObserver(function(){ if(i18nApplying || pending) return; pending=true; requestAnimationFrame(function(){ pending=false; applyI18n(document.body); }); }); i18nObserver.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['title','placeholder','aria-label'] }); } applyI18n(document.body); }
-  function setLanguage(lang) { var next = normalizeLanguage(lang); window.currentLanguage = next; persistLanguage(); applyI18n(document.body); var msg = next === 'tr' ? 'Dil Türkçe olarak ayarlandı.' : next === 'de' ? 'Dil Almanca olarak ayarlandı.' : 'Language set to English.'; if (typeof window.updateStatus === 'function') window.updateStatus(msg, 'success'); }
+  function updateLanguageChrome() { document.querySelectorAll('select[data-language-select], #language-select').forEach(function(select){ setLanguageOptions(select); select.value = window.currentLanguage; }); document.querySelectorAll('[data-language-current], .language-current').forEach(function(el){ el.textContent = getNativeLanguageLabel(window.currentLanguage); }); document.querySelectorAll('[data-language-flag], .language-flag').forEach(function(el){ el.textContent = getLanguageFlag(window.currentLanguage); }); document.querySelectorAll('[data-language-code]').forEach(function(el){ var item = RA_LANGUAGES[window.currentLanguage] || RA_LANGUAGES.tr; el.textContent = item.shortLabel || window.currentLanguage.toUpperCase(); }); }
+  function applyI18n(root) { root = root || document.body; if (!root || i18nApplying) return; i18nApplying = true; try { document.documentElement.lang = window.currentLanguage; document.documentElement.setAttribute('data-current-language', window.currentLanguage); document.title = (RA_LANGUAGES[window.currentLanguage] || RA_LANGUAGES.tr).title; document.querySelectorAll('[data-language]').forEach(function(btn){ btn.classList.toggle('active', btn.dataset.language === window.currentLanguage); btn.setAttribute('aria-pressed', btn.dataset.language === window.currentLanguage ? 'true' : 'false'); }); var guideLink = document.getElementById('guide-link'); if (guideLink) guideLink.href = 'user-guide.html?lang=' + window.currentLanguage; var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: function(node){ var p=node.parentElement; if(!p || isI18nSkipped(p) || ['SCRIPT','STYLE','TEXTAREA','CODE','PRE','CANVAS','OPTION'].indexOf(p.tagName)>=0) return NodeFilter.FILTER_REJECT; return NodeFilter.FILTER_ACCEPT; } }); var nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(localizeTextNode); if (root.nodeType === Node.ELEMENT_NODE) localizeAttributes(root); if (root.querySelectorAll) root.querySelectorAll('[title], [placeholder], [aria-label]').forEach(localizeAttributes); updateLanguageChrome(); } finally { i18nApplying = false; } }
+  function setupLanguageSwitcher() { document.querySelectorAll('select[data-language-select], #language-select').forEach(function(select){ setLanguageOptions(select); select.value = window.currentLanguage; select.onchange = function(){ setLanguage(select.value); }; }); document.querySelectorAll('[data-language]').forEach(function(btn){ btn.onclick = function(){ setLanguage(btn.dataset.language); }; }); if (!i18nObserver && document.body) { var pending=false; i18nObserver = new MutationObserver(function(){ if(i18nApplying || pending) return; pending=true; requestAnimationFrame(function(){ pending=false; applyI18n(document.body); }); }); i18nObserver.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['title','placeholder','aria-label'] }); } applyI18n(document.body); }
+  function setLanguage(lang) { var next = normalizeLanguage(lang); window.currentLanguage = next; persistLanguage(); applyI18n(document.body); try { window.dispatchEvent(new CustomEvent('radiography-language-change', { detail: { language: next } })); } catch (_) {} var msg = next === 'tr' ? 'Dil T\u00fcrk\u00e7e olarak ayarland\u0131.' : next === 'de' ? 'Dil Almanca olarak ayarland\u0131.' : 'Language set to English.'; if (typeof window.updateStatus === 'function') window.updateStatus(msg, 'success'); }
   function registerRadiographyLanguage(code, config, translations, exportHeaders) { code = String(code || '').toLowerCase().slice(0,2); if (!code) return; RA_LANGUAGES[code] = Object.assign({ code: code, label: code.toUpperCase(), shortLabel: code.toUpperCase(), title: 'Radiography Analysis' }, config || {}); TRANSLATIONS[code] = translations || {}; REVERSE[code] = reverseMap(TRANSLATIONS[code]); EXPORT_HEADERS[code] = exportHeaders || {}; }
-  window.currentLanguage = getInitialLanguage(); window.RA_LANGUAGES = RA_LANGUAGES; window.RA_TRANSLATIONS = TRANSLATIONS; window.registerRadiographyLanguage = registerRadiographyLanguage; window.normalizeLanguage = normalizeLanguage; window.readSavedSettings = readSavedSettings; window.writeSavedSettings = writeSavedSettings; window.t = t; window.localizeExportHeader = localizeExportHeader; window.localizeExportCell = localizeExportCell; window.persistLanguage = persistLanguage; window.applyI18n = applyI18n; window.setupLanguageSwitcher = setupLanguageSwitcher; window.setLanguage = setLanguage;
+  window.currentLanguage = getInitialLanguage(); window.RA_LANGUAGES = RA_LANGUAGES; window.RA_TRANSLATIONS = TRANSLATIONS; window.registerRadiographyLanguage = registerRadiographyLanguage; window.normalizeLanguage = normalizeLanguage; window.readSavedSettings = readSavedSettings; window.writeSavedSettings = writeSavedSettings; window.t = t; window.getLanguageLabel = getLanguageLabel; window.localizeExportHeader = localizeExportHeader; window.localizeExportCell = localizeExportCell; window.persistLanguage = persistLanguage; window.applyI18n = applyI18n; window.setupLanguageSwitcher = setupLanguageSwitcher; window.setLanguage = setLanguage;
 }());

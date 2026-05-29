@@ -185,55 +185,75 @@
             background: rgba(0, 242, 255, 0.08);
         }
 
-        .language-switch {
+        .language-control {
+            position: relative;
+            height: 34px;
+            min-width: 118px;
             display: inline-flex;
-            padding: 3px;
+            align-items: center;
+            gap: 6px;
+            padding: 0 24px 0 10px;
             border-radius: 999px;
             border: 1px solid var(--border-color);
             background: rgba(255, 255, 255, 0.035);
-        }
-
-        .language-switch button {
-            border: none;
-            border-radius: 999px;
-            background: transparent;
             color: var(--text-dim);
-            padding: 6px 8px;
-            min-width: 32px;
-            cursor: pointer;
             font-size: 0.72rem;
-            font-weight: 800;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            white-space: nowrap;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
 
+        .language-control:hover,
+        .language-control:focus-within {
+            color: var(--text-main);
+            border-color: rgba(0, 242, 255, 0.25);
+            background: rgba(0, 242, 255, 0.08);
+        }
 
+        .language-flag {
+            width: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            line-height: 1;
+            pointer-events: none;
+        }
 
-        .language-caption {
+        .language-current {
+            color: inherit;
+            font-size: 0.72rem;
+            font-weight: 700;
+            pointer-events: none;
+        }
+
+        .language-chevron {
+            position: absolute;
+            right: 9px;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--text-dim);
-            font-size: 0.68rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            margin-left: 4px;
+            font-size: 0.66rem;
+            opacity: 0.72;
+            pointer-events: none;
         }
 
-        .language-switch select {
-            border: none;
-            outline: none;
-            border-radius: 999px;
-            background: var(--accent-primary);
-            color: #05070a;
-            padding: 6px 28px 6px 10px;
-            min-width: 104px;
+        .language-control select {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
             cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 900;
-            box-shadow: var(--shadow-glow);
+            border: 0;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
-        .language-switch button.active {
-            color: #05070a;
-            background: var(--accent-primary);
-            box-shadow: var(--shadow-glow);
+        .language-switch {
+            display: inline-flex;
         }
 
         @media (max-width: 1180px) {
@@ -1616,9 +1636,11 @@
         <div class="header-actions">
             <a id="guide-link" class="guide-link" href="user-guide.html" target="_blank" rel="noopener">Kılavuz</a>
             <a class="producer-badge" href="https://allject.com" target="_blank" rel="noopener" title="AllJect Design & Development">AllJect</a>
-            <label class="language-switch" for="language-select" title="Language">
-                <span class="language-caption">Dil</span>
-                <select id="language-select" data-language-select aria-label="Language"></select>
+            <label id="language-control" class="language-control" for="language-select" title="Dil se&#231;imi">
+                <span class="language-flag" data-language-flag aria-hidden="true">&#x1F1F9;&#x1F1F7;</span>
+                <span class="language-current" data-language-current>T&#252;rk&#231;e</span>
+                <select id="language-select" data-language-select aria-label="Dil se&#231;imi"></select>
+                <span class="language-chevron" aria-hidden="true">&#9662;</span>
             </label>
         </div>
     </header>
@@ -3312,7 +3334,7 @@
         `;
 
         // --- State Management ---
-        const APP_BUILD = 'radiography-analysis-production-i18n-2026-05-28';
+        const APP_BUILD = 'radiography-analysis-public-release-2026-05-30';
         const APP_NAME = 'Radiography Analysis';
         const PRODUCER_NAME = 'AllJect';
         const PRODUCER_FULL_NAME = 'AllJect Design & Development';
@@ -4407,6 +4429,9 @@
             const score = Number.isFinite(transform.registrationScore) ? transform.registrationScore.toFixed(3) : '--';
             const stateClass = getAlignmentConfidenceClass(transform);
             const stateLabel = isRef ? 'Referans' : (stateClass === 'strong' ? 'Yüksek güven' : stateClass === 'medium' ? 'Orta güven' : 'Düşük güven');
+            const candidateLabel = t('aday');
+            const usedLabel = t('kullan\u0131lan');
+            const inlierLabel = t('inlier');
             return `
                 <div style="margin-top:10px; padding:9px 10px; border-radius:9px; border:1px solid rgba(0,242,255,0.16); background:rgba(0,242,255,0.045);">
                     <div style="color:var(--accent-primary); font-weight:800; margin-bottom:5px;">HİZALAMA GÜVENİ: ${stateLabel}</div>
@@ -4414,7 +4439,7 @@
                     <div>YÖNTEM: ${method}</div>
                     <div>İÇERİK SKORU: ${score}</div>
                     <div>ÖZELLİK YÖNTEMİ: ${featureMethod}</div>
-                    <div>EŞLEŞME: ${matches} aday / ${usedMatches} kullanılan / ${inliers} inlier</div>
+                    <div>EŞLEŞME: ${matches} ${candidateLabel} / ${usedMatches} ${usedLabel} / ${inliers} ${inlierLabel}</div>
                 </div>
             `;
         }
@@ -4430,15 +4455,14 @@
                 const inlierText = isRef ? 'REF' : `${formatAlignmentMetric(transform.featureInliers)}/${formatAlignmentMetric(transform.featureUsedMatches)}`;
                 const confidenceClass = getAlignmentConfidenceClass(transform);
                 const lowCount = roiGroups.filter(group => {
-                    const data = group.rois[img.id];
-                    return data && (data.status === 'DÃ¼ÅŸÃ¼k gÃ¼ven' || data.status === 'D\u00fc\u015f\u00fck g\u00fcven' || data.status === 'Dusuk guven' || data.confidence < 0.82) && !data.manualAdjusted && img.id !== referenceImageId;
+                    const data = group.rois[img.id];                    return data && (data.status === 'D\u00fc\u015f\u00fck g\u00fcven' || data.status === 'Dusuk guven' || data.confidence < 0.82) && !data.manualAdjusted && img.id !== referenceImageId;
                 }).length;
                 return `
                     <div class="image-thumb ${isActive ? 'active' : ''} ${lowCount ? 'low-confidence' : ''}" onclick="selectImage('${img.id}')">
                         <img src="${img.previewUrl}" alt="${img.info.name}">
                         ${isRef ? '<span class="thumb-ref">REFERANS</span>' : (img.alignedSource ? '<span class="thumb-ref">ÇAKIŞTI</span>' : '')}
-                        ${lowCount ? `<span class="thumb-confidence">${lowCount} uyarı</span>` : ''}
-                        <span class="thumb-align-metrics ${confidenceClass}">G ${confidenceText} • ${inlierText}</span>
+                        ${lowCount ? `<span class="thumb-confidence">${lowCount} ${t('uyar\u0131')}</span>` : ''}
+                        <span class="thumb-align-metrics ${confidenceClass}">${t('G')} ${confidenceText} • ${inlierText}</span>
                         <span class="thumb-label">${index + 1}. ${img.info.name}</span>
                         <span class="thumb-actions">
                             <button class="thumb-action" onclick="event.stopPropagation(); setReferenceImage('${img.id}')">Ref</button>
@@ -5003,8 +5027,8 @@
             const activeImage = getActiveImage();
             const modeEl = document.getElementById('pipeline-preview-mode');
             if (modeEl) {
-                const scope = activeGroupId ? (roiGroups.find(g => g.id === activeGroupId)?.name || activeGroupId) : 'Tam görsel';
-                modeEl.innerText = activeImage ? `${activeImage.info.name} • ${scope}` : 'Seçili görsel / ROI';
+                const scope = activeGroupId ? (roiGroups.find(g => g.id === activeGroupId)?.name || activeGroupId) : t('Tam g\u00f6rsel');
+                modeEl.innerText = activeImage ? `${activeImage.info.name} \u2022 ${scope}` : t('Se\u00e7ili g\u00f6rsel / ROI');
             }
         }
 
@@ -5109,12 +5133,14 @@
                 const prefix = stats.pythonPreprocess === false
                     ? 'Ön işlemler kapalı'
                     : (stats.autoApplied ? 'Python referans FD + FD dışı metrik/önizleme' : 'Python referans FD');
-                const confidence = activeData && activeData.confidence != null ? ` | Eşleşme güveni ${Math.round(activeData.confidence * 100)}%` : '';
-                const presetText = stats.analysisPresetLabel ? ` | Mod ${stats.analysisPresetLabel}` : '';
-                autoEl.innerText = `${prefix}${confidence}${presetText}: ${stats.preprocessSteps && stats.preprocessSteps.length ? stats.preprocessSteps.join(', ') : 'sabit referans adımları'}`;
+                const confidence = activeData && activeData.confidence != null ? ` | ${t('E\u015fle\u015fme g\u00fcveni')} ${Math.round(activeData.confidence * 100)}%` : '';
+                const presetText = stats.analysisPresetLabel ? ` | ${t('Mod')} ${t(stats.analysisPresetLabel)}` : '';
+                const stepsText = stats.preprocessSteps && stats.preprocessSteps.length ? stats.preprocessSteps.map(step => t(step)).join(', ') : t('sabit referans ad\u0131mlar\u0131');
+                autoEl.innerText = `${t(prefix)}${confidence}${presetText}: ${stepsText}`;
             } else {
                 const status = activeData ? activeData.status || 'Bekliyor' : 'Bekliyor';
-                autoEl.innerText = `${status}: ${checkboxValue('auto-apply-analysis', true) ? 'Görsel işlemler sonuca uygulanacak' : 'Referans analiz hattı bekleniyor'} | Mod ${getAnalysisPresetLabel(activeAnalysisPreset)}`;
+                const pendingPipeline = checkboxValue('auto-apply-analysis', true) ? t('G\u00f6rsel i\u015flemler sonuca uygulanacak') : t('Referans analiz hatt\u0131 bekleniyor');
+                autoEl.innerText = `${t(status)}: ${pendingPipeline} | ${t('Mod')} ${t(getAnalysisPresetLabel(activeAnalysisPreset))}`;
             }
 
             if (stats && stats.usedBoxSizes && stats.usedBoxSizes.length) {
@@ -5838,6 +5864,13 @@
             document.getElementById('calculate-all').onclick = calculateActiveROI;
             loadSettings();
             setupLanguageSwitcher();
+            window.addEventListener('radiography-language-change', () => {
+                renderImageStrip();
+                updateROITable();
+                if (getActiveImage()) updateCurrentImageInfoPanel();
+                renderActivePipelineForSelection({ markDirty: false, updateState: false });
+                if (overlayPreviewVisible) renderAlignmentOverlay();
+            });
 
             document.getElementById('btn-copy-all').onclick = () => {
                 const fullExport = buildFullExportTSV();

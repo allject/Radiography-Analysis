@@ -1,38 +1,39 @@
 # Radiography Analysis
 
-**English** — A local HTML application for ROI-based dental radiograph alignment, fractal dimension analysis, densitometry/morphometry measurements and ImageJ-compatible Excel export.
+**Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification and ImageJ-compatible Excel export.
 
-**Türkçe** — Dental radyografilerde ROI tabanlı hizalama, fraktal boyut analizi, densitometri/morfometri ölçümleri ve ImageJ uyumlu Excel çıktısı üreten yerel HTML uygulaması.
-
-**Deutsch** — Eine lokale HTML-Anwendung für ROI-basierte dentale Radiographie-Ausrichtung, fraktale Dimension, Densitometrie/Morphometrie und ImageJ-kompatiblen Excel-Export.
-
-Producer / Yapımcı / Hersteller: **AllJect | AllJect Design & Development | https://allject.com**
+Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
 ## Languages
 
-The application supports **Turkish, English and German** through an extensible language registry in `radiography-languages.js`. The last selected language is remembered in the browser.
+The interface and guide support **Turkish, English and German** through an extensible dropdown-based language registry in `radiography-languages.js`. The last selected language is remembered in the browser.
+
+- Turkish: `README-TURKISH.md`
+- English: `README-ENGLISH.md`
+- German: `README-GERMAN.md`
 
 ## Quick start
 
-1. Open `index.html` in a browser or publish the folder with GitHub Pages.
-2. Load one or more radiographs. The first image is the reference; other images align to it.
-3. Draw an ROI, align, verify with overlay, calculate, then copy Excel output.
-4. Open `user-guide.html` for the full trilingual guide.
+1. Open `index.html` locally or publish this folder with GitHub Pages.
+2. Import one or more radiographs. One image runs analysis mode; two or more images use reference-first comparison mode.
+3. Draw ROI, align, verify with Overlay, calculate, then copy Excel output.
+4. Open `user-guide.html` for the detailed trilingual manual and Excel column dictionary.
 
-## Core features
+## Final QA scope
 
-- Single-image analysis mode and multi-image comparison mode.
-- Reference-first alignment model.
-- Enlarged ROI overlay preview.
-- Presets: bone trabeculae, periapical lesion, enamel demineralization, implant site.
-- Validated fractal calculation behavior preserved.
-- ImageJ-compatible export columns.
-- Extensible TR/EN/DE language layer.
+- Compact TR/EN/DE language dropdown with remembered selection.
+- Excel copy headers localize to the selected language, including ImageJ-compatible measurement names.
+- `user-guide.html` contains the trilingual operating manual, workflow protocols and searchable Excel column dictionary.
+- Root app and guide files are synchronized for static GitHub Pages publishing.
 
-## Clinical disclaimer
+## Public release notes
 
-This software is not a diagnostic medical device. It is intended for research, measurement standardization and decision support. Clinical decisions must be made by qualified clinicians with patient history, examination and applicable protocols.
+- Project name: **Radiography Analysis**.
+- Static deployment: no build step required.
+- Core files use English filenames.
+- Patient-identifiable images must not be committed to public repositories.
+- This software is for research, measurement standardization and decision support. It is not a diagnostic medical device.
 
 ## GitHub Pages
 
-Settings → Pages → Deploy from branch → `main` / root. The app opens from `index.html`.
+Repository Settings -> Pages -> Deploy from branch -> `main` / root. The application opens from `index.html`.

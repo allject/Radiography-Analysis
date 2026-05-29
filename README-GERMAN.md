@@ -1,17 +1,9 @@
-# Radiography Analysis — German Guide
+# Radiography Analysis
 
-Radiography Analysis ist eine lokale HTML-Anwendung für ROI-Ausrichtung, Fraktalanalyse und ImageJ-kompatiblen Excel-Export in dentalen Radiographien.
-
-Hersteller: **AllJect | AllJect Design & Development | https://allject.com**
+Lokale/statische HTML-Anwendung f&uuml;r ROI-Ausrichtung dentaler Radiographien, fraktale Dimension, Densitometrie/Morphometrie und ImageJ-kompatiblen Excel-Export.
 
 ## Nutzung
 
-Öffnen Sie `index.html`, laden Sie Bilder, erstellen Sie eine ROI, richten Sie die Bilder aus, prüfen Sie das Overlay und kopieren Sie die Ergebnisse nach Excel. Vollständiges Handbuch: `user-guide.html`.
+`index.html` &ouml;ffnen, Bilder importieren, ROI zeichnen, Zielbilder am ersten Referenzbild ausrichten, per Overlay pr&uuml;fen und berechnen. Vollst&auml;ndiges Handbuch: `user-guide.html?lang=de`.
 
-## Sprache
-
-Türkisch, Englisch und Deutsch werden unterstützt. Die Sprache wird über ein Dropdown gewählt und im Browser gespeichert.
-
-## Hinweis
-
-Diese Software ist kein medizinisches Diagnosegerät; sie ist für Forschung und Entscheidungsunterstützung vorgesehen.
+Hersteller: AllJect | AllJect Design & Development | https://allject.com

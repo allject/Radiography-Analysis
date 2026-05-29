@@ -1,17 +1,9 @@
-# Radiography Analysis — Turkish Guide
+# Radiography Analysis
 
-Radiography Analysis, dental radyografiler için ROI hizalama, fraktal analiz ve ImageJ uyumlu Excel çıktısı sağlayan yerel HTML uygulamasıdır.
+Dental radyografilerde ROI hizalama, fraktal boyut analizi, densitometri/morfometri &ouml;l&ccedil;&uuml;mleri ve ImageJ uyumlu Excel &ccedil;&#305;kt&#305;s&#305; i&ccedil;in yerel/statik HTML uygulamas&#305;.
 
-Yapımcı: **AllJect | AllJect Design & Development | https://allject.com**
+## Kullan&#305;m
 
-## Kullanım
+`index.html` dosyas&#305;n&#305; a&ccedil;&#305;n, g&ouml;rselleri i&ccedil;e aktar&#305;n, ROI &ccedil;izin, hedefleri ilk referans g&ouml;rsele hizalay&#305;n, Overlay ile kontrol edin ve hesaplay&#305;n. Ayr&#305;nt&#305;l&#305; k&#305;lavuz: `user-guide.html?lang=tr`.
 
-`index.html` dosyasını açın, görselleri yükleyin, ROI oluşturun, hizalayın, overlay ile kontrol edin ve sonuçları Excel’e kopyalayın. Detaylı kılavuz: `user-guide.html`.
-
-## Dil
-
-Türkçe, İngilizce ve Almanca desteklenir. Dil seçimi dropdown menüden yapılır ve tarayıcıda hatırlanır.
-
-## Uyarı
-
-Bu yazılım tıbbi tanı cihazı değildir; araştırma ve karar destek amacıyla kullanılmalıdır.
+Yap&#305;mc&#305;: AllJect | AllJect Design & Development | https://allject.com
