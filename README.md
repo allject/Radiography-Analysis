@@ -4,6 +4,8 @@
 
 Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
+**Download: **https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.0.0.zip
+
 ## Languages
 
 The interface and guide support **Turkish, English and German** through an extensible dropdown-based language registry in `radiography-languages.js`. The last selected language is remembered in the browser.
