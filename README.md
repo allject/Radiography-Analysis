@@ -10,7 +10,7 @@ Producer: **AllJect | AllJect Design & Development | [https://allject.com](https
 
 ### Option 1: Run Instantly in Your Browser (Recommended)
 You don't need to download anything. Click the button below to open the application directly in your web browser:
-👉 [![Open in Browser](https://img.shields.io/badge/Launch-Live_Application-success?style=for-the-badge&logo=google-chrome&logoColor=white)]([https://allject.github.io/Radiography-Analysis/)(https://allject.github.io/Radiography-Analysis/)) 
+👉 [![Open in Browser](https://img.shields.io/badge/Launch-Live_Application-success?style=for-the-badge&logo=google-chrome&logoColor=white)]([https://allject.github.io/Radiography-Analysis/)
 
 ---
 
