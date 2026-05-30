@@ -2,9 +2,26 @@
 
 **Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification and ImageJ-compatible Excel export.
 
-Producer: **AllJect | AllJect Design & Development | https://allject.com**
+Producer: **AllJect | AllJect Design & Development | [https://allject.com](https://allject.com)**
 
-**Download:** https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.0.0.zip
+---
+
+## 🚀 How to Use / Nasıl Kullanılır?
+
+### Option 1: Run Instantly in Your Browser (Recommended)
+You don't need to download anything. Click the button below to open the application directly in your web browser:
+👉 [![Open in Browser](https://img.shields.io/badge/Launch-Live_Application-success?style=for-the-badge&logo=google-chrome&logoColor=white)](https://allject.github.io/Radiography-Analysis/) 
+*(Note: Replace this link with your GitHub Pages URL if active)*
+
+---
+
+### Option 2: Download for Offline Use (Bilgisayara İndir)
+If you prefer to use the application offline, follow these simple steps:
+
+1. Click the big green button below to download the application package (.zip):
+   📥 [![Download Zip](https://img.shields.io/badge/Download-Application_ZIP-blue?style=for-the-badge&logo=github&logoColor=white)](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.0.0.zip)
+2. **Extract the ZIP file** (Zipli dosyayı klasöre çıkartın).
+3. Open the folder and double-click the **`index.html`** file to start the application.
 
 ## Languages
 
