@@ -4,7 +4,7 @@
 
 Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
-**Download: **https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.0.0.zip
+**Download:** https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.0.0.zip
 
 ## Languages
 
