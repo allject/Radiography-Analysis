@@ -1,6 +1,24 @@
-﻿# Radiography Analysis
+# Radiography Analysis
 
-**Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification and ImageJ-compatible Excel export.
+### 🇹🇷 Özet (Quick Overview - TR)
+**Radiography Analysis**, dental radyografi ROI hizalama, fraktal boyut analizi, dansitometri/morfometri ölçümleri, histogram kalite kontrolü, çakıştırma doğrulaması ve ImageJ uyumlu Excel dışa aktarımı sağlayan, tarayıcı tabanlı statık bir uygulamadır. 
+- 🌐 **Canlı Uygulama (GitHub Pages):** [https://allject.github.io/Radiography-Analysis/](https://allject.github.io/Radiography-Analysis/)
+- 📦 **Son Sürüm (Release):** [v1.1.0](https://github.com/allject/Radiography-Analysis/releases/tag/v1.1.0)
+- 💾 **Doğrudan İndirme (.zip):** [v1.1.0 Sürümünü İndir](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.1.0.zip)
+
+### 🇬🇧 Overview (Quick Overview - EN)
+**Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification, and ImageJ-compatible Excel export.
+- 🌐 **Live Application (GitHub Pages):** [https://allject.github.io/Radiography-Analysis/](https://allject.github.io/Radiography-Analysis/)
+- 📦 **Latest Release:** [v1.1.0](https://github.com/allject/Radiography-Analysis/releases/tag/v1.1.0)
+- 💾 **Direct Download (.zip):** [Download v1.1.0](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.1.0.zip)
+
+### 🇩🇪 Übersicht (Quick Overview - DE)
+**Radiography Analysis** ist eine einsatzbereite, statische Browser-Anwendung für die Ausrichtung von dentalen Radiographie-ROIs, Fraktalanalysen, Densitometrie-/Morphometriemessungen, Histogramm-QS, Overlay-Verifizierungen und den ImageJ-kompatiblen Excel-Export.
+- 🌐 **Live-Anwendung (GitHub Pages):** [https://allject.github.io/Radiography-Analysis/](https://allject.github.io/Radiography-Analysis/)
+- 📦 **Neueste Version (Release):** [v1.1.0](https://github.com/allject/Radiography-Analysis/releases/tag/v1.1.0)
+- 💾 **Direkter Download (.zip):** [v1.1.0 Herunterladen](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.1.0.zip)
+
+---
 
 Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
@@ -14,14 +32,14 @@ The interface and guide support **Turkish, English and German** through an exten
 
 ## Quick start
 
-1. Open `radiography-analysis.html` locally or publish this folder with GitHub Pages.
+1. Open `radiography-analysis.html` locally, download the [Latest ZIP](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.1.0.zip), or access it via [GitHub Pages](https://allject.github.io/Radiography-Analysis/).
 2. Import one or more radiographs. One image runs analysis mode; two or more images use reference-first comparison mode.
 3. Draw ROI, align, verify with Overlay, calculate, then copy Excel output.
 4. Open `user-guide.html` for the detailed trilingual manual and Excel column dictionary.
 
-## Release candidate 2026-05-30
+## Release notes (v1.1.0)
 
-This package is prepared as the public GitHub release candidate for **Radiography Analysis**. It includes final TR/EN/DE language hardening, localized Excel copy headers, an expanded trilingual user guide, improved notifications, and responsive UI refinements for desktop, tablet and mobile use.
+This package represents the stable GitHub release for **Radiography Analysis**. It includes final TR/EN/DE language hardening, localized Excel copy headers, an expanded trilingual user guide, improved notifications, and responsive UI refinements for desktop, tablet and mobile use.
 
 ## Final QA scope
 
@@ -37,7 +55,3 @@ This package is prepared as the public GitHub release candidate for **Radiograph
 - Core files use English filenames.
 - Patient-identifiable images must not be committed to public repositories.
 - This software is for research, measurement standardization and decision support. It is not a diagnostic medical device.
-
-## GitHub Pages
-
-Repository Settings -> Pages -> Deploy from branch -> `main` / root. Open the application at `radiography-analysis.html`; the guide is `user-guide.html`.
