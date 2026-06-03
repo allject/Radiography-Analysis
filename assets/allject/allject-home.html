@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AllJect Design & Development local brand page.">
+    <meta name="author" content="AllJect Design & Development">
+    <title>AllJect Design &amp; Development</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="manifest" href="./site.webmanifest">
+    <style>
+        :root {
+            --bg: #07111f;
+            --panel: rgba(255, 255, 255, 0.08);
+            --ink: #edf7ff;
+            --muted: #a7b9cf;
+            --accent: #34d5ff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 32px;
+            background: radial-gradient(circle at 20% 10%, rgba(52, 213, 255, 0.22), transparent 34rem), linear-gradient(150deg, #050a13 0%, var(--bg) 58%, #081625 100%);
+            color: var(--ink);
+            font-family: Arial, sans-serif;
+        }
+        main {
+            width: min(720px, 100%);
+            padding: clamp(28px, 6vw, 56px);
+            border: 1px solid rgba(157, 211, 255, 0.18);
+            border-radius: 28px;
+            background: var(--panel);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+            text-align: center;
+        }
+        img {
+            width: 82px;
+            height: 82px;
+            border-radius: 22px;
+            background: #fff;
+            padding: 10px;
+        }
+        h1 {
+            margin: 24px 0 10px;
+            font-size: clamp(2rem, 6vw, 4rem);
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+        }
+        p {
+            margin: 0 auto;
+            max-width: 520px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        a {
+            display: inline-flex;
+            margin-top: 24px;
+            padding: 0.82rem 1rem;
+            border: 1px solid rgba(52, 213, 255, 0.32);
+            border-radius: 999px;
+            color: var(--ink);
+            background: rgba(52, 213, 255, 0.12);
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <img src="./favicon.svg" alt="AllJect">
+        <h1>AllJect Design &amp; Development</h1>
+        <p>This local package keeps the Radiography Analysis release self-contained for offline use and GitHub Pages deployment.</p>
+        <a href="../../radiography-analysis.html">Open Radiography Analysis</a>
+    </main>
+</body>
+</html>
