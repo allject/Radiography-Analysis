@@ -1,4 +1,13 @@
-# Changelog
+﻿# Changelog
+
+## 2026-06-03 - GitHub release package finalization
+
+- Renamed the main application file to `radiography-analysis.html`.
+- Updated README, guide and deployment references for the new application filename.
+- Added ROI support for histogram percentile, contrast, sharpness and GLCM texture metrics.
+- Kept full-image Excel export on the fast non-fractal path while preserving ROI fractal behavior.
+- Updated the trilingual user guide, language variables and searchable Excel column dictionary.
+- Verified static JavaScript syntax and browser loading for the app and guide.
 
 ## 2026-06-01 - Release copy and notification stabilization
 
@@ -56,3 +65,4 @@
 - Renamed public package files to English names.
 - Added multilingual README and deployment notes.
 - Added ImageJ-compatible export mode and detailed Excel columns.
+

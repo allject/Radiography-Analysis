@@ -1,4 +1,4 @@
-# Radiography Analysis
+﻿# Radiography Analysis
 
 **Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification and ImageJ-compatible Excel export.
 
@@ -14,7 +14,7 @@ The interface and guide support **Turkish, English and German** through an exten
 
 ## Quick start
 
-1. Open `index.html` locally or publish this folder with GitHub Pages.
+1. Open `radiography-analysis.html` locally or publish this folder with GitHub Pages.
 2. Import one or more radiographs. One image runs analysis mode; two or more images use reference-first comparison mode.
 3. Draw ROI, align, verify with Overlay, calculate, then copy Excel output.
 4. Open `user-guide.html` for the detailed trilingual manual and Excel column dictionary.
@@ -40,4 +40,4 @@ This package is prepared as the public GitHub release candidate for **Radiograph
 
 ## GitHub Pages
 
-Repository Settings -> Pages -> Deploy from branch -> `main` / root. The application opens from `index.html`.
+Repository Settings -> Pages -> Deploy from branch -> `main` / root. Open the application at `radiography-analysis.html`; the guide is `user-guide.html`.
