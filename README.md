@@ -29,10 +29,6 @@ Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
 The interface and guide support **Turkish, English and German** through an extensible dropdown-based language registry in `radiography-languages.js`. The last selected language is remembered in the browser.
 
-- Turkish: `README-TURKISH.md`
-- English: `README-ENGLISH.md`
-- German: `README-GERMAN.md`
-
 ## Quick start
 
 1. Open `radiography-analysis.html` locally, download the [Latest ZIP](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.1.0.zip), or access it via [GitHub Pages](https://allject.github.io/Radiography-Analysis/).
