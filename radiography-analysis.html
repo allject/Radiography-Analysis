@@ -1,18 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Radiography Analysis | Dental Radiography ROI & Fractal Analysis</title>
-    <link rel="icon" type="image/svg+xml" href="assets/allject/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/allject/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/allject/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/allject/apple-touch-icon.png">
-    <script src="assets/vendor/konva-9.3.6.min.js"></script>
-    <script src="assets/vendor/chart.min.js"></script>
-    <script src="radiography-languages.js"></script>
-    <link href="assets/vendor/fonts/google-fonts.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="./assets/allject/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/allject/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/allject/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/allject/apple-touch-icon.png">
+    <script src="./assets/vendor/konva-9.3.6.min.js"></script>
+    <script src="./assets/vendor/chart.min.js"></script>
+    <script src="./radiography-languages.js"></script>
+    <link href="./assets/vendor/fonts/google-fonts.css" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #05070a;
@@ -2016,7 +2016,7 @@
     <header>
         <div class="logo-container">
             <div class="logo-icon">
-                <img src="assets/allject/favicon.svg" alt="AllJect" class="logo-mark-img">
+                <img src="./assets/allject/favicon.svg" alt="AllJect" class="logo-mark-img">
             </div>
             <div class="logo-text">Radiography<span>Analysis</span></div>
         </div>
@@ -2669,7 +2669,7 @@
     <input type="file" id="file-input" accept="image/*" multiple>
 
     <script>
-        const OPENCV_WORKER_URL = new URL('assets/vendor/opencv.js', window.location.href).href;
+        const OPENCV_WORKER_URL = new URL('./assets/vendor/opencv.js', window.location.href).href;
         const workerCode = `
             const OPENCV_WORKER_URL = ${JSON.stringify(OPENCV_WORKER_URL)};
             let opencvLoadError = null;
