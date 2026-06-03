@@ -1,41 +1,136 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönlendiriliyorsunuz...</title>
     
-    <meta http-equiv="refresh" content="0; url=./radiography-analysis.html?v=2606032351">
+    <!-- Saniyeler içinde yönlendirme (0 saniye) -->
+    <meta http-equiv="refresh" content="0; url=radiography-analysis.html">
     
+    <!-- Primary Meta Tags -->
+    <title>Radiography Analysis - Dental ROI Alignment & Fractal Dimension Tool</title>
+    <meta name="title" content="Radiography Analysis - Dental ROI Alignment & Fractal Dimension Tool">
+    <meta name="description" content="A static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry measurements, and ImageJ-compatible Excel export. Developed by AllJect.">
+    <meta name="keywords" content="Radiography Analysis, Dental Radiography, ROI Alignment, Fractal Dimension, Densitometry, ImageJ Export, AllJect, Dental Software, Medical Research Tool">
+    <meta name="author" content="AllJect Design & Development">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://allject.github.io/Radiography-Analysis/">
+
+    <!-- Open Graph / Facebook (Sosyal Medya ve Logo Önizlemesi) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://allject.github.io/Radiography-Analysis/">
+    <meta property="og:title" content="Radiography Analysis - Dental ROI Alignment & Fractal Dimension Tool">
+    <meta property="og:description" content="Static browser application for dental radiography ROI alignment, fractal dimension analysis, and densitometry measurements.">
+    <!-- Önizleme görseli (Deponuzda bir logo veya ekran görüntüsü varsa yolunu buraya yazın) -->
+    <meta property="og:image" content="https://allject.github.io/Radiography-Analysis/assets/preview-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://allject.github.io/Radiography-Analysis/">
+    <meta property="twitter:title" content="Radiography Analysis - Dental ROI Alignment & Fractal Dimension Tool">
+    <meta property="twitter:description" content="Static browser application for dental radiography ROI alignment, fractal dimension analysis, and densitometry measurements.">
+    <meta property="twitter:image" content="https://allject.github.io/Radiography-Analysis/assets/preview-logo.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
+
+    <!-- Fallback / Yönlendirme Bekleme Ekranı Stilleri -->
     <style>
+        :root {
+            --primary-color: #0066cc;
+            --text-color: #333333;
+            --bg-color: #f8f9fa;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background-color: #f9f9f9;
-            color: #333;
             text-align: center;
         }
-        .container {
-            padding: 20px;
+        .redirect-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            max-width: 450px;
+            width: 90%;
         }
-        a {
-            color: #0066cc;
+        .logo-placeholder {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        .btn-link {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
             text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
         }
-        a:hover {
-            text-decoration: underline;
+        .btn-link:hover {
+            background-color: #0052a3;
+        }
+        .footer-credit {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <p>Eğer otomatik olarak yönlendirilmezseniz, lütfen <a href="./radiography-analysis.html">buraya tıklayın</a>.</p>
+    <div class="redirect-box">
+        <!-- Logo veya Uygulama İkonu -->
+        <div class="logo-placeholder">🦷📉</div>
+        
+        <h1>Radiography Analysis</h1>
+        <div class="spinner"></div>
+        
+        <p>You are being redirected to the application. If the page does not load automatically, please use the button below.</p>
+        
+        <a href="radiography-analysis.html" class="btn-link">Go to Application</a>
+        
+        <div class="footer-credit">
+            Developed by <a href="https://allject.com" target="_blank" style="color: #666; text-decoration: underline;">AllJect</a>
+        </div>
     </div>
 
+    <!-- JavaScript Fallback (Meta refresh çalışmazsa tarayıcıyı zorla yönlendirir) -->
+    <script>
+        setTimeout(function() {
+            window.location.href = "radiography-analysis.html";
+        }, 100);
+    </script>
 </body>
 </html>
