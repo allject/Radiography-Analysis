@@ -375,6 +375,242 @@
     "Pozlama": "Belichtung"
   });
 
+
+  // Final release translation hardening: runtime messages and notification labels.
+  Object.assign(TR_TO_EN, {
+    "Ham ROI önizlemesi çizilemedi:": "Raw ROI preview could not be drawn:",
+    "Bildirimler": "Notifications",
+    "Bildirimi kapat": "Dismiss notification",
+    "Kapat": "Close",
+    "Detay": "Details",
+    "Yeni bildirim": "New notification"
+  });
+  Object.assign(TR_TO_DE, {
+    "Ham ROI önizlemesi çizilemedi:": "Rohe ROI-Vorschau konnte nicht gezeichnet werden:",
+    "Bildirimler": "Benachrichtigungen",
+    "Bildirimi kapat": "Benachrichtigung schließen",
+    "Kapat": "Schließen",
+    "Detay": "Details",
+    "Yeni bildirim": "Neue Benachrichtigung"
+  });
+
+
+  // Full-image Excel export completion messages.
+  Object.assign(TR_TO_EN, {
+    "Analiz motoru haz\u0131r de\u011fil; tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri Excel i\u00e7in tamamlanamad\u0131.": "Analysis engine is not ready; full-image measurements could not be completed for Excel.",
+    "Excel \u00e7\u0131kt\u0131s\u0131 i\u00e7in tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri haz\u0131rlan\u0131yor...": "Preparing full-image measurements for Excel export...",
+    "Baz\u0131 tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri tamamlanamad\u0131; Excel \u00e7\u0131kt\u0131s\u0131nda uyar\u0131 alanlar\u0131n\u0131 kontrol edin.": "Some full-image measurements could not be completed; check warning fields in the Excel export.",
+    "Tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri tamamland\u0131; Excel \u00e7\u0131kt\u0131s\u0131 g\u00fcncellendi.": "Full-image measurements are complete; Excel export has been updated.",
+    "Excel \u00e7\u0131kt\u0131s\u0131 haz\u0131rlanamad\u0131.": "Excel export could not be prepared."
+  });
+  Object.assign(TR_TO_DE, {
+    "Analiz motoru haz\u0131r de\u011fil; tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri Excel i\u00e7in tamamlanamad\u0131.": "Analyse-Engine ist nicht bereit; Vollbildmessungen konnten f\u00fcr Excel nicht abgeschlossen werden.",
+    "Excel \u00e7\u0131kt\u0131s\u0131 i\u00e7in tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri haz\u0131rlan\u0131yor...": "Vollbildmessungen f\u00fcr den Excel-Export werden vorbereitet...",
+    "Baz\u0131 tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri tamamlanamad\u0131; Excel \u00e7\u0131kt\u0131s\u0131nda uyar\u0131 alanlar\u0131n\u0131 kontrol edin.": "Einige Vollbildmessungen konnten nicht abgeschlossen werden; Warnfelder im Excel-Export pr\u00fcfen.",
+    "Tam g\u00f6rsel \u00f6l\u00e7\u00fcmleri tamamland\u0131; Excel \u00e7\u0131kt\u0131s\u0131 g\u00fcncellendi.": "Vollbildmessungen sind abgeschlossen; der Excel-Export wurde aktualisiert.",
+    "Excel \u00e7\u0131kt\u0131s\u0131 haz\u0131rlanamad\u0131.": "Excel-Export konnte nicht vorbereitet werden."
+  });
+
+
+
+  // Notification/status translation completion for product UI.
+  Object.assign(TR_TO_EN, {
+    "Bildirimler": "Notifications",
+    "Bildirimi kapat": "Dismiss notification",
+    "Bilgi": "Info",
+    "Tamamlandı": "Completed",
+    "Uyarı": "Warning",
+    "Hata": "Error",
+    "Bildirim": "Notification",
+    "Hesaplama": "Calculation",
+    "HAZIR": "READY",
+    "HESAPLANIYOR": "CALCULATING",
+    "HİZALANIYOR": "ALIGNING",
+    "HATA": "ERROR",
+    "BEKLİYOR": "WAITING",
+    "Beklenmeyen işlem hatası oluştu; konsolu kontrol edin.": "Unexpected runtime error; check the console.",
+    "Arayüz olayları bağlanamadı; sayfayı yeniden yükleyin.": "Interface events could not be attached; reload the page.",
+    "Analiz motoru başlatılamadı. Sayfa açık kaldı; lütfen bağlantıyı/OpenCV yüklemesini kontrol edin.": "The analysis engine could not start. The page stayed open; please check the connection/OpenCV loading.",
+    "Analiz motoru oluşturulamadı. Arayüz çalışıyor; hesaplama için sayfayı yeniden yükleyin.": "The analysis engine could not be created. The interface is running; reload the page before calculation.",
+    "Kopyalama başarısız. Tarayıcı pano iznini kontrol edin.": "Copy failed. Check the browser clipboard permission.",
+    "Otomatik ayar uygulanamadı; çalışma korunuyor.": "Automatic setting could not be applied; the workspace was preserved.",
+    "Otomatik ayarlar sıfırlandı": "Automatic settings reset.",
+    "Overlay için en az 2 görsel gerekir.": "At least 2 images are required for the overlay.",
+    "Önizleme ayarı uygulanamadı.": "Preview setting could not be applied.",
+    "Analiz için en az 1 röntgen dosyası seçin.": "Select at least 1 radiograph file for analysis.",
+    "Görsellerden biri yüklenemedi. Lütfen desteklenen röntgen dosyaları seçin.": "One of the images could not be loaded. Please select supported radiograph files.",
+    "Yeni ROI eklemek için referans görseli açın. Karşılaştırma modunda ilk görsel referanstır; diğerleri ona hizalanır.": "Open the reference image before adding a new ROI. In comparison mode, the first image is the reference; the others align to it.",
+    "Analiz başlatılamadı. ROI ve görsel sınırları kontrol edildi.": "Analysis could not be started. ROI and image boundaries were checked.",
+    "Hizalamak için bir ROI seçin.": "Select an ROI to align.",
+    "Hizalama için önce en az 1 görsel yükleyin.": "Load at least 1 image before alignment.",
+    "Tek görsel analiz modundasınız; hizalama gerekmiyor. ROI ekleyip Hesapla’ya basabilirsiniz.": "You are in single-image analysis mode; alignment is not required. Add an ROI and press Calculate.",
+    "Karşılaştırma modu: diğer görseller ilk referans görsele hizalanıyor ve aktif ROI kopyalanıyor...": "Comparison mode: other images are being aligned to the first reference image and the active ROI is being copied...",
+    "Aktif ROI diğer görsellere hizalandı. Gerekirse düzeltip Hesapla'ya basın.": "The active ROI was aligned to the other images. Adjust if needed, then press Calculate.",
+    "Hizalama başlatılamadı.": "Alignment could not be started.",
+    "Hesaplama için önce en az 1 görsel yükleyin.": "Load at least 1 image before calculation.",
+    "Aktif ROI için tüm ölçümler hesaplanıyor...": "Calculating all measurements for the active ROI...",
+    "ROI yok: tüm fotoğraf için ölçümler hesaplanıyor...": "No ROI: calculating measurements for the full image(s)...",
+    "Hesaplama başlatılamadı.": "Calculation could not be started.",
+    "Analiz edilecek ROI bulunamadı.": "No ROI task was found for analysis.",
+    "Analiz motoru hazır değil; hesaplama başlatılamadı.": "Analysis engine is not ready; calculation could not start.",
+    "Hesaplanıyor": "Calculating",
+    "Analiz bekleniyor": "Waiting for analysis",
+    "Bekliyor": "Waiting",
+    "Yok": "None",
+    "Geçti": "Passed",
+    "İncele": "Review"
+  });
+  Object.assign(TR_TO_DE, {
+    "Bildirimler": "Benachrichtigungen",
+    "Bildirimi kapat": "Benachrichtigung schließen",
+    "Bilgi": "Info",
+    "Tamamlandı": "Abgeschlossen",
+    "Uyarı": "Warnung",
+    "Hata": "Fehler",
+    "Bildirim": "Benachrichtigung",
+    "Hesaplama": "Berechnung",
+    "HAZIR": "BEREIT",
+    "HESAPLANIYOR": "BERECHNET",
+    "HİZALANIYOR": "AUSRICHTUNG",
+    "HATA": "FEHLER",
+    "BEKLİYOR": "WARTET",
+    "Beklenmeyen işlem hatası oluştu; konsolu kontrol edin.": "Unerwarteter Laufzeitfehler; Konsole prüfen.",
+    "Arayüz olayları bağlanamadı; sayfayı yeniden yükleyin.": "Oberflächenereignisse konnten nicht verbunden werden; Seite neu laden.",
+    "Analiz motoru başlatılamadı. Sayfa açık kaldı; lütfen bağlantıyı/OpenCV yüklemesini kontrol edin.": "Die Analyse-Engine konnte nicht gestartet werden. Die Seite blieb geöffnet; bitte Verbindung/OpenCV-Ladevorgang prüfen.",
+    "Analiz motoru oluşturulamadı. Arayüz çalışıyor; hesaplama için sayfayı yeniden yükleyin.": "Die Analyse-Engine konnte nicht erstellt werden. Die Oberfläche läuft; vor der Berechnung Seite neu laden.",
+    "Kopyalama başarısız. Tarayıcı pano iznini kontrol edin.": "Kopieren fehlgeschlagen. Browser-Zwischenablageberechtigung prüfen.",
+    "Otomatik ayar uygulanamadı; çalışma korunuyor.": "Automatische Einstellung konnte nicht angewendet werden; Arbeitsbereich wurde beibehalten.",
+    "Otomatik ayarlar sıfırlandı": "Automatische Einstellungen zurückgesetzt.",
+    "Overlay için en az 2 görsel gerekir.": "Für das Overlay sind mindestens 2 Bilder erforderlich.",
+    "Önizleme ayarı uygulanamadı.": "Vorschaueinstellung konnte nicht angewendet werden.",
+    "Analiz için en az 1 röntgen dosyası seçin.": "Wählen Sie mindestens 1 Röntgendatei für die Analyse aus.",
+    "Görsellerden biri yüklenemedi. Lütfen desteklenen röntgen dosyaları seçin.": "Eines der Bilder konnte nicht geladen werden. Bitte unterstützte Röntgendateien auswählen.",
+    "Yeni ROI eklemek için referans görseli açın. Karşılaştırma modunda ilk görsel referanstır; diğerleri ona hizalanır.": "Zum Hinzufügen einer neuen ROI das Referenzbild öffnen. Im Vergleichsmodus ist das erste Bild die Referenz; die anderen werden daran ausgerichtet.",
+    "Analiz başlatılamadı. ROI ve görsel sınırları kontrol edildi.": "Analyse konnte nicht gestartet werden. ROI- und Bildgrenzen wurden geprüft.",
+    "Hizalamak için bir ROI seçin.": "Wählen Sie eine ROI zum Ausrichten.",
+    "Hizalama için önce en az 1 görsel yükleyin.": "Laden Sie vor der Ausrichtung mindestens 1 Bild.",
+    "Tek görsel analiz modundasınız; hizalama gerekmiyor. ROI ekleyip Hesapla’ya basabilirsiniz.": "Sie sind im Einzelbild-Analysemodus; Ausrichtung ist nicht erforderlich. ROI hinzufügen und Berechnen drücken.",
+    "Karşılaştırma modu: diğer görseller ilk referans görsele hizalanıyor ve aktif ROI kopyalanıyor...": "Vergleichsmodus: Andere Bilder werden am ersten Referenzbild ausgerichtet und die aktive ROI wird kopiert...",
+    "Aktif ROI diğer görsellere hizalandı. Gerekirse düzeltip Hesapla'ya basın.": "Die aktive ROI wurde an die anderen Bilder angepasst. Bei Bedarf korrigieren und Berechnen drücken.",
+    "Hizalama başlatılamadı.": "Ausrichtung konnte nicht gestartet werden.",
+    "Hesaplama için önce en az 1 görsel yükleyin.": "Laden Sie vor der Berechnung mindestens 1 Bild.",
+    "Aktif ROI için tüm ölçümler hesaplanıyor...": "Alle Messwerte für die aktive ROI werden berechnet...",
+    "ROI yok: tüm fotoğraf için ölçümler hesaplanıyor...": "Keine ROI: Messwerte für das/die Vollbild(er) werden berechnet...",
+    "Hesaplama başlatılamadı.": "Berechnung konnte nicht gestartet werden.",
+    "Analiz edilecek ROI bulunamadı.": "Keine ROI-Aufgabe für die Analyse gefunden.",
+    "Analiz motoru hazır değil; hesaplama başlatılamadı.": "Analyse-Engine ist nicht bereit; Berechnung konnte nicht gestartet werden.",
+    "Hesaplanıyor": "Berechnung",
+    "Analiz bekleniyor": "Analyse ausstehend",
+    "Bekliyor": "Wartet",
+    "Yok": "Keine",
+    "Geçti": "Bestanden",
+    "İncele": "Prüfen"
+  });
+
+
+
+  // Excel copy and release polish translations.
+  Object.assign(TR_TO_EN, {
+    "Excel çıktısı hazırlanıyor: tüm fotoğraf analizleri ve ROI ölçümleri kontrol ediliyor...": "Preparing Excel export: checking full-image analyses and ROI measurements...",
+    "Excel verisi hazırlandı ve kopyalandı.": "Excel data is ready and copied.",
+    "Kopyalanacak Excel verisi yok.": "No Excel data to copy.",
+    "Kopyalama alanı": "Copy area",
+    "Excel verisi seçildi": "Excel data selected",
+    "Kopyalama tarayıcı tarafından engellendi. Metin seçildi; Ctrl+C ile kopyalayabilirsiniz.": "Copying was blocked by the browser. The text is selected; press Ctrl+C to copy it.",
+    "Tekrar kopyala": "Copy again",
+    "Kopyalama başarısız. Tarayıcı pano iznini kontrol edin.": "Copy failed. Check the browser clipboard permission.",
+    "Excel çıktısı hazırlanamadı.": "Excel export could not be prepared.",
+    "Başlıklar dahil Excel formatında kopyalandı": "Copied in Excel format, including headers."
+  });
+  Object.assign(TR_TO_DE, {
+    "Excel çıktısı hazırlanıyor: tüm fotoğraf analizleri ve ROI ölçümleri kontrol ediliyor...": "Excel-Export wird vorbereitet: Vollbildanalysen und ROI-Messwerte werden geprüft...",
+    "Excel verisi hazırlandı ve kopyalandı.": "Excel-Daten sind bereit und wurden kopiert.",
+    "Kopyalanacak Excel verisi yok.": "Keine Excel-Daten zum Kopieren.",
+    "Kopyalama alanı": "Kopierbereich",
+    "Excel verisi seçildi": "Excel-Daten ausgewählt",
+    "Kopyalama tarayıcı tarafından engellendi. Metin seçildi; Ctrl+C ile kopyalayabilirsiniz.": "Kopieren wurde vom Browser blockiert. Der Text ist ausgewählt; mit Strg+C kopieren.",
+    "Tekrar kopyala": "Erneut kopieren",
+    "Kopyalama başarısız. Tarayıcı pano iznini kontrol edin.": "Kopieren fehlgeschlagen. Browser-Zwischenablageberechtigung prüfen.",
+    "Excel çıktısı hazırlanamadı.": "Excel-Export konnte nicht vorbereitet werden.",
+    "Başlıklar dahil Excel formatında kopyalandı": "Im Excel-Format inklusive Kopfzeilen kopiert."
+  });
+
+  // Public release texture/quality metric translations.
+  Object.assign(TR_TO_EN, {
+    "Histogram Entropy": "Histogram Entropy",
+    "P01 Gray": "P01 Gray",
+    "P05 Gray": "P05 Gray",
+    "P10 Gray": "P10 Gray",
+    "P25 Gray": "P25 Gray",
+    "P75 Gray": "P75 Gray",
+    "P90 Gray": "P90 Gray",
+    "P95 Gray": "P95 Gray",
+    "P99 Gray": "P99 Gray",
+    "Dynamic Range Gray": "Dynamic Range Gray",
+    "Robust Range P05-P95": "Robust Range P05-P95",
+    "IQR Gray": "IQR Gray",
+    "Mean Absolute Deviation": "Mean Absolute Deviation",
+    "Coefficient of Variation": "Coefficient of Variation",
+    "SNR dB": "SNR dB",
+    "Clipping %": "Clipping %",
+    "RMS Contrast": "RMS Contrast",
+    "Normalized RMS Contrast": "Normalized RMS Contrast",
+    "Tenengrad Sharpness": "Tenengrad Sharpness",
+    "Edge Energy": "Edge Energy",
+    "Laplacian Variance": "Laplacian Variance",
+    "Gradient Pixel Count": "Gradient Pixel Count",
+    "GLCM Quantization Levels": "GLCM Quantization Levels",
+    "GLCM Pair Count": "GLCM Pair Count",
+    "GLCM Contrast": "GLCM Contrast",
+    "GLCM Dissimilarity": "GLCM Dissimilarity",
+    "GLCM Homogeneity": "GLCM Homogeneity",
+    "GLCM ASM": "GLCM ASM",
+    "GLCM Energy": "GLCM Energy",
+    "GLCM Entropy": "GLCM Entropy",
+    "GLCM Correlation": "GLCM Correlation",
+    "Tam fotoğraf ölçümü": "Full-image measurement",
+    "Fraktal boyut atlandı": "Fractal dimension skipped",
+    "Yapısal tam-görüntü metrikleri atlandı": "Structural full-image metrics skipped",
+    "Tam fotoğraf satırında fraktal boyut ve yapısal tüm-görüntü metrikleri hesaplanmadı.": "Fractal dimension and structural full-image metrics were not calculated for the full-image row."
+  });
+  Object.assign(TR_TO_DE, {
+    "Histogram Entropy": "Histogramm-Entropie",
+    "P01 Gray": "P01 Grauwert",
+    "P05 Gray": "P05 Grauwert",
+    "P10 Gray": "P10 Grauwert",
+    "P25 Gray": "P25 Grauwert",
+    "P75 Gray": "P75 Grauwert",
+    "P90 Gray": "P90 Grauwert",
+    "P95 Gray": "P95 Grauwert",
+    "P99 Gray": "P99 Grauwert",
+    "Dynamic Range Gray": "Dynamikbereich Grauwert",
+    "Robust Range P05-P95": "Robuster Bereich P05-P95",
+    "IQR Gray": "IQR Grauwert",
+    "Mean Absolute Deviation": "Mittlere absolute Abweichung",
+    "Coefficient of Variation": "Variationskoeffizient",
+    "SNR dB": "SNR dB",
+    "Clipping %": "Clipping %",
+    "RMS Contrast": "RMS-Kontrast",
+    "Normalized RMS Contrast": "Normalisierter RMS-Kontrast",
+    "Tenengrad Sharpness": "Tenengrad-Schaerfe",
+    "Edge Energy": "Kantenenergie",
+    "Laplacian Variance": "Laplace-Varianz",
+    "Gradient Pixel Count": "Gradienten-Pixelanzahl",
+    "GLCM Quantization Levels": "GLCM-Quantisierungsstufen",
+    "GLCM Pair Count": "GLCM-Paaranzahl",
+    "GLCM Contrast": "GLCM-Kontrast",
+    "GLCM Dissimilarity": "GLCM-Unaehnlichkeit",
+    "GLCM Homogeneity": "GLCM-Homogenitaet",
+    "GLCM ASM": "GLCM ASM",
+    "GLCM Energy": "GLCM-Energie",
+    "GLCM Entropy": "GLCM-Entropie",
+    "GLCM Correlation": "GLCM-Korrelation",
+    "Tam fotoğraf ölçümü": "Vollbildmessung",
+    "Fraktal boyut atlandı": "Fraktale Dimension uebersprungen",
+    "Yapısal tam-görüntü metrikleri atlandı": "Strukturelle Vollbildmetriken uebersprungen",
+    "Tam fotoğraf satırında fraktal boyut ve yapısal tüm-görüntü metrikleri hesaplanmadı.": "Fraktale Dimension und strukturelle Vollbildmetriken wurden fuer die Vollbildzeile nicht berechnet."
+  });
+
   var TRANSLATIONS = { en: TR_TO_EN, de: TR_TO_DE };
   var EXPORT_HEADERS = { en: { 'Referans Görsel':'Reference Image','Görsel':'Image','ROI Grup':'ROI Group','ROI Durumu':'ROI Status','Eşleşme Güveni':'Match Confidence','Şekil':'Shape','Koordinat Uzayı':'Coordinate Space','Orijinal X':'Original X','Orijinal Y':'Original Y','Orijinal W':'Original W','Orijinal H':'Original H','Orijinal Açı':'Original Angle','Çalışma X':'Workspace X','Çalışma Y':'Workspace Y','Çalışma W':'Workspace W','Çalışma H':'Workspace H','Çalışma Açı':'Workspace Angle','Analiz X':'Analysis X','Analiz Y':'Analysis Y','Analiz W':'Analysis W','Analiz H':'Analysis H','Fraktal Boyut (D)':'Fractal Dimension (D)','Karmaşıklık':'Complexity','Nokta':'Points','Eğim SE':'Slope SE','Kutu Ölçekleri':'Box Scales','Elenen Ölçekler':'Excluded Scales','Güvenilirlik':'Reliability','Uyarı':'Warning','Analiz Ön İşlem':'Analysis Preprocessing','Kalibrasyon':'Calibration','Analiz Preseti':'Analysis Preset','Parlaklık':'Brightness','Kontrast':'Contrast','Pozlama':'Exposure','Görsel İşlemler Sonuca':'Visual Processing Applied','Referans Ön İşlemleri':'Reference Preprocessing','8-bit Normalizasyon':'8-bit Normalization','Siyah-Beyaz Görünüm':'Black-and-White Preview','Otomatik Kontrast':'Auto Contrast','CLAHE Önizleme':'CLAHE Preview' }, de: { 'Referans Görsel':'Referenzbild','Görsel':'Bild','ROI Grup':'ROI-Gruppe','ROI Durumu':'ROI-Status','Eşleşme Güveni':'Abgleich-Konfidenz','Şekil':'Form','Koordinat Uzayı':'Koordinatenraum','Orijinal X':'Original X','Orijinal Y':'Original Y','Orijinal W':'Original B','Orijinal H':'Original H','Orijinal Açı':'Originalwinkel','Çalışma X':'Arbeitsbereich X','Çalışma Y':'Arbeitsbereich Y','Çalışma W':'Arbeitsbereich B','Çalışma H':'Arbeitsbereich H','Çalışma Açı':'Arbeitsbereich Winkel','Analiz X':'Analyse X','Analiz Y':'Analyse Y','Analiz W':'Analyse B','Analiz H':'Analyse H','Fraktal Boyut (D)':'Fraktale Dimension (D)','Karmaşıklık':'Komplexität','Nokta':'Punkte','Eğim SE':'Steigungs-SE','Kutu Ölçekleri':'Box-Skalen','Elenen Ölçekler':'Ausgeschlossene Skalen','Güvenilirlik':'Zuverlässigkeit','Uyarı':'Warnung','Analiz Ön İşlem':'Analyse-Vorverarbeitung','Kalibrasyon':'Kalibrierung','Analiz Preseti':'Analyse-Voreinstellung','Parlaklık':'Helligkeit','Kontrast':'Kontrast','Pozlama':'Belichtung','Görsel İşlemler Sonuca':'Bildverarbeitung angewendet','Referans Ön İşlemleri':'Referenz-Vorverarbeitung','8-bit Normalizasyon':'8-Bit-Normalisierung','Siyah-Beyaz Görünüm':'Schwarzweiß-Vorschau','Otomatik Kontrast':'Automatischer Kontrast','CLAHE Önizleme':'CLAHE-Vorschau' } };
   var PREFIX_TR = ['Referans:', 'Hedef:', 'G\u00fcven:', 'Y\u00f6ntem:', 'G\u00f6rsel histogram\u0131:', 'ROI histogram\u0131:', 'Tam g\u00f6rsel histogram\u0131:', 'E\u015fle\u015fme g\u00fcveni', 'G\u00dcVEN:', 'G\u00dcVEN SKORU:', 'DOSYA:', '\u00c7\u00d6Z\u00dcN\u00dcRL\u00dcK:', 'BOYUT:', 'T\u0130P:', 'H\u0130ZALAMA:', 'MOD:', 'ROL:', 'AKI\u015e:', 'E\u015eLE\u015eME:', 'H\u0130ZALAMA G\u00dcVEN\u0130:', '\u0130\u00c7ER\u0130K SKORU:', '\u00d6ZELL\u0130K Y\u00d6NTEM\u0130:', 'Mod '];
