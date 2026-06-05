@@ -1,6 +1,6 @@
 # Radiography Analysis
 
-### 🇹🇷 Özet (Quick Overview - TR)
+### Özet (Quick Overview - TR)
 
 **Radiography Analysis**, dental radyografi ROI hizalama, fraktal boyut analizi, dansitometri/morfometri ölçümleri, histogram kalite kontrolü, çakıştırma doğrulaması, gelişmiş radyografik kalite metrikleri ve ImageJ uyumlu Excel dışa aktarımı sağlayan, tarayıcı tabanlı statik bir uygulamadır.
 
@@ -8,7 +8,7 @@
 * 📦 **Son Sürüm (Release):** [v1.2.0](https://github.com/allject/Radiography-Analysis/releases/tag/v1.2.0)
 * 💾 **Doğrudan İndirme (.zip):** [v1.2.0 Sürümünü İndir](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.0.zip)
 
-### 🇬🇧 Overview (Quick Overview - EN)
+### Overview (Quick Overview - EN)
 
 **Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification, extended radiographic quality metrics, and ImageJ-compatible Excel export.
 
@@ -16,7 +16,7 @@
 * 📦 **Latest Release:** [v1.2.0](https://github.com/allject/Radiography-Analysis/releases/tag/v1.2.0)
 * 💾 **Direct Download (.zip):** [Download v1.2.0](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.0.zip)
 
-### 🇩🇪 Übersicht (Quick Overview - DE)
+### Übersicht (Quick Overview - DE)
 
 **Radiography Analysis** ist eine einsatzbereite, statische Browser-Anwendung für die Ausrichtung von dentalen Radiographie-ROIs, Fraktalanalysen, Densitometrie-/Morphometriemessungen, Histogramm-QS, Overlay-Verifizierungen, erweiterte radiographische Qualitätsmetriken und den ImageJ-kompatiblen Excel-Export.
 
