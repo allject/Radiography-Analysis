@@ -1,4 +1,25 @@
-﻿# Changelog
+# Changelog
+
+## 2026-06-05 - Release readiness and mobile interaction verification
+
+- Fixed mobile hit-test blockers after image upload: notifications no longer intercept panel/canvas touches and hidden overlay panels are removed from pointer hit-testing.
+- Stabilized the Analysis & Information panel on mobile with a dedicated collapsed/expanded state and pixel-based expanded height.
+- Removed temporary console timing/debug output from full-image analysis, Excel export preparation and preview rendering paths.
+- Updated public build labels and cache-buster metadata for the 2026-06-05 release.
+- Cleaned remaining Turkish/German character artifacts in app preview labels and guide dynamic text.
+- Verified live mobile upload, panel expand/collapse and canvas drag behavior with Chrome mobile emulation against the local static server.
+- Rechecked JavaScript syntax, UTF-8 character integrity, Excel header/value parity, guide column count, local assets and HTTP delivery.
+
+## 2026-06-04 - Dark pastel mobile release polish
+
+- Restored the mobile application toolbar as a horizontal scrollable ROI/action strip and moved guide, AllJect and language controls into the right-side menu.
+- Added 12 derived radiographic Excel columns for research usability, exposure balance, robust contrast, clipping risk, sharpness/noise, CNR proxy, texture heterogeneity and trabecular pattern review.
+- Added a dedicated mobile auxiliary menu for guide links, AllJect links and language shortcuts.
+- Reworked the application and user guide with a dark pastel navy/blue/green release theme while preserving the validated analysis and Excel calculation paths.
+- Expanded the user guide Excel section with full-image quality rows, ROI measurement rows, derived radiographic indices, quality-first interpretation and calibration guidance.
+- Completed final mobile/readability polish for copy notifications, guide cards and compact menu surfaces.
+- Added final translation coverage for the new mobile menu and Excel guide labels.
+- Verified local static asset references, JavaScript syntax and UTF-8 character integrity for GitHub Pages publishing.
 
 ## 2026-06-03 - GitHub release package finalization
 

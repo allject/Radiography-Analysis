@@ -644,5 +644,80 @@
   function setupLanguageSwitcher() { document.querySelectorAll('select[data-language-select], #language-select').forEach(function(select){ setLanguageOptions(select); select.value = window.currentLanguage; select.onchange = function(){ setLanguage(select.value); }; }); document.querySelectorAll('[data-language]').forEach(function(btn){ btn.onclick = function(){ setLanguage(btn.dataset.language); }; }); if (!i18nObserver && document.body) { var pending=false; i18nObserver = new MutationObserver(function(){ if(i18nApplying || pending) return; pending=true; requestAnimationFrame(function(){ pending=false; applyI18n(document.body); }); }); i18nObserver.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['title','placeholder','aria-label'] }); } applyI18n(document.body); }
   function setLanguage(lang) { var next = normalizeLanguage(lang); window.currentLanguage = next; persistLanguage(); applyI18n(document.body); try { window.dispatchEvent(new CustomEvent('radiography-language-change', { detail: { language: next } })); } catch (_) {} var msg = next === 'tr' ? 'Dil T\u00fcrk\u00e7e olarak ayarland\u0131.' : next === 'de' ? 'Dil Almanca olarak ayarland\u0131.' : 'Language set to English.'; if (typeof window.updateStatus === 'function') window.updateStatus(msg, 'success'); }
   function registerRadiographyLanguage(code, config, translations, exportHeaders) { code = String(code || '').toLowerCase().slice(0,2); if (!code) return; RA_LANGUAGES[code] = Object.assign({ code: code, label: code.toUpperCase(), shortLabel: code.toUpperCase(), title: 'Radiography Analysis' }, config || {}); TRANSLATIONS[code] = translations || {}; REVERSE[code] = reverseMap(TRANSLATIONS[code]); EXPORT_HEADERS[code] = exportHeaders || {}; }
+
+
+  // 2026-06-04 release UI completion: mobile menu and Excel guide labels.
+  Object.assign(TR_TO_EN, {
+    "Men\u00fc": "Menu",
+    "Mobil uygulama men\u00fcs\u00fc": "Mobile application menu",
+    "Ana men\u00fc": "Main menu",
+    "Analiz ara\u00e7lar\u0131 ve ba\u011flant\u0131lar": "Analysis tools and links",
+    "Kullan\u0131m k\u0131lavuzu": "User guide",
+    "AllJect yerel": "AllJect local",
+    "Yeni Excel \u00f6zellikleri": "New Excel features",
+    "Tam foto\u011fraf kalite sat\u0131rlar\u0131": "Full-image quality rows",
+    "ROI \u00f6l\u00e7\u00fcm sat\u0131rlar\u0131": "ROI measurement rows",
+    "Kalite kolonlar\u0131": "Quality columns",
+    "A\u00e7\u0131klar\u0131 kapat": "Close open items",
+    "H\u0131zl\u0131 okuma \u00f6nerisi": "Quick reading suggestion"
+  });
+  Object.assign(TR_TO_DE, {
+    "Men\u00fc": "Men\u00fc",
+    "Mobil uygulama men\u00fcs\u00fc": "Mobiles Anwendungsmen\u00fc",
+    "Ana men\u00fc": "Hauptmen\u00fc",
+    "Analiz ara\u00e7lar\u0131 ve ba\u011flant\u0131lar": "Analysewerkzeuge und Links",
+    "Kullan\u0131m k\u0131lavuzu": "Benutzerhandbuch",
+    "AllJect yerel": "AllJect lokal",
+    "Yeni Excel \u00f6zellikleri": "Neue Excel-Funktionen",
+    "Tam foto\u011fraf kalite sat\u0131rlar\u0131": "Vollbild-Qualit\u00e4tszeilen",
+    "ROI \u00f6l\u00e7\u00fcm sat\u0131rlar\u0131": "ROI-Messzeilen",
+    "Kalite kolonlar\u0131": "Qualit\u00e4tsspalten",
+    "A\u00e7\u0131klar\u0131 kapat": "Ge\u00f6ffnete schlie\u00dfen",
+    "H\u0131zl\u0131 okuma \u00f6nerisi": "Schnelle Leseempfehlung"
+  });
+
+
+
+  // 2026-06-04 derived radiographic Excel indices.
+  Object.assign(TR_TO_EN, {
+    "Research Usability Score": "Research Usability Score",
+    "Exposure Balance Score": "Exposure Balance Score",
+    "Robust Contrast Score": "Robust Contrast Score",
+    "Clipping Risk Class": "Clipping Risk Class",
+    "Saturation Margin %": "Saturation Margin %",
+    "Sharpness-to-Noise Index": "Sharpness-to-Noise Index",
+    "Radiographic CNR Proxy": "Radiographic CNR Proxy",
+    "Texture Heterogeneity Score": "Texture Heterogeneity Score",
+    "Trabecular Thickness/Separation Ratio": "Trabecular Thickness/Separation Ratio",
+    "Trabecular Porosity Index %": "Trabecular Porosity Index %",
+    "Mean-Median Delta": "Mean-Median Delta",
+    "Technical Review Flag": "Technical Review Flag",
+    "Low": "Low",
+    "Moderate": "Moderate",
+    "High": "High",
+    "Review": "Review",
+    "Pass": "Pass"
+  });
+  Object.assign(TR_TO_DE, {
+    "Research Usability Score": "Forschungs-Nutzbarkeitsscore",
+    "Exposure Balance Score": "Belichtungs-Balance-Score",
+    "Robust Contrast Score": "Robuster Kontrastscore",
+    "Clipping Risk Class": "Clipping-Risikoklasse",
+    "Saturation Margin %": "Sättigungsreserve %",
+    "Sharpness-to-Noise Index": "Schärfe-Rausch-Index",
+    "Radiographic CNR Proxy": "Radiographischer CNR-Proxy",
+    "Texture Heterogeneity Score": "Textur-Heterogenitätsscore",
+    "Trabecular Thickness/Separation Ratio": "Trabekeldicke/Abstands-Verhältnis",
+    "Trabecular Porosity Index %": "Trabekulärer Porositätsindex %",
+    "Mean-Median Delta": "Mittelwert-Median-Delta",
+    "Technical Review Flag": "Technische Prüfflagge",
+    "Low": "Niedrig",
+    "Moderate": "Moderat",
+    "High": "Hoch",
+    "Review": "Prüfen",
+    "Pass": "Bestanden"
+  });
+
+  REVERSE.en = reverseMap(TR_TO_EN); REVERSE.de = reverseMap(TR_TO_DE);
   window.currentLanguage = getInitialLanguage(); window.RA_LANGUAGES = RA_LANGUAGES; window.RA_TRANSLATIONS = TRANSLATIONS; window.registerRadiographyLanguage = registerRadiographyLanguage; window.normalizeLanguage = normalizeLanguage; window.readSavedSettings = readSavedSettings; window.writeSavedSettings = writeSavedSettings; window.t = t; window.getLanguageLabel = getLanguageLabel; window.localizeExportHeader = localizeExportHeader; window.localizeExportCell = localizeExportCell; window.persistLanguage = persistLanguage; window.applyI18n = applyI18n; window.setupLanguageSwitcher = setupLanguageSwitcher; window.setLanguage = setLanguage;
 }());

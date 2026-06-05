@@ -334,7 +334,10 @@
             header { gap: 10px; padding: 0 12px; }
             .logo-text { font-size: 1rem; }
             .header-actions { gap: 6px; margin-left: 4px; }
-            .guide-link { display: none; }
+            .guide-link, .producer-badge { display: inline-flex; height: 32px; padding: 0 8px; font-size: 0.68rem; }
+            .language-control { min-width: 108px; height: 32px; padding: 0; }
+            .language-control select { position: static; opacity: 1; width: 100%; height: 100%; padding: 0 22px 0 9px; color: var(--text-dim); background: transparent; }
+            .language-flag, .language-current { display: none; }
         }
         #file-input { position: fixed; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
@@ -622,6 +625,8 @@
             gap: 12px;
             padding: 12px;
             overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
             min-height: 0;
         }
 
@@ -2004,6 +2009,1033 @@
             .app-toast { padding: 12px 12px 17px 12px; }
         }
 
+
+
+        /* Final mobile header access: keep guide, AllJect and language reachable. */
+        @media (max-width: 760px) {
+            .header-actions { gap: 6px; }
+            .guide-link, .producer-badge { display: inline-flex !important; height: 32px; padding: 0 8px; font-size: 0.68rem; }
+            .language-control { min-width: 104px; height: 32px; padding: 0; }
+            .language-control select { position: static; opacity: 1; width: 100%; height: 100%; padding: 0 22px 0 9px; color: var(--text-dim); background: transparent; }
+            .language-flag, .language-current { display: none; }
+        }
+        @media (max-width: 520px) {
+            .guide-link, .producer-badge { width: 32px; padding: 0; justify-content: center; font-size: 0; }
+            .guide-link::after { content: "K"; font-size: 0.72rem; }
+            .producer-badge::after { content: "A"; font-size: 0.72rem; }
+            .language-control { min-width: 92px; padding: 0; }
+        }
+
+
+        /* Final copy/toast readability polish */
+        .app-toast.success {
+            border-color: rgba(88, 240, 167, 0.42) !important;
+            background: linear-gradient(135deg, rgba(8, 34, 29, 0.98), rgba(7, 20, 34, 0.98)) !important;
+            color: #eefbf5 !important;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(88, 240, 167, 0.08) inset !important;
+        }
+
+        .app-toast.success::before {
+            background: #58f0a7 !important;
+            box-shadow: 0 0 14px rgba(88, 240, 167, 0.42) !important;
+        }
+
+        .app-toast.success .app-toast-title {
+            color: #c9ffdf !important;
+            font-weight: 800 !important;
+        }
+
+        .app-toast.success .app-toast-message {
+            color: #f4fff8 !important;
+            font-weight: 650 !important;
+        }
+
+        .app-toast.success .app-toast-timer {
+            background: linear-gradient(90deg, #58f0a7, rgba(255, 255, 255, 0.58)) !important;
+            opacity: 0.86 !important;
+        }
+
+        .copy-action-button.is-copying {
+            color: #ffe4a8 !important;
+            background: rgba(255, 170, 0, 0.12) !important;
+            border-color: rgba(255, 190, 78, 0.38) !important;
+        }
+
+        .copy-action-button.copy-done {
+            color: #eafff2 !important;
+            background: rgba(88, 240, 167, 0.16) !important;
+            border-color: rgba(88, 240, 167, 0.46) !important;
+            box-shadow: inset 0 0 18px rgba(88, 240, 167, 0.08) !important;
+        }
+
+        .copy-done-mark {
+            color: #58f0a7 !important;
+        }
+
+
+        /* Public release pastel interface and mobile command menu */
+        :root {
+            --bg-dark: #f4f0ea;
+            --panel-bg: rgba(255, 252, 247, 0.78);
+            --accent-primary: #7ab8c8;
+            --accent-secondary: #d7b7d9;
+            --accent-success: #78b99a;
+            --text-main: #26323f;
+            --text-dim: #667484;
+            --border-color: rgba(84, 105, 125, 0.16);
+            --glass-blur: blur(18px) saturate(1.08);
+            --shadow-glow: 0 18px 50px rgba(93, 117, 138, 0.16);
+            --release-surface: rgba(255, 252, 247, 0.84);
+            --release-surface-strong: rgba(255, 255, 255, 0.94);
+            --release-line: rgba(97, 117, 137, 0.18);
+            --release-sky: #7ab8c8;
+            --release-mint: #9ccfac;
+            --release-rose: #e3a8a2;
+            --release-lilac: #c4b7df;
+            --release-ink: #26323f;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 12% -10%, rgba(196, 183, 223, 0.42), transparent 34%),
+                radial-gradient(circle at 86% 4%, rgba(154, 207, 172, 0.34), transparent 30%),
+                linear-gradient(135deg, #f8f3ec 0%, #eef6f3 46%, #f5eff8 100%) !important;
+            color: var(--release-ink) !important;
+        }
+
+        header {
+            background: rgba(255, 252, 247, 0.86) !important;
+            border-bottom: 1px solid var(--release-line) !important;
+            box-shadow: 0 16px 42px rgba(93, 117, 138, 0.14) !important;
+        }
+
+        main, #canvas-container {
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.36), rgba(255,255,255,0.08)),
+                radial-gradient(circle at 30% 12%, rgba(122,184,200,0.16), transparent 28%),
+                radial-gradient(circle at 72% 82%, rgba(227,168,162,0.14), transparent 28%) !important;
+        }
+
+        .logo-text {
+            background: linear-gradient(90deg, #253241, #6f7f91) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+
+        .logo-text span { -webkit-text-fill-color: #6aaec0 !important; }
+        .logo-icon { background: rgba(255,255,255,0.92) !important; box-shadow: 0 12px 28px rgba(108, 139, 162, 0.18) !important; }
+
+        .toolbar,
+        .header-actions .guide-link,
+        .header-actions .producer-badge,
+        .language-control,
+        .floating-panel,
+        .side-stack,
+        .filter-panel,
+        .auto-panel,
+        .quality-panel,
+        .advanced-metrics-panel,
+        .alignment-preview-panel,
+        .image-strip,
+        .empty-upload-card,
+        .copy-assist-panel,
+        .notification-center .app-toast {
+            background: var(--release-surface) !important;
+            border-color: var(--release-line) !important;
+            color: var(--release-ink) !important;
+            box-shadow: 0 18px 48px rgba(93, 117, 138, 0.16) !important;
+            backdrop-filter: var(--glass-blur) !important;
+        }
+
+        .tool-btn,
+        .producer-badge,
+        .guide-link,
+        .language-control,
+        .mini-btn,
+        .thumb-action,
+        .preset-btn,
+        .btn-collapse {
+            color: var(--text-dim) !important;
+            border-color: rgba(97,117,137,0.14) !important;
+        }
+
+        .tool-btn:hover,
+        .tool-btn:focus-visible,
+        .producer-badge:hover,
+        .guide-link:hover,
+        .language-control:hover,
+        .language-control:focus-within,
+        .mini-btn:hover,
+        .preset-btn:hover {
+            background: rgba(122, 184, 200, 0.14) !important;
+            border-color: rgba(122, 184, 200, 0.34) !important;
+            color: var(--release-ink) !important;
+            outline: 0;
+        }
+
+        .tool-btn.active,
+        .preset-btn.active,
+        .image-thumb.active {
+            background: linear-gradient(135deg, rgba(122,184,200,0.20), rgba(156,207,172,0.16)) !important;
+            color: #2f6d7a !important;
+            border-color: rgba(122,184,200,0.42) !important;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.42), 0 10px 26px rgba(122,184,200,0.14) !important;
+        }
+
+        .btn-upload,
+        .empty-upload-btn {
+            background: linear-gradient(135deg, #7ab8c8, #9ccfac) !important;
+            color: #17313a !important;
+            border: 0 !important;
+            box-shadow: 0 14px 30px rgba(122,184,200,0.24) !important;
+        }
+
+        .panel-header,
+        .side-stack-header,
+        .alignment-preview-header,
+        .pipeline-preview-head {
+            background: rgba(255,255,255,0.42) !important;
+            border-color: var(--release-line) !important;
+            color: var(--release-ink) !important;
+        }
+
+        .panel-title,
+        .fd-value,
+        .metric-value,
+        .histogram-stat-value,
+        .empty-upload-title,
+        .roi-fd-line strong { color: var(--release-ink) !important; }
+        .fd-label,
+        .metric-label,
+        .histogram-stat-label,
+        .empty-upload-subtitle,
+        .quality-note,
+        .histogram-note,
+        .alignment-preview-note { color: var(--text-dim) !important; }
+
+        input, select, textarea, .roi-input {
+            background: rgba(255,255,255,0.72) !important;
+            border-color: rgba(97,117,137,0.18) !important;
+            color: var(--release-ink) !important;
+        }
+
+        input:focus, select:focus, textarea:focus, .roi-input:focus {
+            border-color: rgba(122,184,200,0.52) !important;
+            box-shadow: 0 0 0 3px rgba(122,184,200,0.16) !important;
+            outline: 0 !important;
+        }
+
+        input[type="range"] { accent-color: #7ab8c8; }
+        .switch input:checked + .slider { background: linear-gradient(135deg, #7ab8c8, #9ccfac) !important; }
+
+        .app-toast.success {
+            background: linear-gradient(135deg, rgba(244,255,247,0.97), rgba(238,248,244,0.97)) !important;
+            color: #1f3a30 !important;
+            border-color: rgba(120,185,154,0.34) !important;
+        }
+        .app-toast.success .app-toast-title { color: #276348 !important; }
+        .app-toast.success .app-toast-message { color: #223a31 !important; }
+        .app-toast.warning { background: rgba(255,248,232,0.97) !important; color: #4f3b18 !important; }
+        .app-toast.error { background: rgba(255,241,241,0.97) !important; color: #582626 !important; }
+
+        .copy-action-button.is-copying {
+            color: #6e5225 !important;
+            background: rgba(255, 211, 140, 0.28) !important;
+            border-color: rgba(214, 166, 74, 0.35) !important;
+        }
+
+        .copy-action-button.copy-done {
+            color: #244b38 !important;
+            background: rgba(120, 185, 154, 0.22) !important;
+            border-color: rgba(120, 185, 154, 0.42) !important;
+        }
+
+        .app-menu-toggle,
+        .app-mobile-menu { display: none; }
+
+        .app-menu-toggle {
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(97,117,137,0.18);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.72);
+            color: var(--release-ink);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 12px 26px rgba(93,117,138,0.14);
+            cursor: pointer;
+            transition: transform .18s ease, border-color .18s ease, background .18s ease;
+        }
+
+        .app-menu-toggle:hover,
+        .app-menu-toggle:focus-visible {
+            background: rgba(255,255,255,0.94);
+            border-color: rgba(122,184,200,0.42);
+            transform: translateY(-1px);
+            outline: 0;
+        }
+
+        .app-menu-line {
+            width: 17px;
+            height: 2px;
+            border-radius: 99px;
+            background: #405466;
+            transition: transform .22s ease, opacity .22s ease;
+        }
+
+        .app-menu-toggle[aria-expanded="true"] .app-menu-line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+        .app-menu-toggle[aria-expanded="true"] .app-menu-line:nth-child(2) { opacity: 0; }
+        .app-menu-toggle[aria-expanded="true"] .app-menu-line:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+        .app-mobile-menu {
+            position: fixed;
+            top: calc(64px + 10px);
+            right: 12px;
+            width: min(360px, calc(100vw - 24px));
+            padding: 12px;
+            border: 1px solid rgba(97,117,137,0.18);
+            border-radius: 24px;
+            background: rgba(255,252,247,0.94);
+            color: var(--release-ink);
+            box-shadow: 0 26px 80px rgba(74,91,108,0.24);
+            backdrop-filter: blur(22px) saturate(1.08);
+            z-index: 2200;
+            opacity: 0;
+            transform: translateY(-8px) scale(.98);
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+        }
+
+        .app-mobile-menu.open {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .app-mobile-menu-head {
+            padding: 4px 4px 12px;
+            display: grid;
+            gap: 3px;
+        }
+        .app-mobile-menu-head strong { font-size: .96rem; color: var(--release-ink); }
+        .app-mobile-menu-head small { color: var(--text-dim); }
+
+        .app-mobile-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .app-mobile-menu button,
+        .app-mobile-menu a {
+            min-height: 40px;
+            border: 1px solid rgba(97,117,137,0.16);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.64);
+            color: var(--release-ink);
+            text-decoration: none;
+            font: inherit;
+            font-weight: 750;
+            font-size: .82rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease;
+        }
+
+        .app-mobile-menu button:hover,
+        .app-mobile-menu button:focus-visible,
+        .app-mobile-menu a:hover,
+        .app-mobile-menu a:focus-visible {
+            background: rgba(122,184,200,0.15);
+            border-color: rgba(122,184,200,0.36);
+            transform: translateY(-1px);
+            outline: 0;
+        }
+
+        .app-mobile-menu-links {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .app-mobile-menu-lang {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .app-mobile-menu-lang button { min-height: 34px; background: rgba(156,207,172,0.17); }
+
+        @media (min-width: 861px) {
+            .app-mobile-menu.open { display: none; }
+        }
+
+        @media (max-width: 860px) {
+            header { height: 62px; padding: 0 12px !important; }
+            .logo-container { min-width: 0; }
+            .logo-text { font-size: 1rem; white-space: nowrap; }
+            header > .toolbar { display: none !important; }
+            .app-menu-toggle { display: inline-flex !important; }
+            .header-actions { margin-left: auto !important; gap: 8px !important; }
+            .header-actions > .guide-link,
+            .header-actions > .producer-badge,
+            .header-actions > .language-control { display: none !important; }
+            .notification-center { bottom: calc(86px + env(safe-area-inset-bottom)) !important; }
+        }
+
+        @media (max-width: 460px) {
+            .logo-icon { width: 30px; height: 30px; }
+            .logo-text { font-size: .92rem; }
+            .app-mobile-menu { left: 10px; right: 10px; width: auto; border-radius: 22px; }
+            .app-mobile-menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @keyframes releaseSoftRise {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .empty-upload-card,
+        .floating-panel,
+        .side-stack { animation: releaseSoftRise .38s ease both; }
+
+
+        /* Final dark pastel release override */
+        :root {
+            --bg-dark: #07101f;
+            --panel-bg: rgba(10, 20, 35, 0.82);
+            --accent-primary: #6fd3e8;
+            --accent-secondary: #8da7ff;
+            --accent-success: #7ce0a8;
+            --text-main: #edf7ff;
+            --text-dim: #9fb3c8;
+            --border-color: rgba(173, 216, 240, 0.16);
+            --glass-blur: blur(18px) saturate(1.15);
+            --shadow-glow: 0 0 28px rgba(111, 211, 232, 0.16);
+            --release-surface: rgba(11, 23, 40, 0.84);
+            --release-surface-strong: rgba(15, 31, 52, 0.94);
+            --release-line: rgba(173, 216, 240, 0.16);
+            --release-sky: #6fd3e8;
+            --release-mint: #7ce0a8;
+            --release-rose: #f0a8a8;
+            --release-lilac: #a9b7ff;
+            --release-ink: #edf7ff;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 10% -8%, rgba(111, 211, 232, 0.18), transparent 34%),
+                radial-gradient(circle at 92% 4%, rgba(124, 224, 168, 0.13), transparent 30%),
+                radial-gradient(circle at 50% 120%, rgba(169, 183, 255, 0.13), transparent 34%),
+                linear-gradient(145deg, #050b16 0%, #081427 45%, #0b1b30 100%) !important;
+            color: var(--text-main) !important;
+        }
+
+        header {
+            background: rgba(7, 16, 31, 0.88) !important;
+            border-bottom: 1px solid var(--release-line) !important;
+            box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28) !important;
+        }
+
+        main, #canvas-container {
+            background:
+                radial-gradient(circle at 28% 12%, rgba(111,211,232,0.08), transparent 30%),
+                radial-gradient(circle at 72% 88%, rgba(124,224,168,0.07), transparent 30%),
+                linear-gradient(145deg, rgba(7,16,31,0.38), rgba(9,24,42,0.58)) !important;
+        }
+
+        .logo-text {
+            background: linear-gradient(90deg, #ffffff, #9fb3c8) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+        }
+        .logo-text span { -webkit-text-fill-color: var(--accent-primary) !important; }
+        .logo-icon { background: rgba(255,255,255,0.94) !important; box-shadow: 0 12px 30px rgba(111,211,232,0.18) !important; }
+
+        .toolbar,
+        .header-actions .guide-link,
+        .header-actions .producer-badge,
+        .language-control,
+        .floating-panel,
+        .side-stack,
+        .filter-panel,
+        .auto-panel,
+        .quality-panel,
+        .advanced-metrics-panel,
+        .alignment-preview-panel,
+        .image-strip,
+        .empty-upload-card,
+        .copy-assist-panel,
+        .notification-center .app-toast {
+            background: linear-gradient(180deg, rgba(14, 29, 49, 0.88), rgba(8, 18, 34, 0.86)) !important;
+            border-color: var(--release-line) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 22px 58px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+            backdrop-filter: var(--glass-blur) !important;
+        }
+
+        .tool-btn,
+        .producer-badge,
+        .guide-link,
+        .language-control,
+        .mini-btn,
+        .thumb-action,
+        .preset-btn,
+        .btn-collapse {
+            color: var(--text-dim) !important;
+            border-color: rgba(173,216,240,0.13) !important;
+        }
+
+        .tool-btn:hover,
+        .tool-btn:focus-visible,
+        .producer-badge:hover,
+        .guide-link:hover,
+        .language-control:hover,
+        .language-control:focus-within,
+        .mini-btn:hover,
+        .preset-btn:hover,
+        .btn-collapse:hover,
+        .btn-collapse:focus-visible {
+            background: rgba(111, 211, 232, 0.10) !important;
+            border-color: rgba(111, 211, 232, 0.32) !important;
+            color: var(--text-main) !important;
+            outline: 0;
+        }
+
+        .tool-btn.active,
+        .preset-btn.active,
+        .image-thumb.active {
+            background: linear-gradient(135deg, rgba(111,211,232,0.16), rgba(124,224,168,0.10)) !important;
+            color: #d8fbff !important;
+            border-color: rgba(111,211,232,0.42) !important;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 12px 32px rgba(111,211,232,0.12) !important;
+        }
+
+        .btn-upload,
+        .empty-upload-btn {
+            background: linear-gradient(135deg, #6fd3e8, #7ce0a8) !important;
+            color: #06131d !important;
+            border: 0 !important;
+            box-shadow: 0 16px 34px rgba(111,211,232,0.20) !important;
+        }
+
+        .panel-header,
+        .side-stack-header,
+        .alignment-preview-header,
+        .pipeline-preview-head {
+            background: rgba(255,255,255,0.035) !important;
+            border-color: var(--release-line) !important;
+            color: var(--text-main) !important;
+        }
+
+        .panel-title,
+        .fd-value,
+        .metric-value,
+        .histogram-stat-value,
+        .empty-upload-title,
+        .roi-fd-line strong { color: var(--text-main) !important; }
+        .fd-label,
+        .metric-label,
+        .histogram-stat-label,
+        .empty-upload-subtitle,
+        .quality-note,
+        .histogram-note,
+        .alignment-preview-note { color: var(--text-dim) !important; }
+
+        input, select, textarea, .roi-input {
+            background: rgba(3, 10, 20, 0.42) !important;
+            border-color: rgba(173,216,240,0.15) !important;
+            color: var(--text-main) !important;
+        }
+
+        input:focus, select:focus, textarea:focus, .roi-input:focus {
+            border-color: rgba(111,211,232,0.52) !important;
+            box-shadow: 0 0 0 3px rgba(111,211,232,0.12) !important;
+            outline: 0 !important;
+        }
+
+        input[type="range"] { accent-color: #6fd3e8; }
+        .switch input:checked + .slider { background: linear-gradient(135deg, #6fd3e8, #7ce0a8) !important; }
+
+        .app-toast.success {
+            background: linear-gradient(135deg, rgba(10, 39, 35, 0.98), rgba(8, 23, 38, 0.98)) !important;
+            color: #effff7 !important;
+            border-color: rgba(124,224,168,0.36) !important;
+        }
+        .app-toast.success .app-toast-title { color: #c8ffdd !important; }
+        .app-toast.success .app-toast-message { color: #f2fff9 !important; }
+        .app-toast.warning { background: rgba(45,34,12,0.98) !important; color: #fff1c7 !important; }
+        .app-toast.error { background: rgba(48,18,23,0.98) !important; color: #ffe1e1 !important; }
+
+        .copy-action-button.is-copying {
+            color: #ffe6a7 !important;
+            background: rgba(255, 199, 95, 0.14) !important;
+            border-color: rgba(255, 199, 95, 0.32) !important;
+        }
+
+        .copy-action-button.copy-done {
+            color: #e9fff2 !important;
+            background: rgba(124, 224, 168, 0.15) !important;
+            border-color: rgba(124, 224, 168, 0.40) !important;
+        }
+
+        .floating-panel.collapsed .panel-content,
+        .side-stack.collapsed .side-stack-content {
+            display: none !important;
+        }
+        .floating-panel.collapsed {
+            max-height: 48px !important;
+            min-height: 0 !important;
+        }
+        .side-stack.collapsed {
+            height: 46px !important;
+            max-height: 46px !important;
+            overflow: hidden !important;
+        }
+
+        .app-menu-toggle {
+            background: rgba(14, 29, 49, 0.92) !important;
+            border-color: rgba(173,216,240,0.18) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.26) !important;
+        }
+        .app-menu-line { background: #d7edf7 !important; }
+        .app-mobile-menu {
+            background: linear-gradient(180deg, rgba(14, 29, 49, 0.98), rgba(8, 18, 34, 0.98)) !important;
+            border-color: rgba(173,216,240,0.18) !important;
+            color: var(--text-main) !important;
+            box-shadow: 0 28px 90px rgba(0,0,0,0.48) !important;
+        }
+        .app-mobile-menu-head strong { color: var(--text-main) !important; }
+        .app-mobile-menu-head small { color: var(--text-dim) !important; }
+        .app-mobile-menu button,
+        .app-mobile-menu a {
+            background: rgba(255,255,255,0.045) !important;
+            border-color: rgba(173,216,240,0.14) !important;
+            color: var(--text-main) !important;
+        }
+        .app-mobile-menu button:hover,
+        .app-mobile-menu button:focus-visible,
+        .app-mobile-menu a:hover,
+        .app-mobile-menu a:focus-visible {
+            background: rgba(111,211,232,0.12) !important;
+            border-color: rgba(111,211,232,0.32) !important;
+        }
+        .app-mobile-menu-lang button { background: rgba(124,224,168,0.10) !important; }
+
+        @media (max-width: 860px) {
+            header { justify-content: space-between !important; gap: 10px !important; padding: 0 12px !important; }
+            .logo-container { flex: 1 1 auto; min-width: 0; }
+            .logo-text { overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 92px); }
+            .header-actions { flex: 0 0 auto; margin-left: 0 !important; }
+            .app-menu-toggle { display: inline-flex !important; flex: 0 0 38px; }
+            .app-mobile-menu { top: calc(62px + env(safe-area-inset-top) + 8px) !important; }
+        }
+
+        @media (max-width: 460px) {
+            .logo-text { max-width: calc(100vw - 86px); }
+            .app-mobile-menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+            .app-mobile-menu button, .app-mobile-menu a { min-height: 38px; font-size: 0.8rem; }
+        }
+
+
+        /* Final button hierarchy and mobile polish */
+        #btn-copy-all.tool-btn.copy-action-button {
+            background: linear-gradient(135deg, rgba(111, 211, 232, 0.20), rgba(124, 224, 168, 0.16)) !important;
+            color: #f4fbff !important;
+            border: 1px solid rgba(111, 211, 232, 0.38) !important;
+            box-shadow: 0 14px 34px rgba(0,0,0,0.24), inset 0 0 0 1px rgba(255,255,255,0.035) !important;
+            justify-content: center !important;
+            min-height: 42px !important;
+            letter-spacing: 0.01em;
+        }
+        #btn-copy-all.tool-btn.copy-action-button svg { color: #bff4ff !important; }
+        #btn-copy-all.tool-btn.copy-action-button:hover,
+        #btn-copy-all.tool-btn.copy-action-button:focus-visible {
+            background: linear-gradient(135deg, rgba(111, 211, 232, 0.28), rgba(124, 224, 168, 0.22)) !important;
+            border-color: rgba(124, 224, 168, 0.48) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+        #btn-copy-all.copy-done {
+            color: #eafff2 !important;
+            background: linear-gradient(135deg, rgba(124,224,168,0.22), rgba(111,211,232,0.16)) !important;
+        }
+        #btn-copy-all.is-copying {
+            color: #ffe8ad !important;
+            background: linear-gradient(135deg, rgba(255,211,111,0.20), rgba(111,211,232,0.12)) !important;
+        }
+
+        #add-roi.tool-btn,
+        #align-roi.tool-btn,
+        #calculate-all.tool-btn {
+            color: #eefbff !important;
+            border-width: 1px !important;
+            font-weight: 760 !important;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.045) !important;
+        }
+        #add-roi.tool-btn {
+            background: linear-gradient(135deg, rgba(78, 170, 190, 0.16), rgba(95, 193, 205, 0.12)) !important;
+            border-color: rgba(92, 190, 210, 0.36) !important;
+        }
+        #align-roi.tool-btn {
+            background: linear-gradient(135deg, rgba(91, 190, 205, 0.19), rgba(110, 207, 210, 0.14)) !important;
+            border-color: rgba(111, 211, 232, 0.40) !important;
+        }
+        #calculate-all.tool-btn {
+            background: linear-gradient(135deg, rgba(111, 211, 232, 0.22), rgba(124, 224, 168, 0.17)) !important;
+            border-color: rgba(124, 224, 168, 0.43) !important;
+        }
+        #add-roi.tool-btn:hover,
+        #align-roi.tool-btn:hover,
+        #calculate-all.tool-btn:hover,
+        #add-roi.tool-btn:focus-visible,
+        #align-roi.tool-btn:focus-visible,
+        #calculate-all.tool-btn:focus-visible {
+            color: #ffffff !important;
+            filter: saturate(1.08) brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        .toolbar { gap: 8px !important; }
+        .tool-btn { min-height: 36px; }
+        .tool-btn svg { flex: 0 0 auto; }
+        .side-stack .floating-panel { border-radius: 15px !important; }
+        .panel-header { user-select: none; }
+        .metric-card,
+        .histogram-stat,
+        .quality-panel,
+        .advanced-metrics-panel {
+            border-color: rgba(173,216,240,0.13) !important;
+        }
+
+        @media (max-width: 1100px) and (min-width: 861px) {
+            header { padding: 0 14px !important; gap: 10px !important; }
+            .toolbar { gap: 6px !important; padding: 5px !important; }
+            .tool-btn { padding: 7px 9px !important; font-size: 0.82rem !important; gap: 6px !important; }
+            .tool-btn.compact { padding: 7px 8px !important; }
+            .header-actions { gap: 6px !important; margin-left: 8px !important; }
+            .guide-link,
+            .producer-badge { padding: 0 8px !important; }
+            .language-control { min-width: 104px !important; }
+        }
+
+        @media (max-width: 860px) {
+            header { min-width: 0 !important; }
+            .app-mobile-menu { max-height: calc(100dvh - 78px); overflow: auto; overscroll-behavior: contain; }
+            .app-mobile-menu-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+            .app-mobile-menu button,
+            .app-mobile-menu a { min-width: 0; line-height: 1.15; }
+            .side-stack { left: 10px !important; right: 10px !important; width: auto !important; }
+            .filter-panel,
+            .auto-panel { left: 10px !important; right: 10px !important; width: auto !important; }
+        }
+
+        @media (max-width: 520px) {
+            .app-mobile-menu { padding: 10px !important; border-radius: 20px !important; }
+            .app-mobile-menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 7px !important; }
+            .app-mobile-menu-links,
+            .app-mobile-menu-lang { gap: 7px !important; margin-top: 8px !important; }
+            .logo-text { font-size: 0.9rem !important; }
+            .side-stack { bottom: 82px !important; height: min(46dvh, 420px) !important; }
+            body.has-multi-images .side-stack { bottom: 108px !important; }
+            .side-stack.collapsed { height: 46px !important; }
+            .panel-content { padding: 12px !important; }
+            .metrics-grid,
+            .advanced-metrics-grid,
+            .quality-grid,
+            .histogram-stats { gap: 8px !important; }
+            #btn-copy-all.tool-btn.copy-action-button { min-height: 44px !important; font-size: 0.82rem !important; }
+        }
+
+
+        /* Final mobile toolbar restoration */
+        @media (max-width: 860px) {
+            header {
+                height: auto !important;
+                min-height: 64px !important;
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto !important;
+                grid-template-areas: "brand actions" "tools tools" !important;
+                align-items: center !important;
+                row-gap: 8px !important;
+                padding: 9px 10px 10px !important;
+            }
+            .logo-container { grid-area: brand !important; min-width: 0 !important; }
+            .header-actions { grid-area: actions !important; justify-self: end !important; align-self: center !important; }
+            header > .toolbar {
+                grid-area: tools !important;
+                display: flex !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: thin !important;
+                scroll-snap-type: x proximity !important;
+                padding: 6px !important;
+                gap: 7px !important;
+                border-radius: 16px !important;
+                background: rgba(9, 20, 36, 0.78) !important;
+            }
+            header > .toolbar .tool-btn {
+                flex: 0 0 auto !important;
+                white-space: nowrap !important;
+                scroll-snap-align: start !important;
+                min-height: 36px !important;
+                padding: 7px 10px !important;
+                font-size: 0.82rem !important;
+            }
+            header > .toolbar > div[style*="width: 1px"] { flex: 0 0 1px !important; }
+            .header-actions > .guide-link,
+            .header-actions > .producer-badge,
+            .header-actions > .language-control { display: none !important; }
+            .app-menu-toggle { display: inline-flex !important; }
+            .app-mobile-menu { top: calc(54px + env(safe-area-inset-top)) !important; }
+            .app-mobile-menu-grid { display: none !important; }
+            .app-mobile-menu-head small::after { content: " / Kılavuz, AllJect, dil"; }
+            main { min-height: 0 !important; }
+        }
+        @media (max-width: 420px) {
+            .logo-text { font-size: 0.86rem !important; max-width: calc(100vw - 76px) !important; }
+            header > .toolbar .tool-btn { padding: 7px 9px !important; font-size: 0.79rem !important; }
+            header > .toolbar .tool-btn svg { width: 16px !important; height: 16px !important; }
+            .app-menu-toggle { width: 36px !important; height: 36px !important; border-radius: 13px !important; }
+        }
+
+
+        /* Final lightweight motion and touch performance polish */
+        header > .toolbar,
+        .app-mobile-menu,
+        .side-stack,
+        .floating-panel {
+            will-change: transform, opacity;
+        }
+        .tool-btn,
+        .app-mobile-menu button,
+        .app-mobile-menu a,
+        .image-thumb,
+        .column-card {
+            transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease !important;
+        }
+        .tool-btn:active,
+        .app-mobile-menu button:active,
+        .app-mobile-menu a:active {
+            transform: translateY(0) scale(0.985) !important;
+        }
+        @media (max-width: 860px) {
+            header > .toolbar::after {
+                content: "";
+                flex: 0 0 10px;
+                height: 1px;
+            }
+            header > .toolbar::-webkit-scrollbar { height: 4px; }
+            header > .toolbar::-webkit-scrollbar-thumb { background: rgba(111,211,232,0.32); border-radius: 999px; }
+        }
+
+
+        /* Final localized mobile menu helper labels */
+        @media (max-width: 860px) {
+            :root[data-current-language="tr"] .app-mobile-menu-head small::after { content: " / K\0131lavuz, AllJect, dil" !important; }
+            :root[data-current-language="en"] .app-mobile-menu-head small::after { content: " / Guide, AllJect, language" !important; }
+            :root[data-current-language="de"] .app-mobile-menu-head small::after { content: " / Handbuch, AllJect, Sprache" !important; }
+        }
+
+        /* Final interaction, z-index and responsive header fix */
+        #side-stack,
+        .side-stack,
+        .floating-panel,
+        .filter-panel,
+        .auto-panel,
+        .alignment-preview-panel,
+        .copy-assist-panel,
+        .notification-center,
+        .app-mobile-menu {
+            pointer-events: auto !important;
+        }
+        #side-stack { z-index: 1560 !important; }
+        .filter-panel,
+        .auto-panel { z-index: 1580 !important; }
+        .alignment-preview-panel { z-index: 1590 !important; }
+        .notification-center { z-index: 2100 !important; pointer-events: none !important; }
+        .notification-center,
+        .notification-center *,
+        .notification-center .app-toast,
+        .notification-center .app-toast * {
+            pointer-events: none !important;
+        }
+        .app-mobile-menu { z-index: 2400 !important; }
+        .app-menu-toggle { z-index: 2450 !important; }
+        .side-stack,
+        .side-stack-content,
+        .floating-panel,
+        .panel-content,
+        .metric-card,
+        .quality-panel,
+        .advanced-metrics-panel,
+        .histogram-wrapper,
+        .roi-table,
+        .roi-detail-panel,
+        .copy-assist-panel,
+        .app-toast-message {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+        .btn-collapse,
+        .tool-btn,
+        .mini-btn,
+        .thumb-action,
+        .app-menu-toggle,
+        .app-mobile-menu button,
+        .app-mobile-menu a,
+        input,
+        select,
+        label,
+        canvas,
+        svg {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+        .panel-header { cursor: default !important; }
+        .btn-collapse { cursor: pointer !important; touch-action: manipulation !important; }
+        body.no-image #side-stack {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(10px) scale(0.985) !important;
+        }
+        body.no-image .empty-state {
+            z-index: 1900 !important;
+            pointer-events: auto !important;
+        }
+        body.no-image .empty-upload-card,
+        body.no-image .empty-upload-card * {
+            pointer-events: auto !important;
+        }
+        body:not(.no-image) .empty-state {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            z-index: -1 !important;
+        }
+        body:not(.no-image) #canvas-container,
+        body:not(.no-image) #canvas-container .konvajs-content,
+        body:not(.no-image) #canvas-container canvas {
+            pointer-events: auto !important;
+            touch-action: none !important;
+        }
+        body:not(.no-image) #side-stack {
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .alignment-preview-panel:not(.visible),
+        .filter-panel:not(.visible),
+        .auto-panel:not(.visible) {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        .alignment-preview-panel:not(.visible) *,
+        .filter-panel:not(.visible) *,
+        .auto-panel:not(.visible) * {
+            pointer-events: none !important;
+        }
+        .alignment-preview-panel.visible {
+            display: block !important;
+            visibility: visible !important;
+        }
+        .filter-panel.visible {
+            display: flex !important;
+            visibility: visible !important;
+        }
+        .auto-panel.visible {
+            display: grid !important;
+            visibility: visible !important;
+        }
+        #side-stack.collapsed {
+            height: 46px !important;
+            max-height: 46px !important;
+            min-height: 46px !important;
+            overflow: hidden !important;
+        }
+        #side-stack.collapsed .side-stack-content {
+            display: none !important;
+        }
+        #side-stack.mobile-expanded {
+            height: var(--side-stack-open-height, 388px) !important;
+            max-height: var(--side-stack-open-height, 388px) !important;
+            min-height: 180px !important;
+            overflow: hidden !important;
+        }
+        #side-stack.mobile-expanded .side-stack-content {
+            display: flex !important;
+        }
+        #side-stack .side-stack-header {
+            position: relative !important;
+            z-index: 3 !important;
+            pointer-events: auto !important;
+        }
+        #side-stack-toggle {
+            position: relative !important;
+            z-index: 4 !important;
+            pointer-events: auto !important;
+        }
+        #side-stack .side-stack-content {
+            overflow-y: auto !important;
+            overscroll-behavior: contain !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y !important;
+        }
+
+        @media (min-width: 861px) and (max-width: 980px) {
+            header {
+                height: 66px !important;
+                padding: 8px 12px !important;
+                align-items: center !important;
+                gap: 10px !important;
+            }
+            .logo-container,
+            .toolbar,
+            .header-actions {
+                align-self: center !important;
+            }
+            .toolbar {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                max-width: calc(100vw - 318px) !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                padding: 5px !important;
+                gap: 6px !important;
+            }
+            .toolbar .tool-btn {
+                flex: 0 0 auto !important;
+                padding: 7px 9px !important;
+                font-size: 0.8rem !important;
+                white-space: nowrap !important;
+            }
+            .header-actions {
+                flex: 0 0 auto !important;
+                margin-left: 0 !important;
+                gap: 6px !important;
+            }
+            .guide-link,
+            .producer-badge,
+            .language-control {
+                height: 32px !important;
+                transform: none !important;
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
         }
@@ -2096,7 +3128,39 @@
             </button>
         </div>
         <div class="header-actions">
-            <a id="guide-link" class="guide-link" href="user-guide.html" target="_blank" rel="noopener">Kılavuz</a>
+            <button id="app-menu-toggle" class="app-menu-toggle" type="button" aria-expanded="false" aria-controls="app-mobile-menu" aria-label="Men&#252;" title="Men&#252;">
+                <span class="app-menu-line" aria-hidden="true"></span>
+                <span class="app-menu-line" aria-hidden="true"></span>
+                <span class="app-menu-line" aria-hidden="true"></span>
+            </button>
+            <nav id="app-mobile-menu" class="app-mobile-menu" aria-label="Mobil uygulama men&#252;s&#252;">
+                <div class="app-mobile-menu-head">
+                    <strong>Ana men&#252;</strong>
+                    <small>Analiz ara&#231;lar&#305; ve ba&#287;lant&#305;lar</small>
+                </div>
+                <div class="app-mobile-menu-grid">
+                    <button type="button" data-app-command="tool-rect">Dikd&#246;rtgen</button>
+                    <button type="button" data-app-command="tool-circle">Daire</button>
+                    <button type="button" data-app-command="add-roi">Yeni ROI</button>
+                    <button type="button" data-app-command="align-roi">Hizala</button>
+                    <button type="button" data-app-command="calculate-all">Hesapla</button>
+                    <button type="button" data-app-command="toggle-filters">Filtreler</button>
+                    <button type="button" data-app-command="toggle-auto">Otomatik</button>
+                    <button type="button" data-app-command="toggle-overlay">Overlay</button>
+                    <button type="button" data-app-command="upload-trigger">&#304;&#231;e Aktar</button>
+                </div>
+                <div class="app-mobile-menu-links">
+                    <a href="./user-guide.html">Kullan&#305;m k&#305;lavuzu</a>
+                    <a href="./assets/allject/allject-home.html">AllJect yerel</a>
+                    <a href="https://allject.com" target="_blank" rel="noopener">allject.com</a>
+                </div>
+                <div class="app-mobile-menu-lang" aria-label="Dil se&#231;imi">
+                    <button type="button" data-language="tr">TR</button>
+                    <button type="button" data-language="en">EN</button>
+                    <button type="button" data-language="de">DE</button>
+                </div>
+            </nav>
+            <a id="guide-link" class="guide-link" href="./user-guide.html" rel="noopener">Kılavuz</a>
             <a class="producer-badge" href="https://allject.com" target="_blank" rel="noopener" title="AllJect Design & Development">AllJect</a>
             <label id="language-control" class="language-control" for="language-select" title="Dil se&#231;imi">
                 <span class="language-flag" data-language-flag aria-hidden="true">&#x1F1F9;&#x1F1F7;</span>
@@ -4400,7 +5464,7 @@
         `;
 
         // --- State Management ---
-        const APP_BUILD = 'radiography-analysis-public-release-2026-05-30';
+        const APP_BUILD = 'radiography-analysis-public-release-2026-06-05';
         const APP_NAME = 'Radiography Analysis';
         const PRODUCER_NAME = 'AllJect';
         const PRODUCER_FULL_NAME = 'AllJect Design & Development';
@@ -4527,6 +5591,70 @@
             updateRegressionQuality(null);
             updateAdvancedMeasurements(null);
             updatePipelineDetails(null, null, null);
+        }
+
+        function setImageInteractionReady() {
+            if (!images.length || !imageNode) return;
+            document.body.classList.remove('no-image');
+            document.body.classList.add('has-multi-images');
+            const empty = document.getElementById('empty-state');
+            if (empty) {
+                empty.style.pointerEvents = 'none';
+                empty.style.visibility = 'hidden';
+            }
+            if (canvasContainer) {
+                canvasContainer.style.pointerEvents = 'auto';
+                canvasContainer.querySelectorAll('.konvajs-content, canvas').forEach(node => {
+                    node.style.pointerEvents = 'auto';
+                    node.style.touchAction = 'none';
+                });
+            }
+            const sideStack = document.getElementById('side-stack');
+            if (sideStack) {
+                sideStack.style.pointerEvents = 'auto';
+                sideStack.style.visibility = 'visible';
+            }
+            if (stage) stage.draggable(true);
+        }
+
+        function collapseSideStackOnMobile() {
+            const stack = document.getElementById('side-stack');
+            const button = document.getElementById('side-stack-toggle');
+            if (!stack || window.innerWidth > 760) return;
+            applySideStackCollapsedState(true);
+        }
+
+        function applySideStackCollapsedState(collapsed) {
+            const stack = document.getElementById('side-stack');
+            const button = document.getElementById('side-stack-toggle');
+            if (!stack) return;
+            stack.classList.toggle('collapsed', Boolean(collapsed));
+            stack.classList.toggle('mobile-expanded', !collapsed && window.innerWidth <= 760);
+            if (window.innerWidth <= 760) {
+                const viewportH = Math.max(320, window.innerHeight || document.documentElement.clientHeight || 720);
+                const openHeight = Math.round(Math.min(window.innerWidth <= 520 ? viewportH * 0.46 : viewportH * 0.48, window.innerWidth <= 520 ? 420 : 460));
+                const maxOpenHeight = Math.max(180, Math.round(viewportH - 202));
+                const finalOpenHeight = Math.max(180, Math.min(openHeight, maxOpenHeight));
+                stack.style.setProperty('--side-stack-open-height', finalOpenHeight + 'px');
+                stack.style.setProperty('height', collapsed ? '46px' : finalOpenHeight + 'px', 'important');
+                stack.style.setProperty('max-height', collapsed ? '46px' : finalOpenHeight + 'px', 'important');
+                if (collapsed) stack.style.setProperty('min-height', '46px', 'important');
+                else stack.style.removeProperty('min-height');
+                if (collapsed) stack.style.setProperty('overflow', 'hidden', 'important');
+                else stack.style.removeProperty('overflow');
+            } else {
+                stack.classList.remove('mobile-expanded');
+                stack.style.height = '';
+                stack.style.maxHeight = '';
+                stack.style.minHeight = '';
+                stack.style.overflow = '';
+                stack.style.removeProperty('--side-stack-open-height');
+            }
+            if (button) {
+                button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                const svg = button.querySelector('svg');
+                if (svg) svg.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+            }
         }
 
         function makeIdentityTransform(targetImage) {
@@ -5258,6 +6386,44 @@
             };
         }
 
+        function preserveROIAnalysisState(nextData, previousData) {
+            const previous = previousData || {};
+            if (!nextData || !previous) return nextData;
+            const hasPreviousAnalysis = Boolean(
+                (previous.result && previous.result !== '--.----') ||
+                previous.regressionStats ||
+                previous.measurements ||
+                previous.threshData ||
+                previous.skelData ||
+                previous.pipelinePreviews
+            );
+            if (!hasPreviousAnalysis) return nextData;
+            return {
+                ...nextData,
+                result: previous.result || nextData.result,
+                complexity: previous.complexity || nextData.complexity,
+                regressionStats: previous.regressionStats || nextData.regressionStats,
+                measurements: previous.measurements || nextData.measurements,
+                lastAnalysisCrop: previous.lastAnalysisCrop || nextData.lastAnalysisCrop,
+                threshData: previous.threshData || nextData.threshData,
+                skelData: previous.skelData || nextData.skelData,
+                pipelinePreviews: previous.pipelinePreviews || nextData.pipelinePreviews
+            };
+        }
+
+        function clearROIAnalysisState(data) {
+            if (!data) return data;
+            data.result = '--.----';
+            data.complexity = 'Bekliyor';
+            data.regressionStats = null;
+            data.measurements = null;
+            data.lastAnalysisCrop = null;
+            data.threshData = null;
+            data.skelData = null;
+            data.pipelinePreviews = null;
+            return data;
+        }
+
         function propagateROIGroup(group, force = false) {
             const refData = group.rois[referenceImageId];
             if (!refData) return;
@@ -5273,7 +6439,7 @@
                 }
                 const existing = group.rois[img.id];
                 if (existing && existing.manualAdjusted && !force) return;
-                group.rois[img.id] = mapReferenceROIToImage(refData, img);
+                group.rois[img.id] = preserveROIAnalysisState(mapReferenceROIToImage(refData, img), existing);
             });
         }
 
@@ -5956,31 +7122,6 @@
                         pipelinePreviews: pipelinePreviews || null,
                         lastAnalysisCrop: regressionStats && regressionStats.crop ? regressionStats.crop : null
                     };
-                    if (regressionStats && regressionStats.measurementTimings) {
-                        const mt = regressionStats.measurementTimings || {};
-                        console.table({
-                            image: img.info && img.info.name ? img.info.name : resultImageId,
-                            'worker setup ms': Number((mt.setupMs || 0).toFixed(1)),
-                            'grayscale + histogram ms': Number((mt.grayHistogramMs || 0).toFixed(1)),
-                            'mean/variance/std ms': Number((mt.basicStatsMs || 0).toFixed(1)),
-                            'histogram derived metrics ms': Number((mt.histogramDerivedMetricsMs || mt.medianMs || mt.modeMs || 0).toFixed(1)),
-                            'otsu threshold ms': Number((mt.otsuThresholdMs || mt.momentsThresholdMs || 0).toFixed(1)),
-                            'sharpness metrics ms': Number((mt.sharpnessMetricsMs || 0).toFixed(1)),
-                            'glcm texture ms': Number((mt.glcmTextureMs || 0).toFixed(1)),
-                            'geometry ms': Number((mt.geometryMs || mt.geometryProfileMs || 0).toFixed(1)),
-                            'profile ms': Number((mt.profileMs || mt.geometryProfileMs || 0).toFixed(1)),
-                            'advanced metrics object ms': Number((mt.advancedMetricsBuildMs || 0).toFixed(1)),
-                            'regression stats object ms': Number((mt.regressionStatsBuildMs || 0).toFixed(1)),
-                            'worker reported total ms': Number((mt.workerTotalMs || duration || 0).toFixed(1)),
-                            'message duration ms': Number((duration || 0).toFixed(1))
-                        });
-                        console.info('Full-image measurement timing', {
-                            imageId: resultImageId,
-                            imageName: img.info && img.info.name,
-                            timings: regressionStats.measurementTimings,
-                            duration
-                        });
-                    }
                 }
                 if (pendingFullAnalysis) {
                     clearTimeout(pendingFullAnalysis.timeoutId);
@@ -5988,18 +7129,6 @@
                     if (pendingFullAnalysis.mainTiming) {
                         pendingFullAnalysis.mainTiming.waitAfterPostMs = performance.now() - pendingFullAnalysis.postedAt;
                         pendingFullAnalysis.mainTiming.totalMainMs = performance.now() - pendingFullAnalysis.mainTiming.startedAt;
-                        console.table({
-                            image: img && img.info && img.info.name ? img.info.name : resultImageId,
-                            'source select ms': Number((pendingFullAnalysis.mainTiming.sourceSelectMs || 0).toFixed(1)),
-                            'canvas create ms': Number((pendingFullAnalysis.mainTiming.canvasCreateMs || 0).toFixed(1)),
-                            'drawImage ms': Number((pendingFullAnalysis.mainTiming.drawImageMs || 0).toFixed(1)),
-                            'getImageData ms': Number((pendingFullAnalysis.mainTiming.getImageDataMs || 0).toFixed(1)),
-                            'histogram draw ms': Number((pendingFullAnalysis.mainTiming.histogramDrawMs || 0).toFixed(1)),
-                            'postMessage ms': Number((pendingFullAnalysis.mainTiming.postMessageMs || 0).toFixed(1)),
-                            'wait after post ms': Number((pendingFullAnalysis.mainTiming.waitAfterPostMs || 0).toFixed(1)),
-                            'main total ms': Number((pendingFullAnalysis.mainTiming.totalMainMs || 0).toFixed(1))
-                        });
-                        console.info('Full-image main-thread timing', pendingFullAnalysis.mainTiming);
                     }
                     pendingFullAnalysis.resolve(img ? img.fullAnalysis : null);
                 }
@@ -6200,7 +7329,8 @@
         function drawPipelineImageData(canvasId, imageData, message = 'Bekliyor') {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
-            if (!imageData || !imageData.width || !imageData.height) {
+            const normalized = normalizePreviewImageData(imageData);
+            if (!normalized) {
                 drawPipelinePlaceholder(canvas, message);
                 return;
             }
@@ -6213,18 +7343,44 @@
             ctx.fillStyle = '#02050a';
             ctx.fillRect(0, 0, width, height);
             const temp = document.createElement('canvas');
-            temp.width = imageData.width;
-            temp.height = imageData.height;
-            temp.getContext('2d').putImageData(imageData, 0, 0);
-            const scale = Math.min(width / imageData.width, height / imageData.height);
-            const drawW = Math.max(1, imageData.width * scale);
-            const drawH = Math.max(1, imageData.height * scale);
+            temp.width = normalized.width;
+            temp.height = normalized.height;
+            try {
+                temp.getContext('2d').putImageData(normalized, 0, 0);
+            } catch (err) {
+                drawPipelinePlaceholder(canvas, message);
+                return;
+            }
+            const scale = Math.min(width / normalized.width, height / normalized.height);
+            const drawW = Math.max(1, normalized.width * scale);
+            const drawH = Math.max(1, normalized.height * scale);
             const x = (width - drawW) / 2;
             const y = (height - drawH) / 2;
             ctx.imageSmoothingEnabled = false;
             ctx.drawImage(temp, x, y, drawW, drawH);
             ctx.strokeStyle = 'rgba(255,255,255,0.08)';
             ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+        }
+
+        function normalizePreviewImageData(value) {
+            if (!value || !Number.isFinite(Number(value.width)) || !Number.isFinite(Number(value.height))) return null;
+            const width = Math.max(1, Math.round(Number(value.width)));
+            const height = Math.max(1, Math.round(Number(value.height)));
+            const expected = width * height * 4;
+            try {
+                if (typeof ImageData !== 'undefined' && value instanceof ImageData && value.data && value.data.length >= expected) {
+                    return value;
+                }
+            } catch (_) {}
+            const raw = value.data;
+            if (!raw || raw.length < expected || typeof ImageData === 'undefined') return null;
+            try {
+                const clamped = raw instanceof Uint8ClampedArray ? raw : new Uint8ClampedArray(raw);
+                const data = clamped.length === expected ? clamped : clamped.slice(0, expected);
+                return new ImageData(data, width, height);
+            } catch (err) {
+                return null;
+            }
         }
 
         function drawPipelineCanvasSource(canvasId, sourceCanvas, message = 'Bekliyor') {
@@ -6300,7 +7456,6 @@
                 }
                 return drawPipelineCanvasSource('pipeline-roi-canvas', offscreen, 'ROI yok');
             } catch (err) {
-                console.warn('Ham ROI önizlemesi çizilemedi:', err);
                 return false;
             }
         }
@@ -6309,22 +7464,30 @@
             const previews = record && record.pipelinePreviews ? record.pipelinePreviews : {};
             if (previews && Object.keys(previews).length) {
                 PIPELINE_PREVIEW_MAP.forEach(([id, key]) => {
-                    drawPipelineImageData(id, previews[key], 'Önizleme yok');
+                    try {
+                        drawPipelineImageData(id, previews[key], 'Önizleme yok');
+                    } catch (err) {
+                        drawPipelinePlaceholder(document.getElementById(id), 'Önizleme yok');
+                    }
                 });
                 if (!previews.roi) drawActiveRawPipelinePreview();
             } else {
                 PIPELINE_PREVIEW_MAP.forEach(([id, key]) => {
-                    if (key === 'threshold') drawPipelineImageData(id, record && record.threshData, 'Eşik yok');
-                    else if (key === 'skeleton') drawPipelineImageData(id, record && record.skelData, 'İskelet yok');
-                    else drawPipelinePlaceholder(document.getElementById(id), 'Hesaplanmadı');
+                    try {
+                        if (key === 'threshold') drawPipelineImageData(id, record && record.threshData, 'Eşik yok');
+                        else if (key === 'skeleton') drawPipelineImageData(id, record && record.skelData, 'İskelet yok');
+                        else drawPipelinePlaceholder(document.getElementById(id), 'Hesaplanmadı');
+                    } catch (err) {
+                        drawPipelinePlaceholder(document.getElementById(id), 'Önizleme yok');
+                    }
                 });
                 drawActiveRawPipelinePreview();
             }
             const activeImage = getActiveImage();
             const modeEl = document.getElementById('pipeline-preview-mode');
             if (modeEl) {
-                const scope = activeGroupId ? (roiGroups.find(g => g.id === activeGroupId)?.name || activeGroupId) : t('Tam g\u00f6rsel');
-                modeEl.innerText = activeImage ? `${activeImage.info.name} \u2022 ${scope}` : t('Se\u00e7ili g\u00f6rsel / ROI');
+                const scope = activeGroupId ? (roiGroups.find(g => g.id === activeGroupId)?.name || activeGroupId) : t('Tam görsel');
+                modeEl.innerText = activeImage ? `${activeImage.info.name} - ${scope}` : t('Seçili görsel / ROI');
             }
         }
 
@@ -6358,7 +7521,8 @@
             if (roi.pipelinePreviews || roi.threshData || roi.skelData) {
                 renderPipelinePreviewSet(roi);
             } else {
-                clearPipelinePreviewCanvases('Bu seçim hesaplanmadı');
+                const hasAnalysis = Boolean(roi.regressionStats || roi.measurements || (roi.result && roi.result !== '--.----'));
+                clearPipelinePreviewCanvases(hasAnalysis ? 'Önizleme yok' : 'Bu seçim hesaplanmadı');
                 drawActiveRawPipelinePreview();
             }
             updatePipelineDetails(roi.regressionStats || null, roi.threshData || null, roi.skelData || null);
@@ -7013,12 +8177,73 @@
             'GLCM Homogeneity', 'GLCM ASM', 'GLCM Energy', 'GLCM Entropy', 'GLCM Correlation',
             'Centroid X', 'Centroid Y', 'Center of Mass X', 'Center of Mass Y', 'Stack Position',
             'Lacunarity', 'Trabecular Thickness px', 'Trabecular Thickness mm',
-            'Trabecular Separation px', 'Trabecular Separation mm', 'Otsu Threshold', 'Kalibrasyon'
+            'Trabecular Separation px', 'Trabecular Separation mm', 'Otsu Threshold',
+            'Research Usability Score', 'Exposure Balance Score', 'Robust Contrast Score', 'Clipping Risk Class',
+            'Saturation Margin %', 'Sharpness-to-Noise Index', 'Radiographic CNR Proxy', 'Texture Heterogeneity Score',
+            'Trabecular Thickness/Separation Ratio', 'Trabecular Porosity Index %', 'Mean-Median Delta', 'Technical Review Flag',
+            'Kalibrasyon'
         ];
 
         function exportNumber(value, digits = 4) {
             if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '';
             return Number(value).toFixed(digits).replace('.', ',');
+        }
+
+        function exportRawNumber(value, digits = 4) {
+            if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '';
+            return Number(value).toFixed(digits).replace('.', ',');
+        }
+
+        function clampMetric(value, min = 0, max = 100) {
+            if (!Number.isFinite(value)) return null;
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function radiographicDerivedExportValues(m = {}) {
+            const mean = Number(m.meanGray);
+            const median = Number(m.medianGray);
+            const std = Number(m.standardDeviation);
+            const robustRange = Number(m.robustRangeP05P95);
+            const clipping = Number(m.clippingPct);
+            const tenengrad = Number(m.tenengradSharpness);
+            const glcmContrast = Number(m.glcmContrast);
+            const glcmEntropy = Number(m.glcmEntropy);
+            const glcmHomogeneity = Number(m.glcmHomogeneity);
+            const tbTh = Number(m.trabecularThicknessPx);
+            const tbSp = Number(m.trabecularSeparationPx);
+            const exposureBalance = Number.isFinite(mean) ? clampMetric(100 - (Math.abs(mean - 127.5) / 127.5) * 100) : null;
+            const contrastScore = Number.isFinite(robustRange) ? clampMetric((robustRange / 255) * 100) : null;
+            const clippingScore = Number.isFinite(clipping) ? clampMetric(100 - clipping * 10) : null;
+            const sharpnessNoise = Number.isFinite(tenengrad) && Number.isFinite(std) ? tenengrad / (std + 1) : null;
+            const sharpnessScore = Number.isFinite(sharpnessNoise) ? clampMetric(Math.log10(sharpnessNoise + 1) * 42) : null;
+            const cnrProxy = Number.isFinite(robustRange) && Number.isFinite(std) ? robustRange / (std + 1) : null;
+            const textureScore = [
+                Number.isFinite(glcmContrast) ? clampMetric(glcmContrast * 18) : null,
+                Number.isFinite(glcmEntropy) ? clampMetric((glcmEntropy / 5) * 100) : null,
+                Number.isFinite(glcmHomogeneity) ? clampMetric((1 - glcmHomogeneity) * 100) : null
+            ].filter(Number.isFinite);
+            const textureHeterogeneity = textureScore.length ? textureScore.reduce((a, b) => a + b, 0) / textureScore.length : null;
+            const tbRatio = Number.isFinite(tbTh) && Number.isFinite(tbSp) && tbSp > 0 ? tbTh / tbSp : null;
+            const porosity = Number.isFinite(tbTh) && Number.isFinite(tbSp) && (tbTh + tbSp) > 0 ? (tbSp / (tbTh + tbSp)) * 100 : null;
+            const meanMedianDelta = Number.isFinite(mean) && Number.isFinite(median) ? mean - median : null;
+            const usabilityParts = [exposureBalance, contrastScore, clippingScore, sharpnessScore].filter(Number.isFinite);
+            const usability = usabilityParts.length ? usabilityParts.reduce((a, b) => a + b, 0) / usabilityParts.length : null;
+            const clippingClass = !Number.isFinite(clipping) ? '' : clipping >= 10 ? 'High' : clipping >= 3 ? 'Moderate' : 'Low';
+            const reviewFlag = (!Number.isFinite(usability) && !Number.isFinite(clipping)) ? '' : ((Number.isFinite(usability) && usability < 45) || (Number.isFinite(clipping) && clipping >= 10) ? 'Review' : 'Pass');
+            return [
+                exportRawNumber(usability, 2),
+                exportRawNumber(exposureBalance, 2),
+                exportRawNumber(contrastScore, 2),
+                clippingClass,
+                exportRawNumber(Number.isFinite(clipping) ? clampMetric(100 - clipping, 0, 100) : null, 2),
+                exportRawNumber(sharpnessNoise, 4),
+                exportRawNumber(cnrProxy, 4),
+                exportRawNumber(textureHeterogeneity, 2),
+                exportRawNumber(tbRatio, 5),
+                exportRawNumber(porosity, 2),
+                exportRawNumber(meanMedianDelta, 3),
+                reviewFlag
+            ];
         }
 
         function measurementExportValues(m = {}) {
@@ -7096,6 +8321,7 @@
                 exportNumber(m.trabecularSeparationPx, 4),
                 exportNumber(m.trabecularSeparationMm, 4),
                 m.threshold ?? '',
+                ...radiographicDerivedExportValues(m),
                 m.calibration || ''
             ];
         }
@@ -7449,26 +8675,10 @@
                 const progressText = `Tam fotoğraf ${i + 1}/${missing.length}`;
                 setCopyButtonsState('busy', progressText);
                 updateStatus(runtimeMessage('copy.fullPreparing', { count: `${i + 1}/${missing.length}` }), 'info', { toast, group, title: runtimeMessage('copy.title'), duration: 3600 });
-                const imagePrepStart = performance.now();
                 try {
                     await postFullImageAnalysis(img, { awaitResult: true, timeoutMs: 120000, skipFractal: true, force: true, updateHistogram: false });
-                    console.info('Excel full-image prep item timing', {
-                        status: 'success',
-                        index: i + 1,
-                        total: missing.length,
-                        imageName: img && img.info ? img.info.name : '',
-                        elapsedMs: Number((performance.now() - imagePrepStart).toFixed(1))
-                    });
                 } catch (err) {
                     failed++;
-                    console.info('Excel full-image prep item timing', {
-                        status: 'failed',
-                        index: i + 1,
-                        total: missing.length,
-                        imageName: img && img.info ? img.info.name : '',
-                        elapsedMs: Number((performance.now() - imagePrepStart).toFixed(1)),
-                        error: err && err.message ? err.message : String(err)
-                    });
                     console.warn('Full-image export analysis failed:', img && img.info ? img.info.name : img, err && err.message ? err.message : err);
                 }
             }
@@ -7606,68 +8816,35 @@
             if (btn) btn.disabled = true;
             const group = 'excel-copy';
             setCopyButtonsState('busy', 'Excel hazırlanıyor...');
-            const timing = {
-                startedAt: performance.now(),
-                missingFullBefore: 0,
-                fullPrepMs: 0,
-                tsvBuildMs: 0,
-                clipboardMs: 0,
-                totalMs: 0
-            };
-            const finishTiming = () => {
-                timing.totalMs = performance.now() - timing.startedAt;
-                console.table({
-                    'missing full-image rows before copy': timing.missingFullBefore,
-                    'full-image prep ms': Number(timing.fullPrepMs.toFixed(1)),
-                    'TSV build ms': Number(timing.tsvBuildMs.toFixed(1)),
-                    'clipboard ms': Number(timing.clipboardMs.toFixed(1)),
-                    'total ms': Number(timing.totalMs.toFixed(1))
-                });
-                console.info('Excel export timing', timing);
-            };
             try {
                 const missingBefore = getMissingFullImageAnalysisImages();
-                timing.missingFullBefore = missingBefore.length;
                 let ensureResult = { requested: 0, failed: 0 };
                 if (!missingBefore.length) {
                     const summary = getExportRowSummary();
-                    const tsvStart = performance.now();
                     const fullExport = buildFullExportTSV();
-                    timing.tsvBuildMs += performance.now() - tsvStart;
                     setCopyButtonsState('busy', 'Kopyalanıyor...');
-                    const copyStart = performance.now();
                     const copied = await copyText(fullExport, runtimeMessage('copy.success', summary), { group, preferLegacy: true });
-                    timing.clipboardMs += performance.now() - copyStart;
                     setCopyButtonsState(copied ? 'success' : 'idle', copied ? 'Kopyalandı' : '');
                     if (copied) setTimeout(() => setCopyButtonsState('idle'), 1800);
-                    finishTiming();
                     return copied;
                 }
 
                 updateStatus(runtimeMessage('copy.start'), 'info', { toast: true, group, title: runtimeMessage('copy.title'), duration: 3600 });
-                const prepStart = performance.now();
                 ensureResult = await ensureFullImageAnalysesForExport({ group, toast: true });
-                timing.fullPrepMs += performance.now() - prepStart;
                 const summary = { ...getExportRowSummary(), failed: ensureResult.failed || 0 };
-                const tsvStart = performance.now();
                 const fullExport = buildFullExportTSV();
-                timing.tsvBuildMs += performance.now() - tsvStart;
                 const successMessage = ensureResult.failed
                     ? runtimeMessage('copy.successPartial', summary)
                     : runtimeMessage('copy.success', summary);
                 setCopyButtonsState('busy', 'Kopyalanıyor...');
-                const copyStart = performance.now();
                 const copied = await copyText(fullExport, successMessage, { group });
-                timing.clipboardMs += performance.now() - copyStart;
                 setCopyButtonsState(copied ? 'success' : 'idle', copied ? 'Kopyalandı' : '');
                 if (copied) setTimeout(() => setCopyButtonsState('idle'), 1800);
-                finishTiming();
                 return copied;
             } catch (err) {
                 console.error('Excel export error:', err);
                 updateStatus(runtimeMessage('copy.error'), 'error', { toast: true, group, title: runtimeMessage('copy.title') });
                 setCopyButtonsState('idle');
-                finishTiming();
                 return false;
             } finally {
                 if (btn) btn.disabled = false;
@@ -7681,6 +8858,8 @@
             document.getElementById('upload-trigger').onclick = () => fileInput.click();
             document.getElementById('empty-upload-trigger').onclick = () => fileInput.click();
             fileInput.onchange = handleFileUpload;
+            setupSideStackWheelScroll();
+            setupSideStackDirectToggle();
             document.getElementById('tool-rect').onclick = () => setTool('rect');
             document.getElementById('tool-circle').onclick = () => setTool('circle');
             document.getElementById('add-roi').onclick = async () => {
@@ -7814,21 +8993,72 @@
             document.querySelectorAll('.btn-collapse').forEach(btn => {
                 if (btn.id === 'copy-result' || btn.id === 'overlay-close') return;
                 btn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const panel = btn.id === 'side-stack-toggle'
                         ? document.getElementById('side-stack')
-                        : e.target.closest('.floating-panel');
+                        : btn.closest('.floating-panel');
                     if (!panel) return;
-                    panel.classList.toggle('collapsed');
-                    const svg = btn.querySelector('svg');
-                    if (panel.classList.contains('collapsed')) {
-                        svg.style.transform = 'rotate(-90deg)';
-                    } else {
-                        svg.style.transform = 'rotate(0deg)';
+                    const collapsed = !panel.classList.contains('collapsed');
+                    if (btn.id === 'side-stack-toggle') {
+                        applySideStackCollapsedState(collapsed);
+                        return;
                     }
+                    panel.classList.toggle('collapsed', collapsed);
+                    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                    const svg = btn.querySelector('svg');
+                    if (svg) svg.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
                 };
             });
 
             document.getElementById('copy-result').onclick = (event) => prepareAndCopyExcelExport(event.currentTarget);
+        }
+
+        function setupSideStackWheelScroll() {
+            const stack = document.getElementById('side-stack');
+            const content = stack ? stack.querySelector('.side-stack-content') : null;
+            if (!stack || !content || stack.dataset.wheelScrollReady === '1') return;
+            stack.dataset.wheelScrollReady = '1';
+            stack.addEventListener('wheel', (event) => {
+                if (stack.classList.contains('collapsed') || document.body.classList.contains('no-image')) return;
+                const target = event.target;
+                if (target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]')) return;
+                const canScroll = content.scrollHeight > content.clientHeight + 1;
+                if (!canScroll) return;
+                const before = content.scrollTop;
+                const unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? content.clientHeight : 1);
+                content.scrollTop += event.deltaY * unit;
+                if (content.scrollTop !== before) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }, { passive: false, capture: true });
+        }
+
+        function setupSideStackDirectToggle() {
+            const stack = document.getElementById('side-stack');
+            const button = document.getElementById('side-stack-toggle');
+            if (!stack || !button || button.dataset.directToggleReady === '1') return;
+            button.dataset.directToggleReady = '1';
+            let lastToggleAt = 0;
+            const toggle = (event) => {
+                if (document.body.classList.contains('no-image')) return;
+                const now = performance.now();
+                if (now - lastToggleAt < 220) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                    return;
+                }
+                lastToggleAt = now;
+                event.preventDefault();
+                event.stopPropagation();
+                if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+                const collapsed = !stack.classList.contains('collapsed');
+                applySideStackCollapsedState(collapsed);
+            };
+            button.addEventListener('click', toggle, { capture: true });
+            button.addEventListener('touchend', toggle, { passive: false, capture: true });
         }
 
         function setOverlayLabel(id, text) {
@@ -8273,8 +9503,8 @@
                     renderImageStrip();
                     updateROITable();
                     updateCurrentImageInfoPanel();
-                    document.body.classList.remove('no-image');
-                    document.body.classList.add('has-multi-images');
+                    setImageInteractionReady();
+                    collapseSideStackOnMobile();
                     if (overlayPreviewVisible) renderAlignmentOverlayPreview();
                     const modeMessage = `${loadedImages.length} görsel eklendi. Toplam ${images.length} görsel var. Referans ilk görseldir; yeni görseller Hizala ile ona eşlenir.`;
                     updateStatus(modeMessage, "success");
@@ -8306,14 +9536,15 @@
                     imageNode.offsetY(displaySource.height / 2);
                     layer.add(imageNode);
                     imageNode.moveToBottom();
+                    setImageInteractionReady();
+                    collapseSideStackOnMobile();
 
                     updateCurrentImageInfoPanel();
                     renderImageStrip();
                     updateROITable();
                     resetAnalysisPanels();
                     applyFilters({ request: false });
-                    document.body.classList.remove('no-image');
-                    document.body.classList.add('has-multi-images');
+                    setImageInteractionReady();
                     layer.draw();
                     const modeMessage = images.length === 1
                         ? "1 görsel yüklendi. Tek görsel analiz modundasınız; ROI ekleyip Hesapla’ya basın."
@@ -8330,6 +9561,7 @@
                 updateStatus(message, "error", { group: 'upload-error' });
                 setAnalysisState('error', 'HATA');
             } finally {
+                if (images.length && imageNode) setImageInteractionReady();
                 fileInput.value = '';
             }
         }
@@ -9104,7 +10336,7 @@
                                     angle: alignedAngle
                                 };
 
-                                group.rois[img.id] = {
+                                const nextAlignedData = {
                                     ...refData,
                                     ...alignedGeometry,
                                     corners: getROICorners(alignedGeometry).map(point => ({
@@ -9132,6 +10364,7 @@
                                     skelData: null,
                                     pipelinePreviews: null
                                 };
+                                group.rois[img.id] = preserveROIAnalysisState(nextAlignedData, previous);
 
                             }
                         });
@@ -10172,19 +11405,6 @@
                     mainTiming.timeoutMs = timeoutMs;
                     mainTiming.waitAfterPostMs = performance.now() - postedAt;
                     mainTiming.totalMainMs = performance.now() - mainTiming.startedAt;
-                    console.table({
-                        image: mainTiming.imageName || img.id,
-                        status: 'timeout',
-                        'source select ms': Number((mainTiming.sourceSelectMs || 0).toFixed(1)),
-                        'canvas create ms': Number((mainTiming.canvasCreateMs || 0).toFixed(1)),
-                        'drawImage ms': Number((mainTiming.drawImageMs || 0).toFixed(1)),
-                        'getImageData ms': Number((mainTiming.getImageDataMs || 0).toFixed(1)),
-                        'histogram draw ms': Number((mainTiming.histogramDrawMs || 0).toFixed(1)),
-                        'postMessage ms': Number((mainTiming.postMessageMs || 0).toFixed(1)),
-                        'wait after post ms': Number((mainTiming.waitAfterPostMs || 0).toFixed(1)),
-                        'main total ms': Number((mainTiming.totalMainMs || 0).toFixed(1))
-                    });
-                    console.info('Full-image main-thread timing', mainTiming);
                     reject(new Error('Tam g\u00f6rsel analizi zaman a\u015f\u0131m\u0131na u\u011frad\u0131.'));
                 }, timeoutMs);
                 fullAnalysisResolvers.set(taskId, { resolve, reject, timeoutId, imageId: img.id, token: analysisToken, mainTiming, postedAt });
@@ -10272,21 +11492,9 @@
                     }
                     if (!images.some(item => item.id === img.id)) continue;
                     if (img.fullAnalysis && img.fullAnalysis.measurements) continue;
-                    const warmupStart = performance.now();
                     try {
                         await postFullImageAnalysis(img, { awaitResult: true, timeoutMs: 120000, worker: getBackgroundAnalysisWorker(), skipFractal: true });
-                        console.info('Background full-image prep item timing', {
-                            status: 'success',
-                            imageName: img && img.info ? img.info.name : '',
-                            elapsedMs: Number((performance.now() - warmupStart).toFixed(1))
-                        });
                     } catch (err) {
-                        console.info('Background full-image prep item timing', {
-                            status: 'failed',
-                            imageName: img && img.info ? img.info.name : '',
-                            elapsedMs: Number((performance.now() - warmupStart).toFixed(1)),
-                            error: err && err.message ? err.message : String(err)
-                        });
                         console.warn('Background full-image analysis failed:', img && img.info ? img.info.name : img, err && err.message ? err.message : err);
                     }
                 }
@@ -10329,6 +11537,52 @@
 
         init();
     </script>
+
+<script>
+(function initReleaseMobileMenu(){
+    function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+    ready(function(){
+        var toggle = document.getElementById('app-menu-toggle');
+        var menu = document.getElementById('app-mobile-menu');
+        if(!toggle || !menu || toggle.dataset.ready === '1') return;
+        toggle.dataset.ready = '1';
+        function setOpen(open){
+            menu.classList.toggle('open', !!open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            document.body.classList.toggle('app-menu-open', !!open);
+        }
+        toggle.addEventListener('click', function(event){
+            event.stopPropagation();
+            setOpen(!menu.classList.contains('open'));
+        });
+        menu.addEventListener('click', function(event){
+            var command = event.target && event.target.closest ? event.target.closest('[data-app-command]') : null;
+            if(command){
+                var target = document.getElementById(command.getAttribute('data-app-command'));
+                if(target && typeof target.click === 'function') target.click();
+                setOpen(false);
+                return;
+            }
+            var lang = event.target && event.target.closest ? event.target.closest('[data-language]') : null;
+            if(lang){
+                var select = document.getElementById('language-select');
+                if(select){ select.value = lang.getAttribute('data-language'); select.dispatchEvent(new Event('change', { bubbles: true })); }
+                if(typeof window.setLanguage === 'function') window.setLanguage(lang.getAttribute('data-language'));
+                setOpen(false);
+                return;
+            }
+            if(event.target && event.target.closest && event.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('click', function(event){
+            if(!menu.classList.contains('open')) return;
+            if(menu.contains(event.target) || toggle.contains(event.target)) return;
+            setOpen(false);
+        });
+        document.addEventListener('keydown', function(event){ if(event.key === 'Escape') setOpen(false); });
+        window.addEventListener('resize', function(){ if(window.innerWidth > 860) setOpen(false); });
+    });
+})();
+</script>
 </body>
 
 </html>
