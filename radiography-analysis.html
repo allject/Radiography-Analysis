@@ -3036,6 +3036,80 @@
             }
         }
 
+        /* Release polish: subtle, non-blocking UI motion */
+        @keyframes releaseCardIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.988); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes releaseMenuIn {
+            from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes releaseButtonSheen {
+            0%, 62% { transform: translateX(-130%) skewX(-16deg); opacity: 0; }
+            74% { opacity: 0.26; }
+            100% { transform: translateX(130%) skewX(-16deg); opacity: 0; }
+        }
+        @keyframes releaseActiveRoi {
+            0% { box-shadow: inset 3px 0 rgba(111,211,232,0.0), 0 0 0 rgba(111,211,232,0.0); }
+            100% { box-shadow: inset 3px 0 rgba(111,211,232,0.72), 0 0 18px rgba(111,211,232,0.08); }
+        }
+        .empty-upload-card,
+        body:not(.no-image) #side-stack,
+        .copy-assist-panel {
+            animation: releaseCardIn 0.28s cubic-bezier(.2,.85,.24,1) both;
+        }
+        .app-mobile-menu.open {
+            animation: releaseMenuIn 0.18s cubic-bezier(.2,.85,.24,1) both;
+            transform-origin: top right;
+        }
+        .btn-upload,
+        #btn-copy-all,
+        #calculate-all {
+            isolation: isolate;
+            overflow: hidden;
+            position: relative;
+        }
+        .btn-upload::after,
+        #btn-copy-all::after,
+        #calculate-all::after {
+            content: "";
+            position: absolute;
+            inset: -25% -45%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.34), transparent);
+            pointer-events: none;
+            opacity: 0;
+            animation: releaseButtonSheen 4.8s ease-in-out infinite;
+        }
+        #calculate-all::after { animation-delay: 1.3s; }
+        #btn-copy-all::after { animation-delay: 2.2s; }
+        .roi-row {
+            transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+        }
+        .roi-row.active {
+            animation: releaseActiveRoi 0.32s ease both;
+        }
+        .roi-row:hover {
+            transform: translateX(1px);
+        }
+        .metric-card,
+        .histogram-stat,
+        .quality-panel,
+        .advanced-metrics-panel {
+            transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+        .metric-card:hover,
+        .histogram-stat:hover {
+            transform: translateY(-1px);
+            border-color: rgba(111,211,232,0.24) !important;
+        }
+        .tool-btn:focus-visible,
+        .btn-collapse:focus-visible,
+        .app-menu-toggle:focus-visible {
+            outline: 2px solid rgba(111,211,232,0.62) !important;
+            outline-offset: 2px;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
         }
@@ -3842,24 +3916,164 @@
                 return { mat: out, scale };
             }
 
+            function applyWorkerHomography(matrix, x, y) {
+                const den = matrix[6] * x + matrix[7] * y + matrix[8];
+                if (!Number.isFinite(den) || Math.abs(den) < 1e-9) return { x: NaN, y: NaN };
+                return {
+                    x: (matrix[0] * x + matrix[1] * y + matrix[2]) / den,
+                    y: (matrix[3] * x + matrix[4] * y + matrix[5]) / den
+                };
+            }
+
+            function affineMatToHomography(mat) {
+                if (!mat || mat.empty()) return null;
+                const data = mat.data64F && mat.data64F.length ? mat.data64F : mat.data32F;
+                if (!data || data.length < 6) return null;
+                return [
+                    Number(data[0]), Number(data[1]), Number(data[2]),
+                    Number(data[3]), Number(data[4]), Number(data[5]),
+                    0, 0, 1
+                ];
+            }
+
+            function polygonArea(points) {
+                let area = 0;
+                for (let i = 0; i < points.length; i++) {
+                    const a = points[i];
+                    const b = points[(i + 1) % points.length];
+                    area += a.x * b.y - b.x * a.y;
+                }
+                return Math.abs(area) / 2;
+            }
+
+            function isConvexQuad(points) {
+                let sign = 0;
+                for (let i = 0; i < 4; i++) {
+                    const a = points[i];
+                    const b = points[(i + 1) % 4];
+                    const c = points[(i + 2) % 4];
+                    const cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+                    if (!Number.isFinite(cross) || Math.abs(cross) < 1e-6) return false;
+                    const current = Math.sign(cross);
+                    if (!sign) sign = current;
+                    else if (sign !== current) return false;
+                }
+                return true;
+            }
+
+            function pointCoverage(points, width, height) {
+                if (!points || points.length < 4) return 0;
+                let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                points.forEach(p => {
+                    if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return;
+                    minX = Math.min(minX, p.x);
+                    minY = Math.min(minY, p.y);
+                    maxX = Math.max(maxX, p.x);
+                    maxY = Math.max(maxY, p.y);
+                });
+                if (![minX, minY, maxX, maxY].every(Number.isFinite)) return 0;
+                return Math.max(0, Math.min(1, ((maxX - minX) * (maxY - minY)) / Math.max(1, width * height)));
+            }
+
+            function reprojectionStats(matrix, refPairs, targetPairs, inlierMask) {
+                const errors = [];
+                for (let i = 0; i < refPairs.length; i++) {
+                    if (inlierMask && !inlierMask[i]) continue;
+                    const mapped = applyWorkerHomography(matrix, refPairs[i].x, refPairs[i].y);
+                    if (!Number.isFinite(mapped.x) || !Number.isFinite(mapped.y)) continue;
+                    errors.push(Math.hypot(mapped.x - targetPairs[i].x, mapped.y - targetPairs[i].y));
+                }
+                if (!errors.length) return { mean: Infinity, median: Infinity, p90: Infinity, count: 0 };
+                errors.sort((a, b) => a - b);
+                const sum = errors.reduce((a, b) => a + b, 0);
+                return {
+                    mean: sum / errors.length,
+                    median: errors[Math.floor(errors.length / 2)],
+                    p90: errors[Math.min(errors.length - 1, Math.floor(errors.length * 0.9))],
+                    count: errors.length
+                };
+            }
+
+            function evaluateRegistrationCandidate(matrix, refPairs, targetPairs, inlierMask, refSize, targetSize, label) {
+                if (!matrix || matrix.length !== 9 || !matrix.every(Number.isFinite)) return null;
+                const refCorners = [
+                    { x: 0, y: 0 },
+                    { x: refSize.width - 1, y: 0 },
+                    { x: refSize.width - 1, y: refSize.height - 1 },
+                    { x: 0, y: refSize.height - 1 }
+                ];
+                const mappedCorners = refCorners.map(p => applyWorkerHomography(matrix, p.x, p.y));
+                if (!mappedCorners.every(p => Number.isFinite(p.x) && Number.isFinite(p.y))) return null;
+                const marginX = targetSize.width * 0.36;
+                const marginY = targetSize.height * 0.36;
+                const insideCount = mappedCorners.filter(p => p.x >= -marginX && p.x <= targetSize.width + marginX && p.y >= -marginY && p.y <= targetSize.height + marginY).length;
+                const area = polygonArea(mappedCorners);
+                const targetArea = Math.max(1, targetSize.width * targetSize.height);
+                const areaRatio = area / targetArea;
+                const convex = isConvexQuad(mappedCorners);
+                const refInlierPoints = [];
+                const targetInlierPoints = [];
+                for (let i = 0; i < refPairs.length; i++) {
+                    if (inlierMask && !inlierMask[i]) continue;
+                    refInlierPoints.push(refPairs[i]);
+                    targetInlierPoints.push(targetPairs[i]);
+                }
+                const stats = reprojectionStats(matrix, refPairs, targetPairs, inlierMask);
+                const refCoverage = pointCoverage(refInlierPoints, refSize.width, refSize.height);
+                const targetCoverage = pointCoverage(targetInlierPoints, targetSize.width, targetSize.height);
+                const inliers = stats.count;
+                const valid = convex
+                    && insideCount >= 3
+                    && areaRatio >= 0.10
+                    && areaRatio <= 3.20
+                    && inliers >= 8
+                    && stats.median <= 6.0
+                    && stats.p90 <= 18.0
+                    && Math.max(refCoverage, targetCoverage) >= 0.035;
+                const inlierRatio = refPairs.length ? inliers / refPairs.length : 0;
+                const coverage = Math.sqrt(Math.max(0, refCoverage) * Math.max(0, targetCoverage));
+                const errorScore = Math.max(0, 1 - stats.median / 7.5) * 0.70 + Math.max(0, 1 - stats.p90 / 22) * 0.30;
+                const geometryScore = convex ? Math.max(0, Math.min(1, insideCount / 4)) * Math.max(0, Math.min(1, 1 - Math.abs(Math.log(Math.max(0.001, areaRatio))) / 2.4)) : 0;
+                const score = (Math.min(1, inliers / 55) * 0.30)
+                    + (Math.min(1, inlierRatio / 0.42) * 0.22)
+                    + (Math.min(1, coverage / 0.20) * 0.18)
+                    + (errorScore * 0.20)
+                    + (geometryScore * 0.10);
+                return {
+                    matrix,
+                    label,
+                    valid,
+                    score,
+                    inliers,
+                    inlierRatio,
+                    medianError: stats.median,
+                    p90Error: stats.p90,
+                    refCoverage,
+                    targetCoverage,
+                    areaRatio,
+                    insideCount
+                };
+            }
+
             function computeRegistration(referenceImageData, targetImageData, refInfo, targetInfo) {
                 const mats = [];
+                let featureDetector = null;
+                let matcher = null;
                 try {
                     if (!cv.ORB || !cv.BFMatcher || !cv.findHomography || !cv.KeyPointVector || !cv.DMatchVector) {
                         return fallbackRegistration(refInfo, targetInfo, 'OpenCV.js feature/homography API yok');
                     }
 
-                    const ref = imageDataToGray(referenceImageData);
-                    const target = imageDataToGray(targetImageData);
+                    const ref = imageDataToGray(referenceImageData, 1800);
+                    const target = imageDataToGray(targetImageData, 1800);
                     mats.push(ref.mat, target.mat);
 
-                    let featureDetector;
                     let detectorName = 'ORB';
                     try {
-                        featureDetector = new cv.ORB(3000, 1.2, 8, 31, 0, 2, cv.ORB_HARRIS_SCORE, 31, 20);
+                        featureDetector = new cv.ORB(4200, 1.18, 8, 31, 0, 2, cv.ORB_HARRIS_SCORE, 31, 14);
                     } catch (createErr) {
                         try {
-                            featureDetector = new cv.ORB(3000);
+                            featureDetector = new cv.ORB(4200);
                         } catch (orbErr) {
                             if (cv.AKAZE) {
                                 featureDetector = new cv.AKAZE();
@@ -3879,147 +4093,194 @@
 
                     featureDetector.detectAndCompute(ref.mat, emptyMask, kp1, des1);
                     featureDetector.detectAndCompute(target.mat, emptyMask, kp2, des2);
-                    
-                    if (des1.empty() || des2.empty() || kp1.size() < 12 || kp2.size() < 12) {
-                        if (featureDetector.delete) featureDetector.delete();
+
+                    if (des1.empty() || des2.empty() || kp1.size() < 18 || kp2.size() < 18) {
                         return fallbackRegistration(refInfo, targetInfo, 'Yeterli ortak özellik noktası yok');
                     }
 
-                    const matcher = new cv.BFMatcher(cv.NORM_HAMMING, false);
-                    let good = [];
-                    let usedKnn = false;
+                    matcher = new cv.BFMatcher(cv.NORM_HAMMING, false);
+                    const forward = [];
                     let totalMatches = 0;
 
-                    try {
-                        if (cv.DMatchVectorVector) {
-                            const knnMatches = new cv.DMatchVectorVector();
-                            mats.push(knnMatches);
-                            matcher.knnMatch(des1, des2, knnMatches, 2);
-                            totalMatches = knnMatches.size();
-                            for (let i = 0; i < knnMatches.size(); i++) {
-                                const matchVector = knnMatches.get(i);
-                                const size = matchVector.size ? matchVector.size() : matchVector.length;
-                                if (size >= 2) {
-                                    const m1 = matchVector.size ? matchVector.get(0) : matchVector[0];
-                                    const m2 = matchVector.size ? matchVector.get(1) : matchVector[1];
-                                    if (m1.distance < 0.75 * m2.distance) {
-                                        good.push(m1);
-                                    }
-                                } else if (size === 1) {
-                                    good.push(matchVector.size ? matchVector.get(0) : matchVector[0]);
-                                }
-                                if (matchVector.delete) matchVector.delete();
+                    if (cv.DMatchVectorVector) {
+                        const knnForward = new cv.DMatchVectorVector();
+                        const knnBackward = new cv.DMatchVectorVector();
+                        mats.push(knnForward, knnBackward);
+                        matcher.knnMatch(des1, des2, knnForward, 2);
+                        matcher.knnMatch(des2, des1, knnBackward, 2);
+                        totalMatches = knnForward.size();
+
+                        const backwardBest = new Map();
+                        for (let i = 0; i < knnBackward.size(); i++) {
+                            const mv = knnBackward.get(i);
+                            const size = mv.size ? mv.size() : mv.length;
+                            if (size >= 1) {
+                                const m = mv.size ? mv.get(0) : mv[0];
+                                const second = size >= 2 ? (mv.size ? mv.get(1) : mv[1]) : null;
+                                if (!second || m.distance < 0.82 * second.distance) backwardBest.set(m.queryIdx, m.trainIdx);
                             }
-                            usedKnn = true;
-                        } else {
-                            throw new Error('DMatchVectorVector not found');
+                            if (mv.delete) mv.delete();
                         }
-                    } catch (knnError) {
-                        const fallbackMatcher = new cv.BFMatcher(cv.NORM_HAMMING, true);
+
+                        for (let i = 0; i < knnForward.size(); i++) {
+                            const mv = knnForward.get(i);
+                            const size = mv.size ? mv.size() : mv.length;
+                            if (size >= 2) {
+                                const m1 = mv.size ? mv.get(0) : mv[0];
+                                const m2 = mv.size ? mv.get(1) : mv[1];
+                                const ratioOk = m1.distance < 0.78 * m2.distance;
+                                const mutualOk = backwardBest.get(m1.trainIdx) === m1.queryIdx;
+                                if (ratioOk && mutualOk) forward.push(m1);
+                            } else if (size === 1) {
+                                const m1 = mv.size ? mv.get(0) : mv[0];
+                                if (backwardBest.get(m1.trainIdx) === m1.queryIdx) forward.push(m1);
+                            }
+                            if (mv.delete) mv.delete();
+                        }
+                    } else {
+                        const crossMatcher = new cv.BFMatcher(cv.NORM_HAMMING, true);
                         const matches = new cv.DMatchVector();
                         mats.push(matches);
-                        fallbackMatcher.match(des1, des2, matches);
-                        fallbackMatcher.delete();
-
-                        const sorted = [];
-                        for (let i = 0; i < matches.size(); i++) sorted.push(matches.get(i));
-                        sorted.sort((a, b) => a.distance - b.distance);
-                        totalMatches = sorted.length;
-                        const keepCount = Math.max(40, Math.floor(sorted.length * 0.25));
-                        good = sorted.slice(0, keepCount).filter(m => Number.isFinite(m.distance));
+                        crossMatcher.match(des1, des2, matches);
+                        crossMatcher.delete();
+                        for (let i = 0; i < matches.size(); i++) forward.push(matches.get(i));
+                        totalMatches = forward.length;
+                        forward.sort((a, b) => a.distance - b.distance);
                     }
 
-                    if (good.length < 10) {
-                        if (featureDetector.delete) featureDetector.delete();
-                        if (matcher.delete) matcher.delete();
-                        return fallbackRegistration(refInfo, targetInfo, 'RANSAC için yeterli eşleşme yok');
+                    const good = forward
+                        .filter(m => Number.isFinite(m.distance))
+                        .sort((a, b) => a.distance - b.distance)
+                        .slice(0, Math.max(24, Math.min(520, Math.floor(forward.length * 0.72))));
+
+                    if (good.length < 14) {
+                        return fallbackRegistration(refInfo, targetInfo, 'RANSAC için yeterli güvenilir eşleşme yok');
                     }
 
+                    const refPairs = [];
+                    const targetPairs = [];
                     const refPts = [];
                     const targetPts = [];
                     good.forEach(m => {
                         const p1 = kp1.get(m.queryIdx).pt;
                         const p2 = kp2.get(m.trainIdx).pt;
+                        refPairs.push({ x: p1.x, y: p1.y });
+                        targetPairs.push({ x: p2.x, y: p2.y });
                         refPts.push(p1.x, p1.y);
                         targetPts.push(p2.x, p2.y);
                     });
 
                     const srcPts = cv.matFromArray(good.length, 1, cv.CV_32FC2, refPts);
                     const dstPts = cv.matFromArray(good.length, 1, cv.CV_32FC2, targetPts);
-                    const mask = new cv.Mat();
-                    mats.push(srcPts, dstPts, mask);
+                    mats.push(srcPts, dstPts);
 
-                    // Alt-piksel (sub-pixel) köşe iyileştirmesi
                     try {
-                        if (typeof cv.cornerSubPix !== 'function') throw new Error('cornerSubPix unavailable');
-                        const winSize = new cv.Size(5, 5);
-                        const zeroZone = new cv.Size(-1, -1);
-                        const criteria = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_MAX_ITER, 40, 0.001);
-                        cv.cornerSubPix(ref.mat, srcPts, winSize, zeroZone, criteria);
-                        cv.cornerSubPix(target.mat, dstPts, winSize, zeroZone, criteria);
-                    } catch (err) {
-                        if (err && err.message !== 'cornerSubPix unavailable') console.warn("Sub-pixel refinement skipped:", err);
-                    }
-
-                    // Faz 1: RANSAC ile inlier tespiti
-                    let H = cv.findHomography(srcPts, dstPts, cv.RANSAC, 2.5, mask);
-                    mats.push(H);
-
-                    let inliers = 0;
-                    const inlierRefPts = [];
-                    const inlierTargetPts = [];
-                    for (let i = 0; i < mask.rows * mask.cols; i++) {
-                        if (mask.data[i]) {
-                            inliers++;
-                            inlierRefPts.push(refPts[i*2], refPts[i*2+1]);
-                            inlierTargetPts.push(targetPts[i*2], targetPts[i*2+1]);
-                        }
-                    }
-
-                    // Faz 2: Kusursuzlaştırma (LMEDS on inliers)
-                    if (inliers >= 8) {
-                        try {
-                            const srcInliers = cv.matFromArray(inliers, 1, cv.CV_32FC2, inlierRefPts);
-                            const dstInliers = cv.matFromArray(inliers, 1, cv.CV_32FC2, inlierTargetPts);
-                            const emptyMask2 = new cv.Mat();
-                            mats.push(srcInliers, dstInliers, emptyMask2);
-                            const H_lmeds = cv.findHomography(srcInliers, dstInliers, cv.LMEDS, 3, emptyMask2);
-                            if (H_lmeds && !H_lmeds.empty()) {
-                                H = H_lmeds;
-                                mats.push(H_lmeds);
+                        if (typeof cv.cornerSubPix === 'function') {
+                            const winSize = new cv.Size(4, 4);
+                            const zeroZone = new cv.Size(-1, -1);
+                            const criteria = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_MAX_ITER, 24, 0.01);
+                            cv.cornerSubPix(ref.mat, srcPts, winSize, zeroZone, criteria);
+                            cv.cornerSubPix(target.mat, dstPts, winSize, zeroZone, criteria);
+                            for (let i = 0; i < good.length; i++) {
+                                refPairs[i].x = srcPts.data32F[i * 2];
+                                refPairs[i].y = srcPts.data32F[i * 2 + 1];
+                                targetPairs[i].x = dstPts.data32F[i * 2];
+                                targetPairs[i].y = dstPts.data32F[i * 2 + 1];
                             }
-                        } catch (e) {
-                            console.warn("LMEDS refinement skipped:", e);
                         }
+                    } catch (err) {
+                        // Sub-pixel refinement is optional; candidate validation below is the safety gate.
                     }
 
-                    const smallMatrix = matToArray3x3(H);
-                    
-                    if (!smallMatrix) {
-                        if (featureDetector.delete) featureDetector.delete();
-                        if (matcher.delete) matcher.delete();
-                        return fallbackRegistration(refInfo, targetInfo, 'Homografi üretilemedi');
+                    const candidates = [];
+                    const refSize = { width: ref.mat.cols, height: ref.mat.rows };
+                    const targetSize = { width: target.mat.cols, height: target.mat.rows };
+
+                    function maskToArray(mask) {
+                        if (!mask || mask.empty()) return null;
+                        const out = [];
+                        for (let i = 0; i < mask.rows * mask.cols; i++) out.push(Boolean(mask.data[i]));
+                        return out;
                     }
 
-                    const inlierRatio = good.length ? inliers / good.length : 0;
-                    const confidence = Math.max(0.25, Math.min(0.98, inlierRatio * Math.min(1, inliers / 20)));
-                    
-                    if (featureDetector.delete) featureDetector.delete();
-                    if (matcher.delete) matcher.delete();
+                    try {
+                        const maskH = new cv.Mat();
+                        mats.push(maskH);
+                        const H = cv.findHomography(srcPts, dstPts, cv.RANSAC, 4.0, maskH);
+                        mats.push(H);
+                        const matrix = matToArray3x3(H);
+                        const maskArr = maskToArray(maskH);
+                        const candidate = evaluateRegistrationCandidate(matrix, refPairs, targetPairs, maskArr, refSize, targetSize, 'homography-ransac');
+                        if (candidate) candidates.push(candidate);
+                    } catch (err) {
+                        // Try affine candidates below.
+                    }
+
+                    if (typeof cv.estimateAffinePartial2D === 'function') {
+                        try {
+                            const maskA = new cv.Mat();
+                            mats.push(maskA);
+                            const A = cv.estimateAffinePartial2D(srcPts, dstPts, maskA, cv.RANSAC, 4.0, 2500, 0.995, 10);
+                            mats.push(A);
+                            const matrix = affineMatToHomography(A);
+                            const maskArr = maskToArray(maskA);
+                            const candidate = evaluateRegistrationCandidate(matrix, refPairs, targetPairs, maskArr, refSize, targetSize, 'similarity-affine-ransac');
+                            if (candidate) candidates.push(candidate);
+                        } catch (err) {}
+                    }
+
+                    if (typeof cv.estimateAffine2D === 'function') {
+                        try {
+                            const maskA2 = new cv.Mat();
+                            mats.push(maskA2);
+                            const A2 = cv.estimateAffine2D(srcPts, dstPts, maskA2, cv.RANSAC, 4.5, 2500, 0.995, 8);
+                            mats.push(A2);
+                            const matrix = affineMatToHomography(A2);
+                            const maskArr = maskToArray(maskA2);
+                            const candidate = evaluateRegistrationCandidate(matrix, refPairs, targetPairs, maskArr, refSize, targetSize, 'full-affine-ransac');
+                            if (candidate) candidates.push(candidate);
+                        } catch (err) {}
+                    }
+
+                    candidates.sort((a, b) => {
+                        if (a.valid !== b.valid) return a.valid ? -1 : 1;
+                        return b.score - a.score;
+                    });
+                    const best = candidates.find(c => c.valid) || null;
+                    if (!best) {
+                        const attempted = candidates[0];
+                        const reason = attempted
+                            ? 'Özellik hizalaması reddedildi: ' + attempted.label
+                                + ', inlier=' + attempted.inliers
+                                + ', medyan hata=' + attempted.medianError.toFixed(2)
+                                + ', kapsama=' + attempted.refCoverage.toFixed(3)
+                            : 'Geçerli homografi/affine adayı üretilemedi';
+                        return fallbackRegistration(refInfo, targetInfo, reason);
+                    }
+
                     const totalRefScale = (refInfo.sentWidth / refInfo.width) * ref.scale;
                     const totalTargetScale = (targetInfo.sentWidth / targetInfo.width) * target.scale;
+                    const confidence = Math.max(0.35, Math.min(0.98, best.score));
                     return {
-                        matrix: scaleHomographyToOriginal(smallMatrix, totalRefScale, totalTargetScale),
+                        matrix: scaleHomographyToOriginal(best.matrix, totalRefScale, totalTargetScale),
                         confidence,
-                        status: confidence >= 0.62 ? 'auto' : 'low',
-                        method: detectorName + ' + BFMatcher + RANSAC homography',
+                        status: confidence >= 0.78 ? 'auto' : 'low',
+                        method: detectorName + ' + mutual BFMatcher + ' + best.label,
                         matches: totalMatches,
                         usedMatches: good.length,
-                        inliers
+                        inliers: best.inliers,
+                        inlierRatio: Number(best.inlierRatio.toFixed(4)),
+                        medianError: Number(best.medianError.toFixed(3)),
+                        p90Error: Number(best.p90Error.toFixed(3)),
+                        refCoverage: Number(best.refCoverage.toFixed(4)),
+                        targetCoverage: Number(best.targetCoverage.toFixed(4)),
+                        areaRatio: Number(best.areaRatio.toFixed(4))
                     };
                 } catch (err) {
                     return fallbackRegistration(refInfo, targetInfo, err.message || 'Kayıt hatası');
                 } finally {
+                    if (featureDetector && featureDetector.delete) featureDetector.delete();
+                    if (matcher && matcher.delete) matcher.delete();
                     mats.forEach(mat => {
                         if (mat && typeof mat.delete === 'function') mat.delete();
                     });
@@ -4105,16 +4366,17 @@
                                     qData[i] = 0;
                                     continue;
                                 }
-                                const g = Math.max(0, Math.min(255, Math.round(0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2])));
+                                const grayWeight = Math.max(0, Math.min(255, (rgba[p] + rgba[p + 1] + rgba[p + 2]) / 3));
+                                const g = Math.round(grayWeight);
                                 grayData[i] = g;
                                 qData[i] = g >> 3;
                                 hist[g]++;
                                 count++;
                                 sum += g;
                                 sumSq += g * g;
-                                weightedSum += g;
-                                weightedX += x * g;
-                                weightedY += y * g;
+                                weightedSum += grayWeight;
+                                weightedX += (x + 0.5) * grayWeight;
+                                weightedY += (y + 0.5) * grayWeight;
                                 if (g < min) min = g;
                                 if (g > max) max = g;
                             }
@@ -4128,7 +4390,7 @@
 
                         const tBasicStats = performance.now();
                         const mean = sum / count;
-                        const variance = Math.max(0, sumSq / count - mean * mean);
+                        const variance = count > 1 ? Math.max(0, (sumSq - (sum * sum) / count) / (count - 1)) : 0;
                         const std = Math.sqrt(variance);
                         timing.basicStatsMs = performance.now() - tBasicStats;
 
@@ -4322,15 +4584,17 @@
                         const boundingHeightPx = Math.abs(roiW * sin) + Math.abs(roiH * cos);
                         const boundingX = Number(roiMeta.x ?? crop.x ?? (centerX - boundingWidthPx / 2)) || 0;
                         const boundingY = Number(roiMeta.y ?? crop.y ?? (centerY - boundingHeightPx / 2)) || 0;
-                        const majorPx = Math.max(roiW, roiH);
-                        const minorPx = Math.min(roiW, roiH);
+                        const roiMajorPx = Math.max(roiW, roiH);
+                        const roiMinorPx = Math.min(roiW, roiH);
+                        const majorPx = isEllipse ? roiMajorPx : (2 * roiMajorPx / Math.sqrt(Math.PI));
+                        const minorPx = isEllipse ? roiMinorPx : (2 * roiMinorPx / Math.sqrt(Math.PI));
                         const fitAngleDeg = roiW >= roiH ? angleDeg : angleDeg + 90;
-                        const feretAngleDeg = isEllipse ? fitAngleDeg : angleDeg + Math.atan2(roiH, roiW) * 180 / Math.PI;
+                        const rectFeretAngleDeg = angleDeg + 180 - (Math.atan2(roiH, roiW) * 180 / Math.PI);
+                        const feretAngleDeg = isEllipse ? fitAngleDeg : ((rectFeretAngleDeg % 180) + 180) % 180;
                         const feretRad = feretAngleDeg * Math.PI / 180;
-                        const feretX = centerX - Math.cos(feretRad) * feretPx / 2;
-                        const feretY = centerY - Math.sin(feretRad) * feretPx / 2;
-                        const imageJIntDenArea = pixelSizeMm ? metricWithCalibrationFast(count, 2) : count;
-                        const imageJIntDen = Number.isFinite(imageJIntDenArea) ? mean * imageJIntDenArea : mean * count;
+                        const feretX = isEllipse ? centerX - Math.cos(feretRad) * feretPx / 2 : boundingX;
+                        const feretY = isEllipse ? centerY - Math.sin(feretRad) * feretPx / 2 : boundingY;
+                        const imageJIntDen = mean * count;
                         const circularity = perimeterPx > 0 ? (4 * Math.PI * areaPx2) / (perimeterPx * perimeterPx) : null;
                         const roundness = majorPx > 0 ? (4 * areaPx2) / (Math.PI * majorPx * majorPx) : null;
                         const aspectRatio = minorPx > 0 ? majorPx / minorPx : null;
@@ -4359,7 +4623,7 @@
                             intDenImageJ: roundMetricFast(imageJIntDen, 3),
                             minGray: min,
                             maxGray: max,
-                            grayscaleProfile: profileSamples.join(','),
+                            grayscaleProfile: profileSamples.join('; '),
                             areaPx2: roundMetricFast(areaPx2, 3),
                             areaMm2: roundMetricFast(metricWithCalibrationFast(areaPx2, 2), 4),
                             perimeterPx: roundMetricFast(perimeterPx, 3),
@@ -4423,6 +4687,7 @@
                             glcmEntropy: roundMetricFast(glcmEntropy, 6),
                             glcmCorrelation: roundMetricFast(glcmCorrelation, 6),
                             areaFractionPct: roundMetricFast(count > 0 ? (foregroundCount / count) * 100 : null, 4),
+                            imageJAreaFractionPct: roundMetricFast(count > 0 ? (foregroundCount / count) * 100 : null, 4),
                             centroidX: roundMetricFast(centerX, 3),
                             centroidY: roundMetricFast(centerY, 3),
                             centerOfMassX: roundMetricFast(centerOfMassX, 3),
@@ -4672,7 +4937,7 @@
                             const idx = y * width + x;
                             if (validMask[idx]) samples.push(Math.round(grayData[idx]));
                         }
-                        return samples.join(',');
+                        return samples.join('; ');
                     }
 
                     function computeMeasurementBundle(imageData, grayData, settings) {
@@ -4690,6 +4955,7 @@
                         const centerX = Number(crop.centerX ?? roiMeta.centerX ?? ((crop.x || 0) + roiW / 2));
                         const centerY = Number(crop.centerY ?? roiMeta.centerY ?? ((crop.y || 0) + roiH / 2));
                         const validMask = new Uint8Array(n);
+                        const measurementGrayData = new Uint8Array(n);
                         const quantLevels = 32;
                         const qData = new Uint8Array(n);
                         const hist = new Array(256).fill(0);
@@ -4699,16 +4965,19 @@
                             for (let x = 0; x < width; x++) {
                                 const idx = row + x;
                                 if (data[idx * 4 + 3] === 0) continue;
-                                const g = Math.max(0, Math.min(255, Math.round(grayData[idx])));
+                                const rgbaIndex = idx * 4;
+                                const grayWeight = Math.max(0, Math.min(255, (data[rgbaIndex] + data[rgbaIndex + 1] + data[rgbaIndex + 2]) / 3));
+                                const g = Math.round(grayWeight);
+                                measurementGrayData[idx] = g;
                                 validMask[idx] = 1;
                                 qData[idx] = g >> 3;
                                 hist[g]++;
                                 count++;
                                 sum += g;
                                 sumSq += g * g;
-                                weightedSum += g;
-                                weightedX += x * g;
-                                weightedY += y * g;
+                                weightedSum += grayWeight;
+                                weightedX += (x + 0.5) * grayWeight;
+                                weightedY += (y + 0.5) * grayWeight;
                                 if (g < min) min = g;
                                 if (g > max) max = g;
                             }
@@ -4717,7 +4986,7 @@
                             return { metrics: { validPixelCount: 0, warning: 'Geçerli piksel bulunamadı.' }, validMask, foregroundMask: new Uint8Array(n) };
                         }
                         const mean = sum / count;
-                        const variance = Math.max(0, sumSq / count - mean * mean);
+                        const variance = count > 1 ? Math.max(0, (sumSq - (sum * sum) / count) / (count - 1)) : 0;
                         const std = Math.sqrt(variance);
                         const median = medianFromHistogram(hist, count);
                         const p01Gray = percentileFromHistogram(hist, count, 0.01);
@@ -4758,7 +5027,7 @@
                         const clippingPct = ((hist[0] + hist[255]) / count) * 100;
                         const foregroundMask = new Uint8Array(n);
                         for (let i = 0; i < n; i++) {
-                            if (validMask[i] && grayData[i] >= threshold) foregroundMask[i] = 1;
+                            if (validMask[i] && measurementGrayData[i] >= threshold) foregroundMask[i] = 1;
                         }
 
                         let tenengradSum = 0, edgeMagnitudeSum = 0, lapSum = 0, lapSqSum = 0, gradientPixels = 0;
@@ -4776,14 +5045,14 @@
                                     const down = idx + width;
                                     if (!validMask[left] || !validMask[right] || !validMask[up] || !validMask[down]) continue;
                                     const gx =
-                                        -grayData[rowUp + x - 1] + grayData[rowUp + x + 1] -
-                                        2 * grayData[left] + 2 * grayData[right] -
-                                        grayData[rowDown + x - 1] + grayData[rowDown + x + 1];
+                                        -measurementGrayData[rowUp + x - 1] + measurementGrayData[rowUp + x + 1] -
+                                        2 * measurementGrayData[left] + 2 * measurementGrayData[right] -
+                                        measurementGrayData[rowDown + x - 1] + measurementGrayData[rowDown + x + 1];
                                     const gy =
-                                        grayData[rowUp + x - 1] + 2 * grayData[up] + grayData[rowUp + x + 1] -
-                                        grayData[rowDown + x - 1] - 2 * grayData[down] - grayData[rowDown + x + 1];
+                                        measurementGrayData[rowUp + x - 1] + 2 * measurementGrayData[up] + measurementGrayData[rowUp + x + 1] -
+                                        measurementGrayData[rowDown + x - 1] - 2 * measurementGrayData[down] - measurementGrayData[rowDown + x + 1];
                                     const magSq = gx * gx + gy * gy;
-                                    const lap = 4 * grayData[idx] - grayData[left] - grayData[right] - grayData[up] - grayData[down];
+                                    const lap = 4 * measurementGrayData[idx] - measurementGrayData[left] - measurementGrayData[right] - measurementGrayData[up] - measurementGrayData[down];
                                     tenengradSum += magSq;
                                     edgeMagnitudeSum += Math.sqrt(magSq);
                                     lapSum += lap;
@@ -4885,15 +5154,17 @@
                         const boundingHeightPx = Math.abs(roiW * sin) + Math.abs(roiH * cos);
                         const boundingX = Number(roiMeta.x ?? crop.x ?? (centerX - boundingWidthPx / 2)) || 0;
                         const boundingY = Number(roiMeta.y ?? crop.y ?? (centerY - boundingHeightPx / 2)) || 0;
-                        const majorPx = Math.max(roiW, roiH);
-                        const minorPx = Math.min(roiW, roiH);
+                        const roiMajorPx = Math.max(roiW, roiH);
+                        const roiMinorPx = Math.min(roiW, roiH);
+                        const majorPx = isEllipse ? roiMajorPx : (2 * roiMajorPx / Math.sqrt(Math.PI));
+                        const minorPx = isEllipse ? roiMinorPx : (2 * roiMinorPx / Math.sqrt(Math.PI));
                         const fitAngleDeg = roiW >= roiH ? angleDeg : angleDeg + 90;
-                        const feretAngleDeg = isEllipse ? fitAngleDeg : angleDeg + Math.atan2(roiH, roiW) * 180 / Math.PI;
+                        const rectFeretAngleDeg = angleDeg + 180 - (Math.atan2(roiH, roiW) * 180 / Math.PI);
+                        const feretAngleDeg = isEllipse ? fitAngleDeg : ((rectFeretAngleDeg % 180) + 180) % 180;
                         const feretRad = feretAngleDeg * Math.PI / 180;
-                        const feretX = centerX - Math.cos(feretRad) * feretPx / 2;
-                        const feretY = centerY - Math.sin(feretRad) * feretPx / 2;
-                        const imageJIntDenArea = pixelSizeMm ? metricWithCalibration(count, pixelSizeMm, 2) : count;
-                        const imageJIntDen = Number.isFinite(imageJIntDenArea) ? mean * imageJIntDenArea : mean * count;
+                        const feretX = isEllipse ? centerX - Math.cos(feretRad) * feretPx / 2 : boundingX;
+                        const feretY = isEllipse ? centerY - Math.sin(feretRad) * feretPx / 2 : boundingY;
+                        const imageJIntDen = mean * count;
                         const circularity = perimeterPx > 0 ? (4 * Math.PI * areaPx2) / (perimeterPx * perimeterPx) : null;
                         const roundness = majorPx > 0 ? (4 * areaPx2) / (Math.PI * majorPx * majorPx) : null;
                         const aspectRatio = minorPx > 0 ? majorPx / minorPx : null;
@@ -4912,7 +5183,7 @@
                             intDenImageJ: roundMetric(imageJIntDen, 3),
                             minGray: min,
                             maxGray: max,
-                            grayscaleProfile: buildProfile(grayData, validMask, width, height),
+                            grayscaleProfile: buildProfile(measurementGrayData, validMask, width, height),
                             areaPx2: roundMetric(areaPx2, 3),
                             areaMm2: roundMetric(metricWithCalibration(areaPx2, pixelSizeMm, 2), 4),
                             perimeterPx: roundMetric(perimeterPx, 3),
@@ -4976,6 +5247,7 @@
                             glcmEntropy: roundMetric(glcmEntropy, 6),
                             glcmCorrelation: roundMetric(glcmCorrelation, 6),
                             areaFractionPct: roundMetric(areaFraction, 4),
+                            imageJAreaFractionPct: roundMetric(areaFraction, 4),
                             centroidX: roundMetric(centerX, 3),
                             centroidY: roundMetric(centerY, 3),
                             centerOfMassX: roundMetric(centerOfMassX, 3),
@@ -5464,7 +5736,7 @@
         `;
 
         // --- State Management ---
-        const APP_BUILD = 'radiography-analysis-public-release-2026-06-05';
+        const APP_BUILD = 'radiography-analysis-public-release-2026-06-07';
         const APP_NAME = 'Radiography Analysis';
         const PRODUCER_NAME = 'AllJect';
         const PRODUCER_FULL_NAME = 'AllJect Design & Development';
@@ -5495,6 +5767,7 @@
         let calculationBatchCounter = 0;
         const calculationBatches = new Map();
         const taskCalculationBatch = new Map();
+        const taskCalculationTimeouts = new Map();
         const ANALYSIS_PRESETS = {
             custom: {
                 label: 'Özel',
@@ -6256,7 +6529,7 @@
             };
         }
 
-        function buildCenteredSimilarityMatrix(refInfo, targetInfo, angleDeg = 0, scaleMul = 1) {
+        function buildCenteredSimilarityMatrix(refInfo, targetInfo, angleDeg = 0, scaleMul = 1, offsetX = 0, offsetY = 0) {
             const refCx = refInfo.width / 2;
             const refCy = refInfo.height / 2;
             const targetCx = targetInfo.width / 2;
@@ -6273,10 +6546,10 @@
             return [
                 a,
                 b,
-                targetCx - a * refCx - b * refCy,
+                targetCx + offsetX - a * refCx - b * refCy,
                 d,
                 e,
-                targetCy - d * refCx - e * refCy,
+                targetCy + offsetY - d * refCx - e * refCy,
                 0,
                 0,
                 1
@@ -6348,6 +6621,47 @@
 
         function mapReferenceROIToImage(refData, targetImage) {
             const t = targetImage.transform || makeIdentityTransform(targetImage);
+            const usesAlignedCanvas = targetImage &&
+                targetImage.id !== referenceImageId &&
+                targetImage.alignedSource &&
+                targetImage.alignedToReferenceId === referenceImageId;
+            if (usesAlignedCanvas) {
+                const alignedData = {
+                    ...refData,
+                    x: Math.round(Number(refData.x || 0)),
+                    y: Math.round(Number(refData.y || 0)),
+                    centerX: Math.round(Number(refData.centerX ?? (Number(refData.x || 0) + Number(refData.w || 2) / 2))),
+                    centerY: Math.round(Number(refData.centerY ?? (Number(refData.y || 0) + Number(refData.h || 2) / 2))),
+                    w: Math.max(2, Math.round(Number(refData.w || 2))),
+                    h: Math.max(2, Math.round(Number(refData.h || 2))),
+                    angle: Number(refData.angle || 0),
+                    status: t.status === 'low' ? 'Düşük güven' : 'Çakıştırıldı',
+                    confidence: t.confidence,
+                    manualAdjusted: false,
+                    alignedToReference: true,
+                    localScore: null,
+                    localZeroScore: null,
+                    localImprovement: null,
+                    localDx: 0,
+                    localDy: 0,
+                    localCandidateDx: 0,
+                    localCandidateDy: 0,
+                    localAccepted: false,
+                    localMethod: 'aligned-reference-space',
+                    result: '--.----',
+                    complexity: 'Bekliyor',
+                    regressionStats: null,
+                    lastAnalysisCrop: null,
+                    threshData: null,
+                    skelData: null,
+                    pipelinePreviews: null
+                };
+                alignedData.corners = getROICorners(alignedData).map(point => ({
+                    x: Math.round(point.x),
+                    y: Math.round(point.y)
+                }));
+                return alignedData;
+            }
             if (t.matrix) {
                 const corners = getROICorners(refData).map(p => applyHomographyPoint(t.matrix, p.x, p.y));
                 const mapped = mapCornersToROIData(corners, targetImage, refData.angle || 0);
@@ -6386,18 +6700,51 @@
             };
         }
 
+        function hasROIAnalysisState(data) {
+            return Boolean(
+                data &&
+                (
+                    (data.result && data.result !== '--.----') ||
+                    data.regressionStats ||
+                    data.measurements ||
+                    data.threshData ||
+                    data.skelData ||
+                    data.pipelinePreviews
+                )
+            );
+        }
+
+        function roiNumericValue(data, key, fallback = null) {
+            if (!data) return fallback;
+            const value = Number(data[key]);
+            return Number.isFinite(value) ? value : fallback;
+        }
+
+        function roiGeometryDelta(nextData, previousData) {
+            if (!nextData || !previousData) return Infinity;
+            const nextW = Math.max(2, roiNumericValue(nextData, 'w', 2));
+            const nextH = Math.max(2, roiNumericValue(nextData, 'h', 2));
+            const prevW = Math.max(2, roiNumericValue(previousData, 'w', 2));
+            const prevH = Math.max(2, roiNumericValue(previousData, 'h', 2));
+            const nextCx = roiNumericValue(nextData, 'centerX', roiNumericValue(nextData, 'x', 0) + nextW / 2);
+            const nextCy = roiNumericValue(nextData, 'centerY', roiNumericValue(nextData, 'y', 0) + nextH / 2);
+            const prevCx = roiNumericValue(previousData, 'centerX', roiNumericValue(previousData, 'x', 0) + prevW / 2);
+            const prevCy = roiNumericValue(previousData, 'centerY', roiNumericValue(previousData, 'y', 0) + prevH / 2);
+            const positionDelta = Math.hypot(nextCx - prevCx, nextCy - prevCy);
+            const sizeDelta = Math.max(Math.abs(nextW - prevW), Math.abs(nextH - prevH));
+            const angleDelta = Math.abs(roiNumericValue(nextData, 'angle', 0) - roiNumericValue(previousData, 'angle', 0));
+            return Math.max(positionDelta, sizeDelta, angleDelta * 2);
+        }
+
+        function canReuseROIAnalysisState(nextData, previousData) {
+            if (!hasROIAnalysisState(previousData)) return false;
+            return roiGeometryDelta(nextData, previousData) <= 0.75;
+        }
+
         function preserveROIAnalysisState(nextData, previousData) {
             const previous = previousData || {};
             if (!nextData || !previous) return nextData;
-            const hasPreviousAnalysis = Boolean(
-                (previous.result && previous.result !== '--.----') ||
-                previous.regressionStats ||
-                previous.measurements ||
-                previous.threshData ||
-                previous.skelData ||
-                previous.pipelinePreviews
-            );
-            if (!hasPreviousAnalysis) return nextData;
+            if (!canReuseROIAnalysisState(nextData, previous)) return nextData;
             return {
                 ...nextData,
                 result: previous.result || nextData.result,
@@ -6618,7 +6965,7 @@
             const previous = group.rois[activeImageId] || {};
             group.name = roi.name;
             group.type = roi.type;
-            group.rois[activeImageId] = {
+            const nextData = {
                 ...previous,
                 x: Number(m.x) || 0,
                 y: Number(m.y) || 0,
@@ -6639,15 +6986,16 @@
                 status: activeImageId === referenceImageId ? 'Referans' : (options.manualAdjusted ? 'Düzeltildi' : previous.status || 'Otomatik'),
                 confidence: activeImageId === referenceImageId ? 1 : (previous.confidence ?? 0.75),
                 manualAdjusted: activeImageId === referenceImageId ? false : Boolean(options.manualAdjusted || previous.manualAdjusted),
-                result: roi.result,
-                complexity: roi.complexity,
-                regressionStats: roi.regressionStats,
-                measurements: roi.measurements || previous.measurements || null,
-                lastAnalysisCrop: roi.lastAnalysisCrop || previous.lastAnalysisCrop || null,
-                threshData: roi.threshData || previous.threshData || null,
-                skelData: roi.skelData || previous.skelData || null,
-                pipelinePreviews: roi.pipelinePreviews || previous.pipelinePreviews || null
+                result: '--.----',
+                complexity: 'Bekliyor',
+                regressionStats: null,
+                measurements: null,
+                lastAnalysisCrop: null,
+                threshData: null,
+                skelData: null,
+                pipelinePreviews: null
             };
+            group.rois[activeImageId] = preserveROIAnalysisState(nextData, previous);
         }
 
         function syncAllRenderedROIs() {
@@ -6827,6 +7175,12 @@
             const matchesText = transform.featureInliers != null || transform.featureUsedMatches != null
                 ? `${formatAlignmentMetric(transform.featureInliers)} / ${formatAlignmentMetric(transform.featureUsedMatches)} inlier`
                 : '--';
+            const errorText = Number.isFinite(Number(transform.featureMedianError))
+                ? `med ${Number(transform.featureMedianError).toFixed(2)}px`
+                : '--';
+            const coverageText = Number.isFinite(Number(transform.featureRefCoverage))
+                ? `kapsama ${Math.round(Number(transform.featureRefCoverage) * 100)}%`
+                : '--';
             const confidenceText = Number.isFinite(Number(transform.confidence)) ? `${Math.round(Number(transform.confidence) * 100)}%` : '--';
             const roleText = img.id === referenceImageId ? 'Referans (ilk görsel)' : 'Referansa hizalanan görsel';
             const flowText = images.length === 1 ? 'ROI bu görsel üzerinde hesaplanır.' : 'İlk görsel referanstır; diğer görseller Hizala/Hesapla ile referansa çakıştırılır.';
@@ -6840,7 +7194,7 @@
                 `ROL: ${roleText}<br>` +
                 `AKIŞ: ${flowText}<br>` +
                 `GÜVEN: ${confidenceText} | ${matchesText}`;
-            document.getElementById('image-meta').innerHTML += `<br>EŞLEŞME: ${escapeHTML(transform.method || '--')} / ${scoreText}`;
+            document.getElementById('image-meta').innerHTML += `<br>EŞLEŞME: ${escapeHTML(transform.method || '--')} / ${scoreText} | ${errorText} | ${coverageText}`;
             updateActiveImageHistogram();
         }
         window.setReferenceImage = function (id) {
@@ -7732,10 +8086,79 @@
             const count = Math.max(0, Number(total) || 0);
             if (!count) return null;
             const id = 'calc-' + (++calculationBatchCounter);
-            calculationBatches.set(id, { total: count, completed: 0, failed: 0, started: Date.now(), kind: kind || 'roi', foreground: true });
+            let resolveBatch;
+            const promise = new Promise(resolve => { resolveBatch = resolve; });
+            const watchdogMs = Math.min(180000, Math.max(45000, count * 30000));
+            const timeoutId = setTimeout(() => {
+                const summary = cancelCalculationBatch(id, true);
+                if (summary.total) {
+                    setAnalysisState('idle', 'BEKLİYOR');
+                    updateStatus(`Hesaplama zaman aşımına uğradı: ${summary.completed}/${summary.total} tamamlandı.`, 'warning', { toast: true, title: runtimeMessage('calc.title'), group: id, duration: 7200 });
+                    setCopyButtonsState('idle');
+                }
+            }, watchdogMs);
+            calculationBatches.set(id, { total: count, completed: 0, failed: 0, started: Date.now(), kind: kind || 'roi', foreground: true, promise, resolve: resolveBatch, timeoutId });
             foregroundOperationBusy = true;
             updateStatus(runtimeMessage(kind === 'image' ? 'calc.started.image' : 'calc.started.roi', { total: count }), 'info', { toast: true, title: runtimeMessage('calc.title'), group: id, duration: 3600 });
             return id;
+        }
+
+        function waitForCalculationBatch(batchId, timeoutMs = 180000) {
+            const batch = batchId ? calculationBatches.get(batchId) : null;
+            if (!batch || !batch.promise) return Promise.resolve({ completed: 0, failed: 0, total: 0, timedOut: false });
+            let timeoutId;
+            const timeout = new Promise(resolve => {
+                timeoutId = setTimeout(() => {
+                    const summary = cancelCalculationBatch(batchId, true);
+                    resolve(summary);
+                }, timeoutMs);
+            });
+            return Promise.race([batch.promise, timeout]).finally(() => clearTimeout(timeoutId));
+        }
+
+        function finishCalculationBatch(batchId, summary) {
+            const batch = calculationBatches.get(batchId);
+            if (!batch) return summary || { completed: 0, failed: 0, total: 0, timedOut: false };
+            if (batch.timeoutId) clearTimeout(batch.timeoutId);
+            calculationBatches.delete(batchId);
+            for (const [taskId, mappedBatchId] of taskCalculationBatch.entries()) {
+                if (mappedBatchId === batchId) {
+                    taskCalculationBatch.delete(taskId);
+                    const taskTimeout = taskCalculationTimeouts.get(taskId);
+                    if (taskTimeout) clearTimeout(taskTimeout);
+                    taskCalculationTimeouts.delete(taskId);
+                }
+            }
+            const finalSummary = summary || { completed: batch.completed, failed: batch.failed, total: batch.total, timedOut: false };
+            if (typeof batch.resolve === 'function') batch.resolve(finalSummary);
+            if (!hasForegroundCalculationBatches()) {
+                foregroundOperationBusy = false;
+                scheduleFullImageWarmup(2200);
+            }
+            return finalSummary;
+        }
+
+        function cancelCalculationBatch(batchId, timedOut = false) {
+            const batch = batchId ? calculationBatches.get(batchId) : null;
+            if (!batch) return { completed: 0, failed: 0, total: 0, timedOut };
+            const done = batch.completed + batch.failed;
+            const missing = Math.max(0, batch.total - done);
+            batch.failed += missing;
+            return finishCalculationBatch(batchId, {
+                completed: batch.completed,
+                failed: batch.failed,
+                total: batch.total,
+                timedOut
+            });
+        }
+
+        function completeUnregisteredBatchTask(batchId, ok = false) {
+            const batch = batchId ? calculationBatches.get(batchId) : null;
+            if (!batch) return;
+            if (ok) batch.completed += 1; else batch.failed += 1;
+            if (batch.completed + batch.failed >= batch.total) {
+                finishCalculationBatch(batchId);
+            }
         }
 
         function hasForegroundCalculationBatches() {
@@ -7744,29 +8167,42 @@
 
         function registerCalculationTask(taskId, batchId) {
             if (!batchId || !calculationBatches.has(batchId) || taskId == null) return;
+            const existingTimeout = taskCalculationTimeouts.get(taskId);
+            if (existingTimeout) clearTimeout(existingTimeout);
             taskCalculationBatch.set(taskId, batchId);
+            const batch = calculationBatches.get(batchId);
+            const timeoutMs = batch && batch.kind === 'image' ? 120000 : 45000;
+            const timeoutId = setTimeout(() => {
+                if (!taskCalculationBatch.has(taskId)) return;
+                console.warn('Calculation task timed out:', taskId, batchId);
+                completeCalculationTask(taskId, false);
+            }, timeoutMs);
+            taskCalculationTimeouts.set(taskId, timeoutId);
         }
 
         function completeCalculationTask(taskId, ok = true) {
             const batchId = taskCalculationBatch.get(taskId);
             if (!batchId) return;
             taskCalculationBatch.delete(taskId);
+            const taskTimeout = taskCalculationTimeouts.get(taskId);
+            if (taskTimeout) clearTimeout(taskTimeout);
+            taskCalculationTimeouts.delete(taskId);
             const batch = calculationBatches.get(batchId);
             if (!batch) return;
             if (ok) batch.completed += 1; else batch.failed += 1;
             const done = batch.completed + batch.failed;
             if (done < batch.total) return;
-            calculationBatches.delete(batchId);
-            if (!hasForegroundCalculationBatches()) {
-                foregroundOperationBusy = false;
-                scheduleFullImageWarmup(2200);
-            }
+            finishCalculationBatch(batchId);
             const seconds = ((Date.now() - batch.started) / 1000).toFixed(1);
             if (batch.failed > 0) {
                 updateStatus(runtimeMessage('calc.finishedWithIssues', { failed: batch.failed, completed: batch.completed, total: batch.total, seconds }), 'warning', { toast: true, title: runtimeMessage('calc.title'), group: batchId, duration: 7200 });
+                setAnalysisState('idle', 'BEKLİYOR');
             } else {
                 updateStatus(runtimeMessage('calc.finished', { completed: batch.completed, total: batch.total, seconds }), 'success', { toast: true, title: runtimeMessage('calc.title'), group: batchId, duration: 5200 });
+                setAnalysisState('ready');
             }
+            const fdEl = document.getElementById('fd-value');
+            if (fdEl) fdEl.classList.remove('busy');
         }
 
         function updateStatus(text, type = "info", options = {}) {
@@ -8186,12 +8622,28 @@
 
         function exportNumber(value, digits = 4) {
             if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '';
-            return Number(value).toFixed(digits).replace('.', ',');
+            const maxDigits = Math.max(0, Math.min(4, Number(digits) || 0));
+            const factor = Math.pow(10, maxDigits);
+            const rounded = Math.round((Number(value) + Number.EPSILON) * factor) / factor;
+            const normalized = Math.abs(rounded) < 1 / factor ? 0 : rounded;
+            return normalized.toFixed(maxDigits).replace(/\.?0+$/, '').replace('.', ',');
         }
 
         function exportRawNumber(value, digits = 4) {
-            if (value === null || value === undefined || value === '' || !Number.isFinite(Number(value))) return '';
-            return Number(value).toFixed(digits).replace('.', ',');
+            return exportNumber(value, digits);
+        }
+
+        function exportCountPair(used, total) {
+            return used && total ? `${used}|${total}` : '';
+        }
+
+        function exportListCell(values, fallback = '') {
+            return Array.isArray(values) && values.length ? values.join('; ') : fallback;
+        }
+
+        function exportProfileCell(value) {
+            if (Array.isArray(value)) return value.join('; ');
+            return String(value ?? '').replace(/\s*,\s*/g, '; ');
         }
 
         function clampMetric(value, min = 0, max = 100) {
@@ -8253,7 +8705,7 @@
                 exportNumber(m.integratedDensity, 3),
                 m.minGray ?? '',
                 m.maxGray ?? '',
-                m.grayscaleProfile || '',
+                exportProfileCell(m.grayscaleProfile),
                 exportNumber(m.areaPx2, 3),
                 exportNumber(m.areaMm2, 4),
                 exportNumber(m.perimeterPx, 3),
@@ -8345,14 +8797,14 @@
         function imageJExportValues(m = {}, context = {}) {
             const original = context.original || {};
             const label = context.label || context.groupName || context.imageName || '';
-            const areaValue = m.areaMm2 === null || m.areaMm2 === undefined ? m.areaPx2 : m.areaMm2;
-            const perimeterValue = m.perimeterMm === null || m.perimeterMm === undefined ? m.perimeterPx : m.perimeterMm;
-            const widthValue = m.boundingWidthMm === null || m.boundingWidthMm === undefined ? (m.imageJWidth ?? m.boundingWidthPx) : m.boundingWidthMm;
-            const heightValue = m.boundingHeightMm === null || m.boundingHeightMm === undefined ? (m.imageJHeight ?? m.boundingHeightPx) : m.boundingHeightMm;
-            const majorValue = m.fitEllipseMajorMm === null || m.fitEllipseMajorMm === undefined ? m.fitEllipseMajorPx : m.fitEllipseMajorMm;
-            const minorValue = m.fitEllipseMinorMm === null || m.fitEllipseMinorMm === undefined ? m.fitEllipseMinorPx : m.fitEllipseMinorMm;
-            const feretValue = m.feretMm === null || m.feretMm === undefined ? m.feretPx : m.feretMm;
-            const minFeretValue = m.minFeretMm === null || m.minFeretMm === undefined ? m.minFeretPx : m.minFeretMm;
+            const areaValue = m.areaPx2;
+            const perimeterValue = m.perimeterPx;
+            const widthValue = m.imageJWidth ?? m.boundingWidthPx;
+            const heightValue = m.imageJHeight ?? m.boundingHeightPx;
+            const majorValue = m.fitEllipseMajorPx;
+            const minorValue = m.fitEllipseMinorPx;
+            const feretValue = m.feretPx;
+            const minFeretValue = m.minFeretPx;
             const bx = m.boundingX ?? original.x;
             const by = m.boundingY ?? original.y;
             return [
@@ -8377,11 +8829,11 @@
                 exportNumber(m.angleDeg, 3),
                 exportNumber(m.circularity, 5),
                 exportNumber(feretValue, 4),
-                exportNumber(m.intDenImageJ ?? m.integratedDensity, 3),
+                exportNumber(m.rawIntegratedDensity ?? m.intDenImageJ ?? m.integratedDensity, 3),
                 exportNumber(m.medianGray, 3),
                 exportNumber(m.skewness, 5),
                 exportNumber(m.kurtosis, 5),
-                exportNumber(m.areaFractionPct, 4),
+                exportNumber(m.imageJAreaFractionPct ?? 0, 4),
                 exportNumber(m.rawIntegratedDensity ?? m.integratedDensity, 3),
                 m.stackPosition ?? '',
                 exportNumber(m.feretX, 3),
@@ -8395,11 +8847,17 @@
         }
 
         function cleanExcelCell(value) {
-            return String(value ?? '').replace(/\t/g, ' ').replace(/\r?\n/g, ' ').trim();
+            const normalized = Array.isArray(value) ? value.join('; ') : value;
+            return String(normalized ?? '').replace(/\t/g, ' ').replace(/\r?\n/g, ' ').trim();
+        }
+
+        function encodeExcelTextCell(value) {
+            const text = cleanExcelCell(value);
+            return /[",\t\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
         }
 
         function rowToTSV(row) {
-            return row.map(cleanExcelCell).join('\t');
+            return row.map(encodeExcelTextCell).join('\t');
         }
 
         function mergeExportWarnings(...items) {
@@ -8483,7 +8941,7 @@
             const header = [
                 'Referans Görsel', 'Görsel', 'ROI Grup', 'ROI Durumu', 'Eşleşme Güveni',
                 'Şekil', 'Koordinat Uzayı',
-                'Orijinal X', 'Orijinal Y', 'Orijinal W', 'Orijinal H', 'Orijinal Açı',
+                'Seçilen X', 'Seçilen Y', 'Seçilen W', 'Seçilen H', 'Seçilen Açı',
                 'Çalışma X', 'Çalışma Y', 'Çalışma W', 'Çalışma H', 'Çalışma Açı',
                 'Analiz X', 'Analiz Y', 'Analiz W', 'Analiz H',
                 'Fraktal Boyut (D)', 'Karmaşıklık', 'R²', 'Nokta', 'Eğim SE', 'Kutu Ölçekleri', 'Elenen Ölçekler',
@@ -8517,7 +8975,7 @@
                         ref ? ref.info.name : '',
                         img.info.name,
                         'Tüm fotoğraf',
-                        full.result ? 'Analiz edildi' : 'Analiz bekliyor',
+                        (full.measurements || full.result) ? 'Analiz edildi' : 'Analiz bekliyor',
                         '',
                         'Tam görsel',
                         spaceLabel,
@@ -8526,15 +8984,15 @@
                         crop.x ?? 0, crop.y ?? 0, crop.w ?? (displayDims.width || img.info.width || ''), crop.h ?? (displayDims.height || img.info.height || ''),
                         '',
                         '',
-                        s.r2 == null ? '' : s.r2.toFixed(4).replace('.', ','),
-                        s.pointCount && s.totalScaleCount ? `${s.pointCount}/${s.totalScaleCount}` : '',
-                        s.slopeStdErr == null ? '' : s.slopeStdErr.toFixed(4).replace('.', ','),
-                        s.usedBoxSizes ? s.usedBoxSizes.join(', ') : '',
-                        s.excludedBoxSizes && s.excludedBoxSizes.length ? s.excludedBoxSizes.join(', ') : 'Yok',
+                        exportNumber(s.r2, 4),
+                        exportCountPair(s.pointCount, s.totalScaleCount),
+                        exportNumber(s.slopeStdErr, 4),
+                        exportListCell(s.usedBoxSizes),
+                        exportListCell(s.excludedBoxSizes, 'Yok'),
                         s.minDim || '',
                         s.reliability || '',
                         full.measurements ? (s.warning || '') : mergeExportWarnings(s.warning, 'Ölçüm bekliyor'),
-                        s.preprocessSteps && s.preprocessSteps.length ? s.preprocessSteps.join(', ') : 'Referans analiz hattı',
+                        exportListCell(s.preprocessSteps, 'Referans analiz hattı'),
                         ...imageJExportValues(full.measurements || {}, {
                             label: `${img.info.name}: Tam g\u00f6rsel`,
                             imageName: img.info.name,
@@ -8570,17 +9028,17 @@
                         getROIExportCoord(working, 'x'), getROIExportCoord(working, 'y'),
                         getROIExportCoord(working, 'w'), getROIExportCoord(working, 'h'), getROIExportCoord(working, 'angle'),
                         crop.x ?? crop.centerX ?? '', crop.y ?? crop.centerY ?? '', crop.w ?? '', crop.h ?? '',
-                        data.result && data.result !== '--.----' ? String(data.result).replace('.', ',') : '',
+                        data.result && data.result !== '--.----' ? exportNumber(Number(String(data.result).replace(',', '.')), 4) : '',
                         data.complexity || '',
-                        s.r2 == null ? '' : s.r2.toFixed(4).replace('.', ','),
-                        s.pointCount && s.totalScaleCount ? `${s.pointCount}/${s.totalScaleCount}` : '',
-                        s.slopeStdErr == null ? '' : s.slopeStdErr.toFixed(4).replace('.', ','),
-                        s.usedBoxSizes ? s.usedBoxSizes.join(', ') : '',
-                        s.excludedBoxSizes && s.excludedBoxSizes.length ? s.excludedBoxSizes.join(', ') : 'Yok',
+                        exportNumber(s.r2, 4),
+                        exportCountPair(s.pointCount, s.totalScaleCount),
+                        exportNumber(s.slopeStdErr, 4),
+                        exportListCell(s.usedBoxSizes),
+                        exportListCell(s.excludedBoxSizes, 'Yok'),
                         s.minDim || '',
                         s.reliability || '',
                         mergeExportWarnings(s.warning, exportWarnings),
-                        s.preprocessSteps && s.preprocessSteps.length ? s.preprocessSteps.join(', ') : 'Referans analiz hattı',
+                        exportListCell(s.preprocessSteps, 'Referans analiz hattı'),
                         ...imageJExportValues(data.measurements || {}, {
                             label: `${img.info.name}: ${group.name}`,
                             imageName: img.info.name,
@@ -8660,11 +9118,11 @@
             return { full, roi, analyzedFull, missingFull: Math.max(0, full - analyzedFull) };
         }
 
-            async function ensureFullImageAnalysesForExport(options = {}) {
-                const missing = getMissingFullImageAnalysisImages();
-                const group = options.group || 'excel-copy';
-                const toast = options.toast !== false;
-                if (!missing.length) return { requested: 0, failed: 0 };
+        async function ensureFullImageAnalysesForExport(options = {}) {
+            const missing = getMissingFullImageAnalysisImages();
+            const group = options.group || 'excel-copy';
+            const toast = options.toast !== false;
+            if (!missing.length) return { requested: 0, failed: 0 };
             if (!analysisWorker) {
                 updateStatus(runtimeMessage('copy.fullNoWorker'), 'warning', { toast, group, title: runtimeMessage('copy.title'), duration: 6200 });
                 return { requested: missing.length, failed: missing.length };
@@ -8688,6 +9146,87 @@
                 updateStatus(runtimeMessage('copy.fullReady'), 'success', { toast, group, title: runtimeMessage('copy.title'), duration: 2600 });
             }
             return { requested: missing.length, failed };
+        }
+
+        function roiNeedsExportAnalysis(data) {
+            return Boolean(data && (!data.measurements || !data.regressionStats || !data.result || data.result === '--.----'));
+        }
+
+        async function ensureAutomaticROIAlignmentForExport(options = {}) {
+            if (images.length < 1 || !referenceImageId) return { aligned: 0 };
+            syncAllRenderedROIs();
+            const force = options.force === true;
+            const forceAlignment = options.forceAlignment === true;
+            const allowLocalRefine = options.allowLocalRefine === true;
+            let aligned = 0;
+            if (images.length > 1) {
+                const needsAlignment = images.some(img => (
+                    img.id !== referenceImageId &&
+                    (
+                        !img.transform ||
+                        !img.alignedSource ||
+                        img.alignedToReferenceId !== referenceImageId
+                    )
+                ));
+                if (forceAlignment || needsAlignment) {
+                    clearAlignedSources();
+                    refreshImageTransforms();
+                    await new Promise(resolve => setTimeout(resolve, 20));
+                    const stats = await buildAlignedImageCanvases();
+                    aligned = stats && Number.isFinite(Number(stats.aligned)) ? Number(stats.aligned) : 0;
+                }
+            }
+            if (!roiGroups.length) return { aligned };
+            propagateAllROIGroups(false, force);
+            if (allowLocalRefine) refineAllROIsByLocalPatch(force);
+            renderImageStrip();
+            renderROIsForActiveImage();
+            updateROITable();
+            if (overlayPreviewVisible) renderAlignmentOverlayPreview();
+            return { aligned };
+        }
+
+        async function ensureROIAnalysesForExport(options = {}) {
+            const groupKey = options.group || 'excel-copy';
+            const toast = options.toast !== false;
+            const updateCopyButtons = options.updateCopyButtons !== false;
+            if (!roiGroups.length) return { requested: 0, failed: 0, timedOut: false };
+            await ensureAutomaticROIAlignmentForExport({
+                force: options.force === true,
+                forceAlignment: options.forceAlignment === true,
+                allowLocalRefine: options.allowLocalRefine === true
+            });
+            if (!analysisWorker) {
+                updateStatus(runtimeMessage('calc.noWorker'), 'warning', { toast, group: groupKey, title: runtimeMessage('copy.title'), duration: 6200 });
+                return { requested: 0, failed: 0, timedOut: false };
+            }
+            const tasks = [];
+            roiGroups.forEach(group => {
+                images.forEach(img => {
+                    const data = group.rois && group.rois[img.id];
+                    if (roiNeedsExportAnalysis(data)) tasks.push({ group, img, data });
+                });
+            });
+            if (!tasks.length) return { requested: 0, failed: 0, timedOut: false };
+            const contextLabel = groupKey === 'excel-copy' ? 'Excel için' : 'Yeni ROI öncesi';
+            if (updateCopyButtons) setCopyButtonsState('busy', `ROI hesaplanıyor ${tasks.length}`);
+            updateStatus(`${contextLabel} ${tasks.length} ROI hesaplanıyor...`, 'info', { toast, group: groupKey, title: runtimeMessage('copy.title'), duration: 3600 });
+            const batchId = beginCalculationBatch(tasks.length, 'roi');
+            tasks.forEach(({ group, img, data }, index) => {
+                if (updateCopyButtons) setCopyButtonsState('busy', `ROI ${index + 1}/${tasks.length}`);
+                try {
+                    const taskId = postROIDataAnalysis(group, img, data, { batchId });
+                    if (taskId == null) completeUnregisteredBatchTask(batchId, false);
+                } catch (err) {
+                    console.warn('ROI export analysis could not be queued:', img && img.info ? img.info.name : img, err);
+                    completeUnregisteredBatchTask(batchId, false);
+                }
+            });
+            const result = await waitForCalculationBatch(batchId, Number(options.timeoutMs) || 90000);
+            if (result.timedOut) {
+                updateStatus('ROI hesaplama zaman aşımına uğradı; tamamlanan satırlar korunacak.', 'warning', { toast, group: groupKey, title: runtimeMessage('copy.title'), duration: 7200 });
+            }
+            return { requested: tasks.length, failed: result.failed || 0, timedOut: Boolean(result.timedOut) };
         }
 
         function fallbackCopyText(text) {
@@ -8817,13 +9356,17 @@
             const group = 'excel-copy';
             setCopyButtonsState('busy', 'Excel hazırlanıyor...');
             try {
+                const roiEnsureResult = await ensureROIAnalysesForExport({ group, toast: true });
                 const missingBefore = getMissingFullImageAnalysisImages();
                 let ensureResult = { requested: 0, failed: 0 };
                 if (!missingBefore.length) {
-                    const summary = getExportRowSummary();
+                    const summary = { ...getExportRowSummary(), failed: (roiEnsureResult.failed || 0) + (roiEnsureResult.timedOut ? 1 : 0) };
                     const fullExport = buildFullExportTSV();
+                    const successMessage = summary.failed
+                        ? runtimeMessage('copy.successPartial', summary)
+                        : runtimeMessage('copy.success', summary);
                     setCopyButtonsState('busy', 'Kopyalanıyor...');
-                    const copied = await copyText(fullExport, runtimeMessage('copy.success', summary), { group, preferLegacy: true });
+                    const copied = await copyText(fullExport, successMessage, { group });
                     setCopyButtonsState(copied ? 'success' : 'idle', copied ? 'Kopyalandı' : '');
                     if (copied) setTimeout(() => setCopyButtonsState('idle'), 1800);
                     return copied;
@@ -8831,7 +9374,7 @@
 
                 updateStatus(runtimeMessage('copy.start'), 'info', { toast: true, group, title: runtimeMessage('copy.title'), duration: 3600 });
                 ensureResult = await ensureFullImageAnalysesForExport({ group, toast: true });
-                const summary = { ...getExportRowSummary(), failed: ensureResult.failed || 0 };
+                const summary = { ...getExportRowSummary(), failed: (ensureResult.failed || 0) + (roiEnsureResult.failed || 0) + (roiEnsureResult.timedOut ? 1 : 0) };
                 const fullExport = buildFullExportTSV();
                 const successMessage = ensureResult.failed
                     ? runtimeMessage('copy.successPartial', summary)
@@ -8863,19 +9406,24 @@
             document.getElementById('tool-rect').onclick = () => setTool('rect');
             document.getElementById('tool-circle').onclick = () => setTool('circle');
             document.getElementById('add-roi').onclick = async () => {
-                // Akıllı kontrol: aktif ROI varsa ve hesaplanmamışsa önce hizala ve hesapla
-                if (activeGroupId) {
-                    const group = roiGroups.find(g => g.id === activeGroupId);
-                    if (group) {
-                        const refData = group.rois[referenceImageId];
-                        // Eğer hesaplanmamışsa (result '--.----' ise)
-                        if (refData && refData.result === '--.----') {
-                            await alignActiveROI();
-                            await calculateActiveROI();
-                            // Biraz bekle worker görevleri başlasın
-                            await new Promise(r => setTimeout(r, 100));
-                        }
+                try {
+                    if (roiGroups.length) {
+                        await ensureROIAnalysesForExport({
+                            group: 'new-roi-preflight',
+                            toast: true,
+                            updateCopyButtons: false,
+                            timeoutMs: 60000,
+                            allowLocalRefine: false
+                        });
+                    } else if (images.length > 1) {
+                        await ensureAutomaticROIAlignmentForExport({
+                            force: false,
+                            forceAlignment: false,
+                            allowLocalRefine: false
+                        });
                     }
+                } catch (err) {
+                    console.warn('New ROI preflight calculation failed:', err);
                 }
 
                 const scale = stage.scaleX() || 1;
@@ -10178,7 +10726,25 @@
                 const registrationConfidence = tgtImg.transform && Number.isFinite(Number(tgtImg.transform.confidence))
                     ? Number(tgtImg.transform.confidence)
                     : 0;
-                const maxShift = registrationConfidence >= 0.9 ? 16 : 30;
+                const maxShift = registrationConfidence >= 0.9
+                    ? 10
+                    : registrationConfidence >= 0.82
+                        ? 14
+                        : 0;
+                if (maxShift <= 0) {
+                    return {
+                        dx: 0,
+                        dy: 0,
+                        score: 0,
+                        zeroScore: 0,
+                        improvement: 0,
+                        distinctness: 0,
+                        candidateDx: 0,
+                        candidateDy: 0,
+                        accepted: false,
+                        method: 'aligned-reference-locked'
+                    };
+                }
                 const searchX = Math.round(clamp(templateX - maxShift, 0, targetW - templateW));
                 const searchY = Math.round(clamp(templateY - maxShift, 0, targetH - templateH));
                 const searchW = Math.round(Math.min(targetW - searchX, templateW + maxShift * 2));
@@ -10193,7 +10759,7 @@
                 const edgeSearch = sobelMagnitude(rawSearch, searchW, searchH);
 
                 const quickZeroScore = combinedScore(rawSearch, edgeSearch, rawTemplate, edgeTemplate, searchW, templateW, templateH, zeroOx, zeroOy, 3);
-                const zeroLockThreshold = registrationConfidence >= 0.9 ? 0.58 : 0.72;
+                const zeroLockThreshold = registrationConfidence >= 0.9 ? 0.54 : 0.62;
                 if (quickZeroScore >= zeroLockThreshold) {
                     return {
                         dx: 0,
@@ -10252,10 +10818,10 @@
                 // Conservative gate: do not let a small, ambiguous ROI drag a high-confidence global registration away.
                 const accepted = distance > 0.35
                     && distance <= maxShift
-                    && best.score >= 0.50
-                    && improvement >= 0.035
-                    && distinctness >= 0.012
-                    && !(registrationConfidence >= 0.9 && distance > 14 && improvement < 0.075);
+                    && best.score >= 0.68
+                    && improvement >= 0.085
+                    && distinctness >= 0.040
+                    && !(distance > 8 && improvement < 0.12);
 
                 return {
                     dx: accepted ? round3(dx) : 0,
@@ -10426,11 +10992,24 @@
                         return;
                     }
                     const batchId = beginCalculationBatch(pendingImages.length, 'image');
-                    pendingImages.forEach(img => postFullImageAnalysis(img, { batchId }));
+                    pendingImages.forEach(img => {
+                        try {
+                            const taskId = postFullImageAnalysis(img, { batchId });
+                            if (taskId == null) completeUnregisteredBatchTask(batchId, false);
+                        } catch (err) {
+                            console.warn('Full-image analysis could not be queued:', img && img.info ? img.info.name : img, err);
+                            completeUnregisteredBatchTask(batchId, false);
+                        }
+                    });
                     analysisDirty = false;
                     return;
                 }
 
+                await ensureAutomaticROIAlignmentForExport({
+                    force: false,
+                    forceAlignment: false,
+                    allowLocalRefine: false
+                });
                 const group = roiGroups.find(g => g.id === activeGroupId);
                 const tasks = group ? images.map(img => ({ img, data: group.rois[img.id] })).filter(item => item.data) : [];
                 if (!tasks.length) {
@@ -10440,7 +11019,15 @@
                 }
 
                 const batchId = beginCalculationBatch(tasks.length, 'roi');
-                tasks.forEach(({ img, data }) => postROIDataAnalysis(group, img, data, { batchId }));
+                tasks.forEach(({ img, data }) => {
+                    try {
+                        const taskId = postROIDataAnalysis(group, img, data, { batchId });
+                        if (taskId == null) completeUnregisteredBatchTask(batchId, false);
+                    } catch (err) {
+                        console.warn('ROI analysis could not be queued:', img && img.info ? img.info.name : img, err);
+                        completeUnregisteredBatchTask(batchId, false);
+                    }
+                });
                 analysisDirty = false;
             } catch (err) {
                 console.error('Hesaplama hatas\u0131:', err);
@@ -10589,7 +11176,26 @@
                 const featureInliers = featureRegistration && Number.isFinite(Number(featureRegistration.inliers))
                     ? Number(featureRegistration.inliers)
                     : 0;
-                const featureIsStrong = Boolean(featureRegistration && featureRegistration.matrix && (featureConfidence >= 0.86 || (featureInliers >= 70 && featureConfidence >= 0.62)));
+                const featureMedianError = featureRegistration && Number.isFinite(Number(featureRegistration.medianError))
+                    ? Number(featureRegistration.medianError)
+                    : Infinity;
+                const featureCoverage = featureRegistration
+                    ? Math.min(
+                        Number.isFinite(Number(featureRegistration.refCoverage)) ? Number(featureRegistration.refCoverage) : 0,
+                        Number.isFinite(Number(featureRegistration.targetCoverage)) ? Number(featureRegistration.targetCoverage) : 0
+                    )
+                    : 0;
+                const featureMethod = featureRegistration && featureRegistration.method ? String(featureRegistration.method) : '';
+                const featureIsFallback = /fallback/i.test(featureMethod);
+                const featureIsStrong = Boolean(
+                    featureRegistration &&
+                    featureRegistration.matrix &&
+                    !featureIsFallback &&
+                    featureConfidence >= 0.78 &&
+                    featureInliers >= 14 &&
+                    featureMedianError <= 6.0 &&
+                    featureCoverage >= 0.035
+                );
                 let targetPanel = null;
                 let matrix = null;
                 let confidence = 0;
@@ -10614,15 +11220,19 @@
                         if (matrix) {
                             denseScore = refinedPanel ? refinedPanel.score : null;
                             initialScore = refinedPanel ? refinedPanel.initialScore : null;
-                            confidence = denseScore == null
-                                ? 0.78
-                                : Math.max(0.2, Math.min(0.99, (denseScore + 1) / 2));
-                            method = refinedPanel ? 'panel-dense-homography' : 'panel-quad-homography';
+                            if (denseScore != null && denseScore < 0.12) {
+                                matrix = null;
+                            } else {
+                                confidence = denseScore == null
+                                    ? 0.64
+                                    : Math.max(0.2, Math.min(0.95, (denseScore + 1) / 2));
+                                method = refinedPanel ? 'panel-dense-homography' : 'panel-quad-homography';
+                            }
                         }
                     }
                 }
                 if (!matrix) {
-                    if (featureRegistration && featureRegistration.matrix) {
+                    if (featureRegistration && featureRegistration.matrix && !featureIsFallback && featureConfidence >= 0.55 && featureInliers >= 10 && featureMedianError <= 8.0) {
                         matrix = featureRegistration.matrix;
                         confidence = featureRegistration.confidence || 0.35;
                         method = featureRegistration.method || 'feature-homography';
@@ -10647,7 +11257,12 @@
                     featureUsedMatches: featureRegistration ? featureRegistration.usedMatches : null,
                     featureInliers: featureRegistration ? featureRegistration.inliers : null,
                     featureConfidence: featureRegistration ? featureRegistration.confidence : null,
-                    featureMethod: featureRegistration ? featureRegistration.method : null
+                    featureMethod: featureRegistration ? featureRegistration.method : null,
+                    featureMedianError: featureRegistration ? featureRegistration.medianError : null,
+                    featureP90Error: featureRegistration ? featureRegistration.p90Error : null,
+                    featureRefCoverage: featureRegistration ? featureRegistration.refCoverage : null,
+                    featureTargetCoverage: featureRegistration ? featureRegistration.targetCoverage : null,
+                    featureAreaRatio: featureRegistration ? featureRegistration.areaRatio : null
                 };
                 img.panelQuad = targetPanel ? targetPanel.points : null;
                 img.alignedSource = warpImageToReferenceCanvas(img, matrix);
@@ -10762,24 +11377,54 @@
             const targetSampler = getImageSampler(targetImage.source);
             const refInfo = refImage.info;
             const targetInfo = targetImage.info;
+            const gridSize = 40;
             const refSig = normalizedGradientSignature(refSampler, (nx, ny) => ({
                 x: nx * refInfo.width,
                 y: ny * refInfo.height
-            }));
+            }), gridSize);
             const angles = [-45, -35, -25, -18, -12, -7, -3, 0, 3, 7, 12, 18, 25, 35, 45];
             const scales = [0.88, 0.94, 1, 1.06, 1.14];
-            let best = { score: -Infinity, matrix: buildCenteredSimilarityMatrix(refInfo, targetInfo, 0, 1), angle: 0, scale: 1 };
+            const offsetFractions = [-0.18, -0.09, 0, 0.09, 0.18];
+            let best = { score: -Infinity, matrix: buildCenteredSimilarityMatrix(refInfo, targetInfo, 0, 1), angle: 0, scale: 1, offsetX: 0, offsetY: 0 };
 
             angles.forEach(angle => {
                 scales.forEach(scale => {
-                    const matrix = buildCenteredSimilarityMatrix(refInfo, targetInfo, angle, scale);
+                    offsetFractions.forEach(fx => {
+                        offsetFractions.forEach(fy => {
+                    const offsetX = fx * targetInfo.width;
+                    const offsetY = fy * targetInfo.height;
+                    const matrix = buildCenteredSimilarityMatrix(refInfo, targetInfo, angle, scale, offsetX, offsetY);
                     const targetSig = normalizedGradientSignature(targetSampler, (nx, ny) => {
                         const refX = nx * refInfo.width;
                         const refY = ny * refInfo.height;
                         return applyHomographyPoint(matrix, refX, refY);
-                    });
+                    }, gridSize);
                     const score = znccScore(refSig, targetSig);
-                    if (score > best.score) best = { score, matrix, angle, scale };
+                            if (score > best.score) best = { score, matrix, angle, scale, offsetX, offsetY };
+                        });
+                    });
+                });
+            });
+
+            const fineAngles = [best.angle - 4, best.angle, best.angle + 4];
+            const fineScales = [best.scale * 0.97, best.scale, best.scale * 1.03];
+            const fineOffsets = [-0.045, 0, 0.045];
+            fineAngles.forEach(angle => {
+                fineScales.forEach(scale => {
+                    fineOffsets.forEach(dx => {
+                        fineOffsets.forEach(dy => {
+                            const offsetX = best.offsetX + dx * targetInfo.width;
+                            const offsetY = best.offsetY + dy * targetInfo.height;
+                            const matrix = buildCenteredSimilarityMatrix(refInfo, targetInfo, angle, scale, offsetX, offsetY);
+                            const targetSig = normalizedGradientSignature(targetSampler, (nx, ny) => {
+                                const refX = nx * refInfo.width;
+                                const refY = ny * refInfo.height;
+                                return applyHomographyPoint(matrix, refX, refY);
+                            }, gridSize);
+                            const score = znccScore(refSig, targetSig);
+                            if (score > best.score) best = { score, matrix, angle, scale, offsetX, offsetY };
+                        });
+                    });
                 });
             });
 
@@ -10790,6 +11435,8 @@
                 method: 'global-gradient-angle-scale',
                 angle: best.angle,
                 scale: best.scale,
+                offsetX: Math.round(best.offsetX),
+                offsetY: Math.round(best.offsetY),
                 score: best.score
             };
         }
@@ -11067,12 +11714,13 @@
             return candidates;
         }
 
-        function refineROIByLocalPatch(group, targetImage) {
+        function refineROIByLocalPatch(group, targetImage, force = false) {
             const refImage = getReferenceImage();
             if (!refImage || !targetImage || targetImage.id === referenceImageId) return;
             const refData = group.rois[referenceImageId];
             const targetData = group.rois[targetImage.id];
             if (!refData || !targetData) return;
+            if (targetData.manualAdjusted && !force) return;
 
             const refSampler = getImageSampler(refImage.source);
             const targetSampler = getImageSampler(targetImage.source);
@@ -11173,9 +11821,9 @@
             group.rois[targetImage.id] = refined;
         }
 
-        function refineAllROIsByLocalPatch() {
+        function refineAllROIsByLocalPatch(force = false) {
             roiGroups.forEach(group => {
-                images.forEach(img => refineROIByLocalPatch(group, img));
+                images.forEach(img => refineROIByLocalPatch(group, img, force));
             });
         }
 
@@ -11384,8 +12032,8 @@
                 roiW: width,
                 roiH: height,
                 shape: 'rect',
-                centerX: Math.round(width / 2),
-                centerY: Math.round(height / 2),
+                centerX: width / 2,
+                centerY: height / 2,
                 angle: 0,
                 rotated: false,
                 method: 'full-image',
@@ -11435,8 +12083,8 @@
                         y: 0,
                         w: width,
                         h: height,
-                        centerX: Math.round(width / 2),
-                        centerY: Math.round(height / 2),
+                        centerX: width / 2,
+                        centerY: height / 2,
                         angle: 0
                     },
                     pixelSizeMm: inputValue('pixel-size-mm', ''),
