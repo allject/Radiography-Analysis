@@ -1,42 +1,73 @@
 # Radiography Analysis
 
-**Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification and ImageJ-compatible Excel export.
+### Özet (Quick Overview - TR)
+
+**Radiography Analysis**, dental radyografi ROI hizalama, fraktal boyut analizi, dansitometri/morfometri ölçümleri, histogram kalite kontrolü, çakıştırma doğrulaması, gelişmiş radyografik kalite metrikleri ve ImageJ uyumlu Excel dışa aktarımı sağlayan, tarayıcı tabanlı statik bir uygulamadır.
+
+* 🌐 **Canlı Uygulama (GitHub Pages):** https://allject.github.io/Radiography-Analysis/
+* 📦 **Son Sürüm (Release):** [v1.2.1](https://github.com/allject/Radiography-Analysis/releases/tag/v1.2.1)
+* 💾 **Doğrudan İndirme (.zip):** [v1.2.1 Sürümünü İndir](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.1.zip)
+
+### Overview (Quick Overview - EN)
+
+**Radiography Analysis** is a public-ready, static browser application for dental radiography ROI alignment, fractal dimension analysis, densitometry/morphometry measurements, histogram QA, overlay verification, extended radiographic quality metrics, and ImageJ-compatible Excel export.
+
+* 🌐 **Live Application (GitHub Pages):** https://allject.github.io/Radiography-Analysis/
+* 📦 **Latest Release:** [v1.2.1](https://github.com/allject/Radiography-Analysis/releases/tag/v1.2.1)
+* 💾 **Direct Download (.zip):** [Download v1.2.1](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.1.zip)
+
+### Übersicht (Quick Overview - DE)
+
+**Radiography Analysis** ist eine einsatzbereite, statische Browser-Anwendung für die Ausrichtung von dentalen Radiographie-ROIs, Fraktalanalysen, Densitometrie-/Morphometriemessungen, Histogramm-QS, Overlay-Verifizierungen, erweiterte radiographische Qualitätsmetriken und den ImageJ-kompatiblen Excel-Export.
+
+* 🌐 **Live-Anwendung (GitHub Pages):** https://allject.github.io/Radiography-Analysis/
+* 📦 **Neueste Version (Release):** [v1.2.1](https://github.com/allject/Radiography-Analysis/releases/tag/v1.2.1)
+* 💾 **Direkter Download (.zip):** [v1.2.1 Herunterladen](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.1.zip)
+
+---
 
 Producer: **AllJect | AllJect Design & Development | https://allject.com**
 
 ## Languages
 
-The application and `user-guide.html` support **Turkish, English and German** through the extensible language registry in `radiography-languages.js`. The last selected language is remembered in the browser; no separate build or external translation file is required.
+The interface and guide support **Turkish, English and German** through an extensible dropdown-based language registry in `radiography-languages.js`. The last selected language is remembered in the browser.
 
 ## Quick start
 
-1. Open `radiography-analysis.html` locally or publish this folder with GitHub Pages.
+1. Open `radiography-analysis.html` locally, download the [Latest ZIP](https://github.com/allject/Radiography-Analysis/archive/refs/tags/v1.2.1.zip), or access it via [GitHub Pages](https://allject.github.io/Radiography-Analysis/).
 2. Import one or more radiographs. One image runs analysis mode; two or more images use reference-first comparison mode.
 3. Draw ROI, align, verify with Overlay, calculate, then copy Excel output.
 4. Open `user-guide.html` for the detailed trilingual manual and Excel column dictionary.
 
-## Public release 2026-06-07
+## Release notes (v1.2.1)
 
-This package is prepared as the public GitHub release for **Radiography Analysis**. It includes the finalized offline asset package, TR/EN/DE language hardening, localized Excel copy headers, expanded 163-column Excel measurement documentation, a dark pastel responsive interface, mobile command menu, non-blocking notifications, verified mobile panel/canvas interaction, and GitHub Pages compatible static delivery.
+This package represents the latest stable GitHub release for **Radiography Analysis**. The update focuses on calculation accuracy, ROI synchronization, alignment reliability, workflow consistency, mobile usability improvements, and overall application stability.
 
 ## Final QA scope
 
-- Compact TR/EN/DE language dropdown with remembered selection.
-- Mobile command menu exposes ROI tools, alignment, calculation, overlay, import, guide links and language shortcuts on small screens.
-- Excel copy headers localize to the selected language, including ImageJ-compatible measurement names.
-- Derived radiographic quality indices add exposure balance, robust contrast, clipping risk, sharpness/noise, CNR proxy, texture heterogeneity and trabecular ratio fields without adding expensive image passes.
-- `user-guide.html` contains the operating manual, workflow protocols, full-image/ROI Excel guidance and searchable Excel column dictionary.
-- Root app, guide, favicon and vendor files are synchronized for static GitHub Pages publishing without CDN dependency.
-- Mobile upload, analysis panel toggle and canvas drag were live-tested with Chrome mobile emulation.
+* Compact TR/EN/DE language dropdown with remembered selection.
+* Responsive interface optimized for desktop, tablet, and mobile devices.
+* Mobile command menu provides quick access to ROI tools, alignment, calculation, overlay, import, guide links, and language shortcuts.
+* Excel copy headers localize to the selected language, including ImageJ-compatible measurement names.
+* Extended radiographic quality metrics and derived analysis indicators.
+* Improved ROI synchronization between alignment, calculation, and export workflows.
+* Enhanced calculation reliability through stricter ROI geometry validation and cache management.
+* Improved image registration, ROI transfer consistency, and alignment robustness.
+* Refined local ROI matching and validation logic to reduce alignment drift.
+* `user-guide.html` contains the trilingual operating manual, workflow protocols, analysis guidance, and searchable Excel column dictionary.
+* Root app and guide files are synchronized for static GitHub Pages publishing.
+* Mobile upload, analysis panel interactions, and canvas operations have been validated across modern browsers.
+* GitHub Pages deployment, local vendor assets, UTF-8 integrity, JavaScript syntax, and Excel TSV output have been revalidated.
 
 ## Public release notes
 
-- Project name: **Radiography Analysis**.
-- Static deployment: no build step required.
-- Core files use English filenames.
-- Patient-identifiable images must not be committed to public repositories.
-- This software is for research, measurement standardization and decision support. It is not a diagnostic medical device.
+* Project name: **Radiography Analysis**.
+* Static deployment: no build step required.
+* Compatible with desktop, tablet, and mobile browsers.
+* Core files use English filenames.
+* Patient-identifiable images must not be committed to public repositories.
+* This software is for research, measurement standardization, education, and decision support. It is not a diagnostic medical device.
 
-## GitHub Pages
+### Build
 
-Repository Settings -> Pages -> Deploy from branch -> `main` / root. Open the application at `radiography-analysis.html`; the guide is `user-guide.html`.
+`radiography-analysis-public-release-2026-06-07`
